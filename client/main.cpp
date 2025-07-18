@@ -6,13 +6,13 @@ int main() {
         LPTF_Socket::initialize();
         LPTF_Socket clientSocket;
         clientSocket.connectSocket("127.0.0.1", 8888);
-        std::cout << "(type 'exit' to quit)" << std::endl;
+        std::cout << "(Ecrire 'sortie' pour sortir)" << std::endl;
         while (true) {
             std::string msg;
-            std::cout << "Enter message : ";
+            std::cout << "Entrez le message : ";
             std::getline(std::cin, msg);
 
-            if (msg == "exit") {// Exit the loop if the user types 'exit'
+            if (msg == "sortie") {// Exit the loop if the user types 'exit'
                 break;
             }
 
@@ -21,7 +21,7 @@ int main() {
         }
 
     } catch (const std::exception& e) {
-        std::cerr << "Client Exception: " << e.what() << std::endl;
+        std::cerr << "Exception Client: " << e.what() << std::endl;
         return 1;
     }
     return 0;
