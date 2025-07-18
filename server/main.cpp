@@ -10,7 +10,7 @@ int main() {
         LPTF_Socket::initialize();
 
         LPTF_Socket serveur;
-        auto env = EnvLoader::loadEnv("../.env");
+        auto env = EnvLoader::loadEnv(".env");
         int port = std::stoi(env["PORT"]);
         serveur.bindSocket(port);
         serveur.listenSocket();

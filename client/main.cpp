@@ -6,7 +6,7 @@ int main() {
     try {
         LPTF_Socket::initialize();
         LPTF_Socket clientSocket;
-        auto env = EnvLoader::loadEnv("../.env");
+        auto env = EnvLoader::loadEnv(".env");
         std::string ip = env["IP"];
         int port = std::stoi(env["PORT"]);
 
