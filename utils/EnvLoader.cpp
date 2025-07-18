@@ -1,7 +1,4 @@
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <map>
+#include "EnvLoader.h"
 
 std::map<std::string, std::string> loadEnv(const std::string& path) {
     std::ifstream file(path);
