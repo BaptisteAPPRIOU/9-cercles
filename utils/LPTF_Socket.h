@@ -23,12 +23,12 @@ private:
     void setupAddress(int port);
 
 public:
-    LPTF_Socket();  // constructeur principal
-    LPTF_Socket(int sockfd, struct sockaddr_in clientAddr);  // constructeur utilisé par accept()
+    LPTF_Socket();  // main constructor
+    LPTF_Socket(int sockfd, struct sockaddr_in clientAddr);  // constructor used by accept()
     ~LPTF_Socket();
 
     static void initialize();
-    //GETTER&SETTER//
+    // GETTERS & SETTERS //
     int getSocketFd() const;
 
     void bindSocket(int port);
