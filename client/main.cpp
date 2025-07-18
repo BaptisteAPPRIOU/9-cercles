@@ -1,12 +1,12 @@
 #include "LPTF_Socket.h"
 #include <iostream>
-#include "9-cercles\utils\EnvLoader.cpp"
+#include "../utils/EnvLoader.h"
 
 int main() {
     try {
         LPTF_Socket::initialize();
         LPTF_Socket clientSocket;
-        auto env = loadEnv(".env");
+        auto env = EnvLoader::loadEnv("../.env");
         std::string ip = env["IP"];
         int port = std::stoi(env["PORT"]);
 
