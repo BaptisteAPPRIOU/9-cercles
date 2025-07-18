@@ -77,5 +77,8 @@ CMakeLists.txt.user*
 # --------
 *.dll
 *.exe
+*.env
 
 .vscode/settings.json
+*cercles
+cercles*
