@@ -1,11 +1,16 @@
 #include "LPTF_Socket.h"
 #include <iostream>
+#include "9-cercles\utils\EnvLoader.cpp"
 
 int main() {
     try {
         LPTF_Socket::initialize();
         LPTF_Socket clientSocket;
-        clientSocket.connectSocket("127.0.0.1", 8888);
+        auto env = loadEnv(".env");
+        std::string ip = env["IP"];
+        int port = std::stoi(env["PORT"]);
+
+        clientSocket.connectSocket(ip, port);
         std::cout << "(Ecrire 'sortie' pour sortir)" << std::endl;
         while (true) {
             std::string msg;

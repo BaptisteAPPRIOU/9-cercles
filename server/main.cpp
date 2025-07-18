@@ -1,6 +1,7 @@
 #include "LPTF_Socket.h"
 #include <vector>
 #include <iostream>
+#include "9-cercles\utils\EnvLoader.cpp"
 
 int main() {
     std::cout << "Serveur démarrage..." << std::endl;
@@ -9,7 +10,9 @@ int main() {
         LPTF_Socket::initialize();
 
         LPTF_Socket serveur;
-        serveur.bindSocket(8888);
+        auto env = loadEnv(".env");
+        int port = std::stoi(env["PORT"]);
+        serveur.bindSocket(port);
         serveur.listenSocket();
 
         std::vector<std::unique_ptr<LPTF_Socket>> clients;
