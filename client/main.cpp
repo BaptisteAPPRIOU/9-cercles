@@ -1,6 +1,7 @@
-#include "LPTF_Socket.h"
-#include <iostream>
 #include "../utils/EnvLoader.h"
+#include "../utils/LPTF_Socket.h"
+#include "../utils/LPTF_Packet.h"
+#include <iostream>
 using namespace std;
 
 int main() {
@@ -18,13 +19,24 @@ int main() {
             cout << "Entrez le message : ";
             getline(cin, msg);
 
-            if (msg == "sortie") {// Exit the loop if the user types 'exit'
+            if (msg == "sortie") {
                 break;
             }
 
-            clientSocket.sendMsg(msg); // Send the user input to the server
-            cout << clientSocket.recvMsg() << endl; // Receive and print the response from the server
+            // Construire un paquet binaire
+            std::vector<uint8_t> payload(msg.begin(), msg.end());
+            LPTF_Packet packet(1, LPTF_Packet::GET_INFO, payload);
+            auto serialized = packet.serialize();
+
+            clientSocket.sendBinary(serialized);
+
+            auto responseBytes = clientSocket.recvBinary(); // à adapter dans LPTF_Socket
+            auto responsePacket = LPTF_Packet::deserialize(responseBytes);
+
+            std::string responseMsg(responsePacket.getPayload().begin(), responsePacket.getPayload().end());
+            std::cout << "Réponse serveur : " << responseMsg << std::endl;
         }
+
 
     } catch (const exception& e) {
         cerr << "Exception Client: " << e.what() << endl;

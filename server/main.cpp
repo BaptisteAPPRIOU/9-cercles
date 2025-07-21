@@ -1,7 +1,8 @@
-#include "LPTF_Socket.h"
+#include "../utils/EnvLoader.h"
+#include "../utils/LPTF_Socket.h"
+#include "../utils/LPTF_Packet.h"
 #include <vector>
 #include <iostream>
-#include "../utils/EnvLoader.h"
 using namespace std;
 
 int main() {
@@ -39,27 +40,38 @@ int main() {
                 cerr << "Erreur lors de select()" << endl;
                 break;
             }
+
             if (FD_ISSET(serveur.getSocketFd(), &readfds)) {
                 auto newClient = serveur.acceptSocket();
                 cout << "Nouveau client : " << newClient->getClientIP() << endl;
                 clients.push_back(move(newClient));
             }
 
-            // Messages from existing clients
             for (auto it = clients.begin(); it != clients.end(); ) {
                 int fd = (*it)->getSocketFd();
                 if (FD_ISSET(fd, &readfds)) {
-                    string msg = (*it)->recvMsg();
-                    if (msg.empty()) {
-                        cout << "Client déconnecté." << endl;
-                        it = clients.erase(it);  // removes the client
-                        continue;
-                    } else {
-                        cout << "Reçu : " << msg << endl;
-                        (*it)->sendMsg("Message reçu !");
+                    try {
+                        std::vector<uint8_t> data = (*it)->recvBinary();
+                        auto packet = LPTF_Packet::deserialize(data);
+
+                        if (packet.getType() == LPTF_Packet::GET_INFO) {
+                            std::string payload(packet.getPayload().begin(), packet.getPayload().end());
+                            std::cout << "Message client : " << payload << std::endl;
+
+                            std::string response = "Reçu : " + payload;
+                            std::vector<uint8_t> responsePayload(response.begin(), response.end());
+
+                            LPTF_Packet responsePacket(1, LPTF_Packet::RESPONSE, responsePayload);
+                            (*it)->sendBinary(responsePacket.serialize());
+                        }
+                        ++it;
+                    } catch (const std::exception& e) {
+                        std::cerr << "Client déconnecté ou erreur : " << e.what() << std::endl;
+                        it = clients.erase(it);
                     }
+                } else {
+                    ++it;
                 }
-                ++it;
             }
         }
 
