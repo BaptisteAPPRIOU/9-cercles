@@ -4,14 +4,25 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
+    types: [closed]
 
 jobs:
   tag-and-release:
     runs-on: ubuntu-latest
+    # Only run on direct push to main OR when PR is merged
+    if: github.event_name == 'push' || (github.event.pull_request.merged == true)
+    
+    permissions:
+      contents: write  # Required for creating tags and releases
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch full history for git log operations
 
       - name: Setup Git config
         run: |
@@ -21,7 +32,28 @@ jobs:
       - name: Get all commit messages in push
         id: get_commits
         run: |
-          messages=$(git log --format=%B ${{ github.event.before }}..${{ github.sha }})
+          echo "🔍 Analyzing commits for event: ${{ github.event_name }}"
+          
+          if [ "${{ github.event_name }}" = "push" ]; then
+            # For direct push, use before..after range
+            if [ "${{ github.event.before }}" != "0000000000000000000000000000000000000000" ]; then
+              echo "📝 Getting commits from range: ${{ github.event.before }}..${{ github.sha }}"
+              messages=$(git log --format=%B ${{ github.event.before }}..${{ github.sha }})
+            else
+              # First push to branch, get last commit only
+              echo "📝 Getting last commit (first push to branch)"
+              messages=$(git log -1 --format=%B)
+            fi
+          else
+            # For PR merge, get all commits in the PR
+            echo "📝 Getting commits from PR merge"
+            git fetch origin main
+            messages=$(git log --format=%B origin/main..HEAD)
+          fi
+          
+          echo "📋 Found commit messages:"
+          echo "$messages"
+          
           echo "messages<<EOF" >> $GITHUB_OUTPUT
           echo "$messages" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
@@ -31,23 +63,40 @@ jobs:
         run: |
           messages="${{ steps.get_commits.outputs.messages }}"
           bump="patch"  # default
-
-          echo "$messages" | grep -q "BREAKING:" && bump="major"
-          if [ "$bump" != "major" ] && echo "$messages" | grep -q "feat:"; then
+          
+          echo "🔍 Analyzing commit messages for bump level:"
+          echo "$messages"
+          
+          if echo "$messages" | grep -q "BREAKING:"; then
+            bump="major"
+            echo "🚨 Found BREAKING change - setting to major bump"
+          elif echo "$messages" | grep -q "feat:"; then
             bump="minor"
+            echo "✨ Found feature - setting to minor bump"
+          else
+            echo "🔧 No major features or breaking changes - using patch bump"
           fi
 
+          echo "📈 Bump level: $bump"
           echo "bump=$bump" >> $GITHUB_OUTPUT
 
       - name: Extract ring number from most recent commit
         id: get_ring
         run: |
           latest_msg=$(git log -1 --pretty=%B)
+          echo "🎯 Latest commit message: $latest_msg"
+          
           if [[ "$latest_msg" =~ ring([0-9]+): ]]; then
             ring="${BASH_REMATCH[1]}"
+            echo "✅ Found ring: $ring"
             echo "ring=$ring" >> $GITHUB_OUTPUT
           else
             echo "❌ Latest commit must start with 'ringX:' (e.g. ring2: feat: ...)"
+            echo "Latest commit message: $latest_msg"
+            echo "💡 Examples of valid formats:"
+            echo "  - ring1: feat: add new feature"
+            echo "  - ring2: fix: resolve bug"
+            echo "  - ring1: BREAKING: major API change"
             exit 1
           fi
 
@@ -57,15 +106,21 @@ jobs:
           ring=${{ steps.get_ring.outputs.ring }}
           bump=${{ steps.bump_logic.outputs.bump }}
           prefix="ring${ring}-v"
+          
+          echo "🏷️ Looking for existing tags with prefix: $prefix"
           latest_tag=$(git tag --list "${prefix}*" --sort=-v:refname | head -n 1)
 
           if [ -z "$latest_tag" ]; then
             major=0; minor=1; patch=0
+            echo "🆕 No existing tags found, starting with v0.1.0"
           else
             version=${latest_tag#${prefix}}
             IFS='.' read -r major minor patch <<< "$version"
+            echo "📊 Found latest tag: $latest_tag (version: $version)"
           fi
 
+          echo "⬆️ Applying $bump bump to $major.$minor.$patch"
+          
           if [[ "$bump" == "major" ]]; then
             major=$((major + 1)); minor=0; patch=0
           elif [[ "$bump" == "minor" ]]; then
@@ -75,12 +130,15 @@ jobs:
           fi
 
           new_tag="${prefix}${major}.${minor}.${patch}"
+          echo "🎯 New tag will be: $new_tag"
           echo "new_tag=$new_tag" >> $GITHUB_OUTPUT
 
       - name: Create Git Tag
         run: |
+          echo "🏷️ Creating and pushing tag: ${{ steps.versioning.outputs.new_tag }}"
           git tag ${{ steps.versioning.outputs.new_tag }}
           git push origin ${{ steps.versioning.outputs.new_tag }}
+          echo "✅ Tag created successfully"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
@@ -90,6 +148,9 @@ jobs:
           body: |
             🔔 **Ring:** ${{ steps.get_ring.outputs.ring }}
             📌 **Bump Level:** ${{ steps.bump_logic.outputs.bump }}
-            🔗 Commit Range: `${{ github.event.before }}..${{ github.sha }}`
+            📝 **Event:** ${{ github.event_name }}
+            
+            ## Commits in this release:
+            ${{ steps.get_commits.outputs.messages }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
