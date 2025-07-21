@@ -4,12 +4,14 @@
 #include <fstream>
 #include <string>
 #include <map>
+#include <stdexcept>
+using namespace std;
 
 class EnvLoader {
 public:
-    static std::map<std::string, std::string> loadEnv(const std::string& filepath);
-    static std::string loadIP(const std::string& filepath);
-    static int loadPort(const std::string& filepath);
+    static map<string, string> loadEnv(const string& filepath);
+    static string loadIP(const string& filepath);
+    static int loadPort(const string& filepath);
 };
 
 #endif // ENVLOADER_H

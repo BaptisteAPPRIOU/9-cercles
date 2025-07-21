@@ -12,8 +12,10 @@
 #include <unistd.h>
 #endif
 
+#include <stdexcept>
 #include <string>
 #include <memory>
+using namespace std;
 
 class LPTF_Socket {
 private:
@@ -33,13 +35,13 @@ public:
 
     void bindSocket(int port);
     void listenSocket();
-    std::unique_ptr<LPTF_Socket> acceptSocket();
+    unique_ptr<LPTF_Socket> acceptSocket();
 
-    void connectSocket(const std::string& ip, int port);
+    void connectSocket(const string& ip, int port);
 
-    ssize_t sendMsg(const std::string& msg);
-    std::string recvMsg();
-    std::string getClientIP();
+    ssize_t sendMsg(const string& msg);
+    string recvMsg();
+    string getClientIP();
 
     void closeSocket();
 };

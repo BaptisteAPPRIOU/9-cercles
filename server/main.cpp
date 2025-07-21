@@ -2,9 +2,10 @@
 #include <vector>
 #include <iostream>
 #include "../utils/EnvLoader.h"
+using namespace std;
 
 int main() {
-    std::cout << "Serveur démarrage..." << std::endl;
+    cout << "Serveur démarrage..." << endl;
 
     try {
         LPTF_Socket::initialize();
@@ -15,9 +16,9 @@ int main() {
         serveur.bindSocket(port);
         serveur.listenSocket();
 
-        std::vector<std::unique_ptr<LPTF_Socket>> clients;
+        vector<unique_ptr<LPTF_Socket>> clients;
 
-        std::cout << "Serveur prêt. En attente de connexions..." << std::endl;
+        cout << "Serveur prêt. En attente de connexions..." << endl;
 
         while (true) {
             fd_set readfds;
@@ -35,26 +36,26 @@ int main() {
             // Wait for activity on sockets
             int activity = select(maxFd + 1, &readfds, nullptr, nullptr, nullptr);
             if (activity < 0) {
-                std::cerr << "Erreur lors de select()" << std::endl;
+                cerr << "Erreur lors de select()" << endl;
                 break;
             }
             if (FD_ISSET(serveur.getSocketFd(), &readfds)) {
                 auto newClient = serveur.acceptSocket();
-                std::cout << "Nouveau client : " << newClient->getClientIP() << std::endl;
-                clients.push_back(std::move(newClient));
+                cout << "Nouveau client : " << newClient->getClientIP() << endl;
+                clients.push_back(move(newClient));
             }
 
             // Messages from existing clients
             for (auto it = clients.begin(); it != clients.end(); ) {
                 int fd = (*it)->getSocketFd();
                 if (FD_ISSET(fd, &readfds)) {
-                    std::string msg = (*it)->recvMsg();
+                    string msg = (*it)->recvMsg();
                     if (msg.empty()) {
-                        std::cout << "Client déconnecté." << std::endl;
+                        cout << "Client déconnecté." << endl;
                         it = clients.erase(it);  // removes the client
                         continue;
                     } else {
-                        std::cout << "Reçu : " << msg << std::endl;
+                        cout << "Reçu : " << msg << endl;
                         (*it)->sendMsg("Message reçu !");
                     }
                 }
@@ -62,8 +63,8 @@ int main() {
             }
         }
 
-    } catch (const std::exception& e) {
-        std::cerr << "Erreur fatale : " << e.what() << std::endl;
+    } catch (const exception& e) {
+        cerr << "Erreur fatale : " << e.what() << endl;
         return 1;
     }
 

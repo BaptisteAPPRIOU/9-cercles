@@ -1,32 +1,33 @@
 #include "LPTF_Socket.h"
 #include <iostream>
 #include "../utils/EnvLoader.h"
+using namespace std;
 
 int main() {
     try {
         LPTF_Socket::initialize();
         LPTF_Socket clientSocket;
         auto env = EnvLoader::loadEnv("../../.env");
-        std::string ip = EnvLoader::loadIP("../../.env");
+        string ip = EnvLoader::loadIP("../../.env");
         int port = EnvLoader::loadPort("../../.env");
 
         clientSocket.connectSocket(ip, port);
-        std::cout << "(Ecrire 'sortie' pour sortir)" << std::endl;
+        cout << "(Ecrire 'sortie' pour sortir)" << endl;
         while (true) {
-            std::string msg;
-            std::cout << "Entrez le message : ";
-            std::getline(std::cin, msg);
+            string msg;
+            cout << "Entrez le message : ";
+            getline(cin, msg);
 
             if (msg == "sortie") {// Exit the loop if the user types 'exit'
                 break;
             }
 
             clientSocket.sendMsg(msg); // Send the user input to the server
-            std::cout << clientSocket.recvMsg() << std::endl; // Receive and print the response from the server
+            cout << clientSocket.recvMsg() << endl; // Receive and print the response from the server
         }
 
-    } catch (const std::exception& e) {
-        std::cerr << "Exception Client: " << e.what() << std::endl;
+    } catch (const exception& e) {
+        cerr << "Exception Client: " << e.what() << endl;
         return 1;
     }
     return 0;
