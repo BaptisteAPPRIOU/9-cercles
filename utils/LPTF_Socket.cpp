@@ -101,3 +101,35 @@ string LPTF_Socket::getClientIP() {
     inet_ntop(AF_INET, &(this->clientAddress.sin_addr), client_ip, INET_ADDRSTRLEN);
     return string(client_ip);
 }
+
+ssize_t LPTF_Socket::sendBinary(const std::vector<uint8_t>& data) {
+    const char* buffer = reinterpret_cast<const char*>(data.data());
+    size_t totalSent = 0;
+    while (totalSent < data.size()) {
+        ssize_t sent = send(sockfd, buffer + totalSent, data.size() - totalSent, 0);
+        if (sent <= 0) {
+            throw std::runtime_error("Erreur lors de l'envoi binaire");
+        }
+        totalSent += sent;
+    }
+    return totalSent;
+}
+
+std::vector<uint8_t> LPTF_Socket::recvBinary() {
+    uint8_t header[4];
+    ssize_t headerLen = recv(sockfd, reinterpret_cast<char*>(header), 4, MSG_WAITALL);
+    if (headerLen != 4) {
+        throw std::runtime_error("Erreur de lecture de l'en-tête du paquet");
+    }
+
+    uint16_t payloadSize = (header[2] << 8) | header[3];
+    std::vector<uint8_t> fullData(4 + payloadSize);
+    std::copy(header, header + 4, fullData.begin());
+
+    ssize_t payloadLen = recv(sockfd, reinterpret_cast<char*>(fullData.data() + 4), payloadSize, MSG_WAITALL);
+    if (payloadLen != payloadSize) {
+        throw std::runtime_error("Erreur de lecture du payload");
+    }
+
+    return fullData;
+}

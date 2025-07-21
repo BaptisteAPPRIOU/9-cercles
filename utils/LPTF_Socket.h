@@ -1,6 +1,11 @@
 #ifndef LPTF_SOCKET_H
 #define LPTF_SOCKET_H
 
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#define byte win_byte_override
+
 #ifdef _WIN32
 #include <winsock2.h>
 #include <ws2tcpip.h>
@@ -12,9 +17,12 @@
 #include <unistd.h>
 #endif
 
+#include <cstdint>
 #include <stdexcept>
+#include <algorithm>
 #include <string>
 #include <memory>
+#include <vector>
 using namespace std;
 
 class LPTF_Socket {
@@ -42,6 +50,9 @@ public:
     ssize_t sendMsg(const string& msg);
     string recvMsg();
     string getClientIP();
+
+    ssize_t sendBinary(const std::vector<uint8_t>& data);
+    std::vector<uint8_t> recvBinary();
 
     void closeSocket();
 };
