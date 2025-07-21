@@ -1,28 +1,28 @@
-# 🚀 Release & Versioning Guidelines for 9 Rings Project
+# Release & Versioning Guidelines for 9 Rings Project
 
 This project uses **GitHub Actions** to manage automatic tagging and releases for each **Ring**, based on commit messages and pull requests merged into the `main` branch.
 
 ---
 
-## 🔁 What Happens on Merge to `main`
+## What Happens on Merge to `main`
 
 When a pull request (PR) is merged into the `main` branch:
 
-- ✅ GitHub Actions scans **all commit messages** in that PR
-- ✅ The **last commit** must indicate which Ring (e.g., `ring1:`, `ring2:`)
-- ✅ The workflow calculates the **highest semantic version bump** across all commits:
+- GitHub Actions scans **all commit messages** in that PR
+- The **last commit** must indicate which Ring (e.g., `ring1:`, `ring2:`)
+- The workflow calculates the **highest semantic version bump** across all commits:
   - `BREAKING:` → **major**
   - `feat:` → **minor**
   - everything else → **patch**
-- ✅ A **new version tag** is created for that Ring:
+- A **new version tag** is created for that Ring:
   - Example: `ring2-v1.4.0`
-- ✅ A **GitHub Release** is published automatically
+- A **GitHub Release** is published automatically
 
-> 📌 **You do not need to create the tag or release manually.** Just push your commits and merge the PR — the workflow handles the rest.
+> **You do not need to create the tag or release manually.** Just push your commits and merge the PR — the workflow handles the rest.
 
 ---
 
-## 🧠 Versioning Model
+## Versioning Model
 
 Each Ring has its **own version history**:
 
@@ -35,7 +35,7 @@ Each Ring has its **own version history**:
 
 ---
 
-## ✅ How to Commit (Before PR)
+## How to Commit (Before PR)
 
 Each commit must:
 
@@ -55,7 +55,7 @@ Each commit must:
 
 ---
 
-## 🚀 How to Release a Ring
+## How to Release a Ring
 
 ### 1. Create your commits
 ```bash
@@ -84,16 +84,16 @@ Once merged, the GitHub Action will:
 
 ---
 
-## 🛑 What Not to Do
+## What Not to Do
 
-- ❌ **Do not** mix commits for multiple rings in one PR
-- ❌ **Do not** manually create Git tags or releases
-- ❌ **Do not** push directly to `main` (always use PRs)
-- ❌ **Do not** forget the `ringX:` prefix — the workflow depends on it
+- **Do not** mix commits for multiple rings in one PR
+- **Do not** manually create Git tags or releases
+- **Do not** push directly to `main` (always use PRs)
+- **Do not** forget the `ringX:` prefix — the workflow depends on it
 
 ---
 
-## 📌 Summary
+## Summary
 
 | Task                | Rule                                                              |
 |---------------------|-------------------------------------------------------------------|
