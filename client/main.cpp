@@ -1,10 +1,68 @@
 #include "../utils/EnvLoader.h"
 #include "../utils/LPTF_Socket.h"
 #include "../utils/LPTF_Packet.h"
+#include "../utils/SystemInfo.h"
 #include <iostream>
 #include <windows.h>
+#include <thread>
+#include <atomic>
 
 using namespace std;
+
+// Global variables for thread communication
+atomic<bool> running(true);
+LPTF_Socket* globalSocket = nullptr;
+
+// Thread function to handle server requests
+void serverRequestHandler() {
+    while (running) {
+        try {
+            vector<uint8_t> data = globalSocket->recvBinary();
+            LPTF_Packet packet = LPTF_Packet::deserialize(data);
+            
+            switch (packet.getType()) {
+                case LPTF_Packet::GET_INFO: {
+                    cout << "\n[SERVEUR] Demande des informations système..." << endl;
+                    
+                    // Collect system information
+                    auto sysInfo = SystemInfo::getSystemInfo();
+                    string jsonInfo = SystemInfo::toJson(sysInfo);
+                    
+                    cout << "[SERVEUR] Informations collectées et envoyées." << endl;
+                    
+                    // Send response
+                    vector<uint8_t> payload(jsonInfo.begin(), jsonInfo.end());
+                    LPTF_Packet response(1, LPTF_Packet::RESPONSE, payload);
+                    
+                    globalSocket->sendBinary(response.serialize());
+                    cout << "Entrez le message : ";
+                    cout.flush();
+                    break;
+                }
+                
+                case LPTF_Packet::RESPONSE: {
+                    string response(packet.getPayload().begin(), packet.getPayload().end());
+                    cout << "\nRéponse serveur : " << response << endl;
+                    cout << "Entrez le message : ";
+                    cout.flush();
+                    break;
+                }
+                
+                default:
+                    cout << "\n[SERVEUR] Type de paquet inconnu: " << (int)packet.getType() << endl;
+                    cout << "Entrez le message : ";
+                    cout.flush();
+            }
+            
+        } catch (const exception& e) {
+            if (running) {
+                cout << "\n[ERREUR] Connexion fermée: " << e.what() << endl;
+                running = false;
+            }
+            break;
+        }
+    }
+}
 
 int main() {
     SetConsoleOutputCP(CP_UTF8);
@@ -13,38 +71,63 @@ int main() {
     try {
         LPTF_Socket::initialize();
         LPTF_Socket clientSocket;
+        globalSocket = &clientSocket;
+        
         auto env = EnvLoader::loadEnv("../../.env");
         string ip = EnvLoader::loadIP("../../.env");
         int port = EnvLoader::loadPort("../../.env");
 
         clientSocket.connectSocket(ip, port);
-        cout << "(Ecrire 'sortie' pour sortir)" << endl;
-        while (true) {
+        cout << "Connecté au serveur " << ip << ":" << port << endl;
+        
+        // AUTO-SEND SYSTEM INFO ON CONNECTION
+        cout << "Envoi automatique des informations système..." << endl;
+        auto sysInfo = SystemInfo::getSystemInfo();
+        string jsonInfo = SystemInfo::toJson(sysInfo);
+        
+        cout << "Informations système:" << endl;
+        cout << "- Nom d'hôte: " << sysInfo["hostname"] << endl;
+        cout << "- Utilisateur: " << sysInfo["username"] << endl;
+        cout << "- Système: " << sysInfo["operating_system"] << endl;
+        
+        // Send system info as GET_INFO packet (since that's what server expects)
+        vector<uint8_t> payload(jsonInfo.begin(), jsonInfo.end());
+        LPTF_Packet sysInfoPacket(1, LPTF_Packet::GET_INFO, payload);
+        clientSocket.sendBinary(sysInfoPacket.serialize());
+        
+        cout << "Informations système envoyées au serveur." << endl;
+        cout << "(Tapez 'sortie' pour quitter)" << endl;
+
+        // Start background thread to handle additional server requests
+        thread serverThread(serverRequestHandler);
+
+        // Main thread for user interaction
+        while (running) {
             string msg;
             cout << "Entrez le message : ";
             getline(cin, msg);
 
             if (msg == "sortie") {
+                running = false;
                 break;
             }
 
-            // Construire un paquet binaire
-            std::vector<uint8_t> payload(msg.begin(), msg.end());
-            LPTF_Packet packet(1, LPTF_Packet::GET_INFO, payload);
-            auto serialized = packet.serialize();
-
-            clientSocket.sendBinary(serialized);
-
-            auto responseBytes = clientSocket.recvBinary(); // à adapter dans LPTF_Socket
-            auto responsePacket = LPTF_Packet::deserialize(responseBytes);
-
-            std::string responseMsg(responsePacket.getPayload().begin(), responsePacket.getPayload().end());
-            std::cout << "Réponse serveur : " << responseMsg << std::endl;
+            // Send regular messages
+            vector<uint8_t> msgPayload(msg.begin(), msg.end());
+            LPTF_Packet packet(1, LPTF_Packet::GET_INFO, msgPayload);
+            clientSocket.sendBinary(packet.serialize());
         }
 
+        // Clean shutdown
+        running = false;
+        if (serverThread.joinable()) {
+            serverThread.join();
+        }
+        clientSocket.closeSocket();
 
     } catch (const exception& e) {
         cerr << "Exception Client: " << e.what() << endl;
+        running = false;
         return 1;
     }
     return 0;
