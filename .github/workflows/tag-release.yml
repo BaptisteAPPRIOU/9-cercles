@@ -80,23 +80,41 @@ jobs:
           echo "Bump level: $bump"
           echo "bump=$bump" >> $GITHUB_OUTPUT
 
-      - name: Extract ring number from most recent commit
+      - name: Extract ring number from most recent commit or PR
         id: get_ring
         run: |
           latest_msg=$(git log -1 --pretty=%B)
           echo "Latest commit message: $latest_msg"
           
-          if [[ "$latest_msg" =~ ring([0-9]+): ]]; then
+          # Check if it's a merge commit from a ring branch
+          if [[ "$latest_msg" =~ "Merge pull request".*/dev/init/([0-9]+)[a-z-]*-ring ]]; then
             ring="${BASH_REMATCH[1]}"
-            echo "Found ring: $ring"
+            echo "Found ring from PR branch: $ring"
             echo "ring=$ring" >> $GITHUB_OUTPUT
+          elif [[ "$latest_msg" =~ ring([0-9]+): ]]; then
+            ring="${BASH_REMATCH[1]}"
+            echo "Found ring from commit message: $ring"
+            echo "ring=$ring" >> $GITHUB_OUTPUT
+          elif [[ "$latest_msg" =~ "Merge" ]]; then
+            # If it's a merge commit but doesn't match ring pattern, check previous commits
+            echo "Merge commit detected, checking previous commits for ring pattern"
+            for i in {2..10}; do
+              prev_msg=$(git log -$i --pretty=%B | tail -n +$((i)) | head -1)
+              echo "Checking commit $i: $prev_msg"
+              if [[ "$prev_msg" =~ ring([0-9]+): ]]; then
+                ring="${BASH_REMATCH[1]}"
+                echo "Found ring from previous commit ($i commits back): $ring"
+                echo "ring=$ring" >> $GITHUB_OUTPUT
+                break
+              fi
+            done
+            if [ -z "$ring" ]; then
+              echo "ERROR: Could not find ring pattern in recent commits"
+              exit 1
+            fi
           else
-            echo "ERROR: Latest commit must start with 'ringX:' (e.g. ring2: feat: ...)"
+            echo "ERROR: Could not determine ring number"
             echo "Latest commit message: $latest_msg"
-            echo "Examples of valid formats:"
-            echo "  - ring1: feat: add new feature"
-            echo "  - ring2: fix: resolve bug"
-            echo "  - ring1: BREAKING: major API change"
             exit 1
           fi
 
