@@ -1,4 +1,5 @@
 #include "EnvLoader.h"
+#include <stdexcept>
 
 std::map<std::string, std::string> EnvLoader::loadEnv(const std::string& path) {
     std::ifstream file(path);
@@ -14,4 +15,26 @@ std::map<std::string, std::string> EnvLoader::loadEnv(const std::string& path) {
     }
 
     return env;
+}
+
+std::string EnvLoader::loadIP(const std::string& filepath) {
+    auto env = loadEnv(filepath);
+    auto it = env.find("IP");
+    if (it == env.end()) {
+        throw std::runtime_error("EnvLoader: 'IP' not found in env file");
+    }
+    return it->second;
+}
+
+int EnvLoader::loadPort(const std::string& filepath) {
+    auto env = loadEnv(filepath);
+    auto it = env.find("PORT");
+    if (it == env.end()) {
+        throw std::runtime_error("EnvLoader: 'PORT' not found in env file");
+    }
+    try {
+        return std::stoi(it->second);
+    } catch (...) {
+        throw std::runtime_error(std::string("EnvLoader: invalid PORT value: ") + it->second);
+    }
 }

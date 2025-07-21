@@ -7,8 +7,9 @@
 
 class EnvLoader {
 public:
-    // Charge un fichier .env et retourne un map contenant les variables
     static std::map<std::string, std::string> loadEnv(const std::string& filepath);
+    static std::string loadIP(const std::string& filepath);
+    static int loadPort(const std::string& filepath);
 };
 
 #endif // ENVLOADER_H

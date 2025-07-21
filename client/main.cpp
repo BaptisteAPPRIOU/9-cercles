@@ -6,9 +6,9 @@ int main() {
     try {
         LPTF_Socket::initialize();
         LPTF_Socket clientSocket;
-        auto env = EnvLoader::loadEnv(".env");
-        std::string ip = env["IP"];
-        int port = std::stoi(env["PORT"]);
+        auto env = EnvLoader::loadEnv("../../.env");
+        std::string ip = EnvLoader::loadIP("../../.env");
+        int port = EnvLoader::loadPort("../../.env");
 
         clientSocket.connectSocket(ip, port);
         std::cout << "(Ecrire 'sortie' pour sortir)" << std::endl;
