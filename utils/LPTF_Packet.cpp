@@ -3,6 +3,7 @@
 LPTF_Packet::LPTF_Packet(uint8_t version, PacketType type, const vector<uint8_t>& payload)
     : version(version), type(type), payload(payload) {}
 
+// Serialize the packet to a byte vector
 vector<uint8_t> LPTF_Packet::serialize() const {
     vector<uint8_t> data;
     data.push_back(version);
@@ -16,6 +17,7 @@ vector<uint8_t> LPTF_Packet::serialize() const {
     return data;
 }
 
+// Deserialize a packet from a byte vector
 LPTF_Packet LPTF_Packet::deserialize(const vector<uint8_t>& data) {
     if (data.size() < 4) throw runtime_error("Packet too short");
 
