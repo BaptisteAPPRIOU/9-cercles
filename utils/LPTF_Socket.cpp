@@ -133,3 +133,17 @@ std::vector<uint8_t> LPTF_Socket::recvBinary() {
 
     return fullData;
 }
+
+void LPTF_Socket::closeSocket() {
+#ifdef _WIN32
+    if (sockfd != -1) {
+        closesocket(sockfd);
+        sockfd = -1;
+    }
+#else
+    if (sockfd != -1) {
+        close(sockfd);
+        sockfd = -1;
+    }
+#endif
+}
