@@ -1,0 +1,17 @@
+C:/Users/tslem/Documents/First_Client-Server/build/Desktop_Qt_6_7_1_MinGW_64_bit-Debug/CMakeFiles/edit_cache.dir
+C:/Users/tslem/Documents/First_Client-Server/build/Desktop_Qt_6_7_1_MinGW_64_bit-Debug/CMakeFiles/rebuild_cache.dir
+C:/Users/tslem/Documents/First_Client-Server/build/Desktop_Qt_6_7_1_MinGW_64_bit-Debug/utils/CMakeFiles/utils.dir
+C:/Users/tslem/Documents/First_Client-Server/build/Desktop_Qt_6_7_1_MinGW_64_bit-Debug/utils/CMakeFiles/edit_cache.dir
+C:/Users/tslem/Documents/First_Client-Server/build/Desktop_Qt_6_7_1_MinGW_64_bit-Debug/utils/CMakeFiles/rebuild_cache.dir
+C:/Users/tslem/Documents/First_Client-Server/build/Desktop_Qt_6_7_1_MinGW_64_bit-Debug/utils/CMakeFiles/utils_autogen_timestamp_deps.dir
+C:/Users/tslem/Documents/First_Client-Server/build/Desktop_Qt_6_7_1_MinGW_64_bit-Debug/utils/CMakeFiles/utils_autogen.dir
+C:/Users/tslem/Documents/First_Client-Server/build/Desktop_Qt_6_7_1_MinGW_64_bit-Debug/client/CMakeFiles/client.dir
+C:/Users/tslem/Documents/First_Client-Server/build/Desktop_Qt_6_7_1_MinGW_64_bit-Debug/client/CMakeFiles/edit_cache.dir
+C:/Users/tslem/Documents/First_Client-Server/build/Desktop_Qt_6_7_1_MinGW_64_bit-Debug/client/CMakeFiles/rebuild_cache.dir
+C:/Users/tslem/Documents/First_Client-Server/build/Desktop_Qt_6_7_1_MinGW_64_bit-Debug/client/CMakeFiles/client_autogen_timestamp_deps.dir
+C:/Users/tslem/Documents/First_Client-Server/build/Desktop_Qt_6_7_1_MinGW_64_bit-Debug/client/CMakeFiles/client_autogen.dir
+C:/Users/tslem/Documents/First_Client-Server/build/Desktop_Qt_6_7_1_MinGW_64_bit-Debug/server/CMakeFiles/server.dir
+C:/Users/tslem/Documents/First_Client-Server/build/Desktop_Qt_6_7_1_MinGW_64_bit-Debug/server/CMakeFiles/edit_cache.dir
+C:/Users/tslem/Documents/First_Client-Server/build/Desktop_Qt_6_7_1_MinGW_64_bit-Debug/server/CMakeFiles/rebuild_cache.dir
+C:/Users/tslem/Documents/First_Client-Server/build/Desktop_Qt_6_7_1_MinGW_64_bit-Debug/server/CMakeFiles/server_autogen_timestamp_deps.dir
+C:/Users/tslem/Documents/First_Client-Server/build/Desktop_Qt_6_7_1_MinGW_64_bit-Debug/server/CMakeFiles/server_autogen.dir

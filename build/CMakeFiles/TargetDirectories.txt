@@ -1,0 +1,17 @@
+C:/Users/tslem/Documents/First_Client-Server/build/CMakeFiles/edit_cache.dir
+C:/Users/tslem/Documents/First_Client-Server/build/CMakeFiles/rebuild_cache.dir
+C:/Users/tslem/Documents/First_Client-Server/build/utils/CMakeFiles/utils.dir
+C:/Users/tslem/Documents/First_Client-Server/build/utils/CMakeFiles/edit_cache.dir
+C:/Users/tslem/Documents/First_Client-Server/build/utils/CMakeFiles/rebuild_cache.dir
+C:/Users/tslem/Documents/First_Client-Server/build/utils/CMakeFiles/utils_autogen_timestamp_deps.dir
+C:/Users/tslem/Documents/First_Client-Server/build/utils/CMakeFiles/utils_autogen.dir
+C:/Users/tslem/Documents/First_Client-Server/build/client/CMakeFiles/client.dir
+C:/Users/tslem/Documents/First_Client-Server/build/client/CMakeFiles/edit_cache.dir
+C:/Users/tslem/Documents/First_Client-Server/build/client/CMakeFiles/rebuild_cache.dir
+C:/Users/tslem/Documents/First_Client-Server/build/client/CMakeFiles/client_autogen_timestamp_deps.dir
+C:/Users/tslem/Documents/First_Client-Server/build/client/CMakeFiles/client_autogen.dir
+C:/Users/tslem/Documents/First_Client-Server/build/server/CMakeFiles/server.dir
+C:/Users/tslem/Documents/First_Client-Server/build/server/CMakeFiles/edit_cache.dir
+C:/Users/tslem/Documents/First_Client-Server/build/server/CMakeFiles/rebuild_cache.dir
+C:/Users/tslem/Documents/First_Client-Server/build/server/CMakeFiles/server_autogen_timestamp_deps.dir
+C:/Users/tslem/Documents/First_Client-Server/build/server/CMakeFiles/server_autogen.dir

@@ -1,0 +1,8 @@
+set(__QT_DEPLOY_TARGET_utils_FILE C:/Users/tslem/Documents/First_Client-Server/build/utils/libutils.a)
+set(__QT_DEPLOY_TARGET_utils_TYPE STATIC_LIBRARY)
+set(__QT_DEPLOY_TARGET_client_FILE C:/Users/tslem/Documents/First_Client-Server/build/client/client.exe)
+set(__QT_DEPLOY_TARGET_client_TYPE EXECUTABLE)
+set(__QT_DEPLOY_TARGET_client_RUNTIME_DLLS C:/Qt/6.9.1/mingw_64/bin/Qt6Network.dll;C:/Qt/6.9.1/mingw_64/bin/Qt6Core.dll)
+set(__QT_DEPLOY_TARGET_server_FILE C:/Users/tslem/Documents/First_Client-Server/build/server/server.exe)
+set(__QT_DEPLOY_TARGET_server_TYPE EXECUTABLE)
+set(__QT_DEPLOY_TARGET_server_RUNTIME_DLLS C:/Qt/6.9.1/mingw_64/bin/Qt6Network.dll;C:/Qt/6.9.1/mingw_64/bin/Qt6Core.dll)

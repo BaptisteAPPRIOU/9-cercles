@@ -1,0 +1,23 @@
+# ninja log v6
+11	195	7747890133870334	utils/utils_autogen/timestamp	17fc3f085a70324d
+11	195	7747890133870334	utils/utils_autogen/mocs_compilation.cpp	17fc3f085a70324d
+11	195	7747890133870334	C:/Users/tslem/Documents/First_Client-Server/build/utils/utils_autogen/timestamp	17fc3f085a70324d
+11	195	7747890133870334	C:/Users/tslem/Documents/First_Client-Server/build/utils/utils_autogen/mocs_compilation.cpp	17fc3f085a70324d
+197	423	7747890134410822	utils/CMakeFiles/utils.dir/utils_autogen/mocs_compilation.cpp.obj	42207d68a603efa7
+207	1134	7747890134521209	utils/CMakeFiles/utils.dir/EnvLoader.cpp.obj	7301fb034d2712b0
+202	1889	7747890134471112	utils/CMakeFiles/utils.dir/LPTF_Socket.cpp.obj	998210d4153cf0d3
+1891	2144	7747890151355943	utils/libutils.a	a7255c4d09ca4e72
+2144	2325	7747890155168241	client/client_autogen/timestamp	7b98516eda823f50
+2144	2325	7747890155168241	client/client_autogen/mocs_compilation.cpp	7b98516eda823f50
+2144	2325	7747890155168241	C:/Users/tslem/Documents/First_Client-Server/build/client/client_autogen/timestamp	7b98516eda823f50
+2144	2325	7747890155168241	C:/Users/tslem/Documents/First_Client-Server/build/client/client_autogen/mocs_compilation.cpp	7b98516eda823f50
+2325	2386	7747890155700543	client/CMakeFiles/client.dir/client_autogen/mocs_compilation.cpp.obj	c935c0c5d20779e0
+2331	4055	7747890155754898	client/CMakeFiles/client.dir/main.cpp.obj	b89094390f05ba61
+4056	4407	7747890173001288	client/client.exe	8abddad965e7b7a1
+9	182	7747890208742208	server/server_autogen/timestamp	14842aa83f224489
+9	182	7747890208742208	server/server_autogen/mocs_compilation.cpp	14842aa83f224489
+9	182	7747890208742208	C:/Users/tslem/Documents/First_Client-Server/build/server/server_autogen/timestamp	14842aa83f224489
+9	182	7747890208742208	C:/Users/tslem/Documents/First_Client-Server/build/server/server_autogen/mocs_compilation.cpp	14842aa83f224489
+183	241	7747890209247533	server/CMakeFiles/server.dir/server_autogen/mocs_compilation.cpp.obj	8ca4a3e74e311aea
+188	1958	7747890209292009	server/CMakeFiles/server.dir/main.cpp.obj	41005314fa12fe40
+1958	2108	7747890226998445	server/server.exe	e21973e2c02d290e

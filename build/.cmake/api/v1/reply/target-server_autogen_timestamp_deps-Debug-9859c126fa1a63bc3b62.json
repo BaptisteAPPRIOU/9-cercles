@@ -1,0 +1,34 @@
+{
+	"backtrace" : 0,
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : 
+		[
+			"server/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			}
+		]
+	},
+	"dependencies" : 
+	[
+		{
+			"backtrace" : 0,
+			"id" : "utils::@c810615cce0f7acb82dc"
+		}
+	],
+	"id" : "server_autogen_timestamp_deps::@d19778d2e34a1e3ddfc0",
+	"isGeneratorProvided" : true,
+	"name" : "server_autogen_timestamp_deps",
+	"paths" : 
+	{
+		"build" : "server",
+		"source" : "server"
+	},
+	"sources" : [],
+	"type" : "UTILITY"
+}

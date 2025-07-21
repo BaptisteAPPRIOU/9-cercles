@@ -1,0 +1,27 @@
+{
+	"backtrace" : 0,
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : 
+		[
+			"utils/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			}
+		]
+	},
+	"id" : "utils_autogen_timestamp_deps::@c810615cce0f7acb82dc",
+	"isGeneratorProvided" : true,
+	"name" : "utils_autogen_timestamp_deps",
+	"paths" : 
+	{
+		"build" : "utils",
+		"source" : "utils"
+	},
+	"sources" : [],
+	"type" : "UTILITY"
+}

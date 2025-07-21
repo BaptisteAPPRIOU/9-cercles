@@ -1,0 +1,44 @@
+[
+{
+  "directory": "C:/Users/tslem/Documents/First_Client-Server/build",
+  "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 -IC:/Users/tslem/Documents/First_Client-Server/build/utils/utils_autogen/include -IC:/Users/tslem/Documents/First_Client-Server/utils -isystem C:/Qt/6.9.1/mingw_64/include/QtCore -isystem C:/Qt/6.9.1/mingw_64/include -isystem C:/Qt/6.9.1/mingw_64/mkspecs/win32-g++ -DQT_QML_DEBUG -DQT_DECLARATIVE_DEBUG -g -std=gnu++17 -o utils\\CMakeFiles\\utils.dir\\utils_autogen\\mocs_compilation.cpp.obj -c C:\\Users\\tslem\\Documents\\First_Client-Server\\build\\utils\\utils_autogen\\mocs_compilation.cpp",
+  "file": "C:\\Users\\tslem\\Documents\\First_Client-Server\\build\\utils\\utils_autogen\\mocs_compilation.cpp",
+  "output": "utils\\CMakeFiles\\utils.dir\\utils_autogen\\mocs_compilation.cpp.obj"
+},
+{
+  "directory": "C:/Users/tslem/Documents/First_Client-Server/build",
+  "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 -IC:/Users/tslem/Documents/First_Client-Server/build/utils/utils_autogen/include -IC:/Users/tslem/Documents/First_Client-Server/utils -isystem C:/Qt/6.9.1/mingw_64/include/QtCore -isystem C:/Qt/6.9.1/mingw_64/include -isystem C:/Qt/6.9.1/mingw_64/mkspecs/win32-g++ -DQT_QML_DEBUG -DQT_DECLARATIVE_DEBUG -g -std=gnu++17 -o utils\\CMakeFiles\\utils.dir\\LPTF_Socket.cpp.obj -c C:\\Users\\tslem\\Documents\\First_Client-Server\\utils\\LPTF_Socket.cpp",
+  "file": "C:\\Users\\tslem\\Documents\\First_Client-Server\\utils\\LPTF_Socket.cpp",
+  "output": "utils\\CMakeFiles\\utils.dir\\LPTF_Socket.cpp.obj"
+},
+{
+  "directory": "C:/Users/tslem/Documents/First_Client-Server/build",
+  "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 -IC:/Users/tslem/Documents/First_Client-Server/build/utils/utils_autogen/include -IC:/Users/tslem/Documents/First_Client-Server/utils -isystem C:/Qt/6.9.1/mingw_64/include/QtCore -isystem C:/Qt/6.9.1/mingw_64/include -isystem C:/Qt/6.9.1/mingw_64/mkspecs/win32-g++ -DQT_QML_DEBUG -DQT_DECLARATIVE_DEBUG -g -std=gnu++17 -o utils\\CMakeFiles\\utils.dir\\EnvLoader.cpp.obj -c C:\\Users\\tslem\\Documents\\First_Client-Server\\utils\\EnvLoader.cpp",
+  "file": "C:\\Users\\tslem\\Documents\\First_Client-Server\\utils\\EnvLoader.cpp",
+  "output": "utils\\CMakeFiles\\utils.dir\\EnvLoader.cpp.obj"
+},
+{
+  "directory": "C:/Users/tslem/Documents/First_Client-Server/build",
+  "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_NETWORK_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 -IC:/Users/tslem/Documents/First_Client-Server/build/client/client_autogen/include -IC:/Users/tslem/Documents/First_Client-Server/utils -isystem C:/Qt/6.9.1/mingw_64/include/QtCore -isystem C:/Qt/6.9.1/mingw_64/include -isystem C:/Qt/6.9.1/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.9.1/mingw_64/include/QtNetwork -DQT_QML_DEBUG -DQT_DECLARATIVE_DEBUG -g -std=gnu++17 -o client\\CMakeFiles\\client.dir\\client_autogen\\mocs_compilation.cpp.obj -c C:\\Users\\tslem\\Documents\\First_Client-Server\\build\\client\\client_autogen\\mocs_compilation.cpp",
+  "file": "C:\\Users\\tslem\\Documents\\First_Client-Server\\build\\client\\client_autogen\\mocs_compilation.cpp",
+  "output": "client\\CMakeFiles\\client.dir\\client_autogen\\mocs_compilation.cpp.obj"
+},
+{
+  "directory": "C:/Users/tslem/Documents/First_Client-Server/build",
+  "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_NETWORK_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 -IC:/Users/tslem/Documents/First_Client-Server/build/client/client_autogen/include -IC:/Users/tslem/Documents/First_Client-Server/utils -isystem C:/Qt/6.9.1/mingw_64/include/QtCore -isystem C:/Qt/6.9.1/mingw_64/include -isystem C:/Qt/6.9.1/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.9.1/mingw_64/include/QtNetwork -DQT_QML_DEBUG -DQT_DECLARATIVE_DEBUG -g -std=gnu++17 -o client\\CMakeFiles\\client.dir\\main.cpp.obj -c C:\\Users\\tslem\\Documents\\First_Client-Server\\client\\main.cpp",
+  "file": "C:\\Users\\tslem\\Documents\\First_Client-Server\\client\\main.cpp",
+  "output": "client\\CMakeFiles\\client.dir\\main.cpp.obj"
+},
+{
+  "directory": "C:/Users/tslem/Documents/First_Client-Server/build",
+  "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_NETWORK_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 -IC:/Users/tslem/Documents/First_Client-Server/build/server/server_autogen/include -IC:/Users/tslem/Documents/First_Client-Server/utils -isystem C:/Qt/6.9.1/mingw_64/include/QtCore -isystem C:/Qt/6.9.1/mingw_64/include -isystem C:/Qt/6.9.1/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.9.1/mingw_64/include/QtNetwork -DQT_QML_DEBUG -DQT_DECLARATIVE_DEBUG -g -std=gnu++17 -o server\\CMakeFiles\\server.dir\\server_autogen\\mocs_compilation.cpp.obj -c C:\\Users\\tslem\\Documents\\First_Client-Server\\build\\server\\server_autogen\\mocs_compilation.cpp",
+  "file": "C:\\Users\\tslem\\Documents\\First_Client-Server\\build\\server\\server_autogen\\mocs_compilation.cpp",
+  "output": "server\\CMakeFiles\\server.dir\\server_autogen\\mocs_compilation.cpp.obj"
+},
+{
+  "directory": "C:/Users/tslem/Documents/First_Client-Server/build",
+  "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_NETWORK_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 -IC:/Users/tslem/Documents/First_Client-Server/build/server/server_autogen/include -IC:/Users/tslem/Documents/First_Client-Server/utils -isystem C:/Qt/6.9.1/mingw_64/include/QtCore -isystem C:/Qt/6.9.1/mingw_64/include -isystem C:/Qt/6.9.1/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.9.1/mingw_64/include/QtNetwork -DQT_QML_DEBUG -DQT_DECLARATIVE_DEBUG -g -std=gnu++17 -o server\\CMakeFiles\\server.dir\\main.cpp.obj -c C:\\Users\\tslem\\Documents\\First_Client-Server\\server\\main.cpp",
+  "file": "C:\\Users\\tslem\\Documents\\First_Client-Server\\server\\main.cpp",
+  "output": "server\\CMakeFiles\\server.dir\\main.cpp.obj"
+}
+]

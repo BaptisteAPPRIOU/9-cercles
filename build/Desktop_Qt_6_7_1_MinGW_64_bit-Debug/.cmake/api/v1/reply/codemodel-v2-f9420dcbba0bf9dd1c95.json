@@ -1,0 +1,180 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1,
+						2,
+						3
+					],
+					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"projectIndex" : 0,
+					"source" : "."
+				},
+				{
+					"build" : "utils",
+					"jsonFile" : "directory-utils-Debug-bb33f781d987d5385f78.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "utils",
+					"targetIndexes" : 
+					[
+						6,
+						7,
+						8
+					]
+				},
+				{
+					"build" : "client",
+					"jsonFile" : "directory-client-Debug-3c37cf1077c78f229df7.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "client",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				},
+				{
+					"build" : "server",
+					"jsonFile" : "directory-server-Debug-ca16530337ce509e32d1.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "server",
+					"targetIndexes" : 
+					[
+						3,
+						4,
+						5
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3
+					],
+					"name" : "First_Client_Server",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 2,
+					"id" : "client::@b0c487aac068df482bf0",
+					"jsonFile" : "target-client-Debug-d22ea625396699172ef4.json",
+					"name" : "client",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "client_autogen::@b0c487aac068df482bf0",
+					"jsonFile" : "target-client_autogen-Debug-61503972786ce6c34089.json",
+					"name" : "client_autogen",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "client_autogen_timestamp_deps::@b0c487aac068df482bf0",
+					"jsonFile" : "target-client_autogen_timestamp_deps-Debug-6ab919407b455965a6c1.json",
+					"name" : "client_autogen_timestamp_deps",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "server::@d19778d2e34a1e3ddfc0",
+					"jsonFile" : "target-server-Debug-6ba3f6081f7a83a1e950.json",
+					"name" : "server",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "server_autogen::@d19778d2e34a1e3ddfc0",
+					"jsonFile" : "target-server_autogen-Debug-5f36b8841eeb42e9c2dc.json",
+					"name" : "server_autogen",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "server_autogen_timestamp_deps::@d19778d2e34a1e3ddfc0",
+					"jsonFile" : "target-server_autogen_timestamp_deps-Debug-be904849543f8f14f25d.json",
+					"name" : "server_autogen_timestamp_deps",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "utils::@c810615cce0f7acb82dc",
+					"jsonFile" : "target-utils-Debug-877dad8f3c4b0e6361c4.json",
+					"name" : "utils",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "utils_autogen::@c810615cce0f7acb82dc",
+					"jsonFile" : "target-utils_autogen-Debug-cf9e16b6f35873b9ef27.json",
+					"name" : "utils_autogen",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "utils_autogen_timestamp_deps::@c810615cce0f7acb82dc",
+					"jsonFile" : "target-utils_autogen_timestamp_deps-Debug-753866b3cd81d31b6859.json",
+					"name" : "utils_autogen_timestamp_deps",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "C:/Users/tslem/Documents/First_Client-Server/build/Desktop_Qt_6_7_1_MinGW_64_bit-Debug",
+		"source" : "C:/Users/tslem/Documents/First_Client-Server"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 6
+	}
+}

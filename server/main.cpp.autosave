@@ -1,0 +1,38 @@
+#include "LPTF_Socket.h"
+#include <iostream>
+
+int main() {
+    std::cout << "Serveur démarrage..." << std::endl;
+
+    try {
+        LPTF_Socket::initialize();
+        LPTF_Socket serveur;
+        serveur.bindSocket(8888);
+        serveur.listenSocket();
+        std::vector<Std::unique_ptr>
+        std::cout << "Serveur prêt. En attente de connexions..." << std::endl;
+
+        while (true) {
+            std::unique_ptr<LPTF_Socket> client = serveur.acceptSocket();
+            std::cout << "Client connecté depuis : " << client->getClientIP() << std::endl;
+
+            while (true) {
+                std::string message = client->recvMsg();
+
+                if (message.empty()) {
+                    std::cout << "Client déconnecté." << std::endl;
+                    break;
+                }
+
+                std::cout << "Message reçu : " << message << std::endl;
+
+                client->sendMsg("Message reçu !");
+            }
+        }
+    } catch (const std::exception& e) {
+        std::cerr << "Erreur serveur : " << e.what() << std::endl;
+        return 1;
+    }
+
+    return 0;
+}
