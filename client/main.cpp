@@ -2,9 +2,14 @@
 #include "../utils/LPTF_Socket.h"
 #include "../utils/LPTF_Packet.h"
 #include <iostream>
+#include <windows.h>
+
 using namespace std;
 
 int main() {
+    SetConsoleOutputCP(CP_UTF8);
+    SetConsoleCP(CP_UTF8);
+
     try {
         LPTF_Socket::initialize();
         LPTF_Socket clientSocket;

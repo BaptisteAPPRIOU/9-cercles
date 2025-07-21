@@ -3,9 +3,14 @@
 #include "../utils/LPTF_Packet.h"
 #include <vector>
 #include <iostream>
+#include <windows.h>
+
 using namespace std;
 
 int main() {
+    SetConsoleOutputCP(CP_UTF8);
+    SetConsoleCP(CP_UTF8);
+
     cout << "Serveur démarrage..." << endl;
 
     try {
