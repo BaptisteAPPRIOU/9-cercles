@@ -116,19 +116,24 @@ ssize_t LPTF_Socket::sendBinary(const std::vector<uint8_t>& data) {
 }
 
 std::vector<uint8_t> LPTF_Socket::recvBinary() {
-    uint8_t header[4];
-    ssize_t headerLen = recv(sockfd, reinterpret_cast<char*>(header), 4, MSG_WAITALL);
-    if (headerLen != 4) {
+    // Read full header (11 bytes)
+    uint8_t header[11];
+    ssize_t headerLen = recv(sockfd, reinterpret_cast<char*>(header), 11, MSG_WAITALL);
+    if (headerLen != 11) {
         throw std::runtime_error("Erreur de lecture de l'en-tête du paquet");
     }
 
-    uint16_t payloadSize = (header[2] << 8) | header[3];
-    std::vector<uint8_t> fullData(4 + payloadSize);
-    std::copy(header, header + 4, fullData.begin());
+    // Determine payload size from header bytes 9 (high) and 10 (low)
+    uint16_t payloadSize = (static_cast<uint16_t>(header[9]) << 8) | header[10];
+    std::vector<uint8_t> fullData(11 + payloadSize);
+    std::copy(header, header + 11, fullData.begin());
 
-    ssize_t payloadLen = recv(sockfd, reinterpret_cast<char*>(fullData.data() + 4), payloadSize, MSG_WAITALL);
-    if (payloadLen != payloadSize) {
-        throw std::runtime_error("Erreur de lecture du payload");
+    // Read payload if present
+    if (payloadSize > 0) {
+        ssize_t payloadLen = recv(sockfd, reinterpret_cast<char*>(fullData.data() + 11), payloadSize, MSG_WAITALL);
+        if (payloadLen != payloadSize) {
+            throw std::runtime_error("Erreur de lecture du payload");
+        }
     }
 
     return fullData;
