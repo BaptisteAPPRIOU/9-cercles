@@ -1,7 +1,5 @@
 #include "LPTF_Packet.hpp"
 #include "PacketType.hpp"
-#include <vector>
-#include <stdexcept>
 
 using namespace std;
 
