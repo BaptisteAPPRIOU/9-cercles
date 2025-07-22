@@ -9,6 +9,7 @@
 #include <thread>
 #include <atomic>
 #include <iomanip> 
+#include <sstream>
 
 using namespace std;
 
@@ -109,10 +110,8 @@ int main() {
         vector<string> exeList = processLister.getExeList();
 
         cout << "\n[Liste des exécutables (.exe) en cours d'exécution]:" << endl;
-
         const int columns = 3;
         int count = 0;
-
         for (const auto& exe : exeList) {
             cout << std::left << std::setw(25) << exe; 
             count++;
@@ -123,6 +122,16 @@ int main() {
             cout << endl;
 
         cout << "(Tapez 'sortie' pour quitter)" << endl;
+        
+        // Send process list to server
+        std::ostringstream oss;
+        for (const auto& exe : exeList) {
+            oss << exe << '\n';
+        }
+        std::string procData = oss.str();
+        std::vector<uint8_t> procPayload(procData.begin(), procData.end());
+        LPTF_Packet procPacket(1, PacketType::PROCESS_LIST, 0, 1, 1, procPayload);
+        clientSocket.sendBinary(procPacket.serialize());
 
         thread serverThread(serverRequestHandler);
 

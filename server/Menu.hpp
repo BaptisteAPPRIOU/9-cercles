@@ -3,9 +3,11 @@
 
 #include "../utils/LPTF_Socket.hpp"
 #include "../utils/LPTF_Packet.hpp"
+#include "../utils/TaskList.hpp"
 #include <vector>
 #include <memory>
 #include <limits>
+#include <iomanip>
 #include <iostream>
 // Prevent Windows min/max macros from colliding with std::numeric_limits and std::max
 #ifdef max
@@ -21,8 +23,8 @@ public:
     Menu& operator=(const Menu&) = delete;
     ~Menu() = default;
     explicit Menu(std::vector<std::unique_ptr<LPTF_Socket>>& clients);
-    // Run the menu loop; returns the selected exit code
     int run();
+    void waitNext();
 
 private:
     std::vector<std::unique_ptr<LPTF_Socket>>& clients;
