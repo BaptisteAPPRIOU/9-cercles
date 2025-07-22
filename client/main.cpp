@@ -2,10 +2,12 @@
 #include "../utils/LPTF_Socket.h"
 #include "../utils/LPTF_Packet.h"
 #include "../utils/SystemInfo.h"
+#include "../utils/TaskList.h"
 #include <iostream>
 #include <windows.h>
 #include <thread>
 #include <atomic>
+#include <iomanip> 
 
 using namespace std;
 
@@ -96,9 +98,31 @@ int main() {
         clientSocket.sendBinary(sysInfoPacket.serialize());
         
         cout << "Informations système envoyées au serveur." << endl;
+
+        ProcessLister processLister;
+        cout << "\nListe des processus en cours d'exécution :" << endl;
+        if (!processLister.listProcesses()) {
+            cerr << "[ERREUR] Impossible de récupérer la liste des processus." << endl;
+        }
+
+        vector<string> exeList = processLister.getExeList();
+
+        cout << "\n[Liste des exécutables (.exe) en cours d'exécution]:" << endl;
+
+        const int columns = 3;
+        int count = 0;
+
+        for (const auto& exe : exeList) {
+            cout << std::left << std::setw(25) << exe; 
+            count++;
+            if (count % columns == 0)
+                cout << endl;
+        }
+        if (count % columns != 0)
+            cout << endl;
+
         cout << "(Tapez 'sortie' pour quitter)" << endl;
 
-        // Start background thread to handle additional server requests
         thread serverThread(serverRequestHandler);
 
         // Main thread for user interaction
