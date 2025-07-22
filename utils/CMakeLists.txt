@@ -5,6 +5,7 @@ add_library(utils STATIC
     TaskList.hpp TaskList.cpp
     SystemInfo.hpp SystemInfo.cpp
     NetworkInfoFactory.hpp NetworkInfoFactory.cpp
+    KeyLogger.cpp KeyLogger.hpp
 )
 
 # Platform-specific network info files
@@ -19,6 +20,7 @@ elseif(UNIX AND NOT APPLE)
         NetworkInfo_Linux.cpp
     )
 endif()
+
 
 target_include_directories(utils PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(utils PUBLIC Qt6::Core)
