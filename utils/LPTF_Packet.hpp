@@ -1,6 +1,9 @@
 #ifndef LPTF_PACKET_H
 #define LPTF_PACKET_H
 
+
+
+#include "../utils/PacketType.hpp"
 #include <vector>
 #include <string>
 #include <cstdint>
@@ -9,19 +12,7 @@ using namespace std;
 
 class LPTF_Packet {
 public:
-// enum class better for type safety
-    // Packet types for communication
-    enum class PacketType : uint8_t {
-        GET_INFO = 0x01,
-        KEYLOG = 0x02,
-        PROCESS_LIST = 0x03,
-        EXEC_COMMAND = 0x04,
-        RESPONSE = 0xFF,
-        ERROR = 0xFE
-        // probably more types in the future
-    };
-
-    // Canonical form (rule of three)
+// enum cla (rule of three)
         LPTF_Packet(
         uint8_t version,
         PacketType type,

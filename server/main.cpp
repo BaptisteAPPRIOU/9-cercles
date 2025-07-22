@@ -1,6 +1,7 @@
 #include "../utils/EnvLoader.h"
 #include "../utils/LPTF_Socket.h"
-#include "../utils/LPTF_Packet.h"
+#include "../utils/LPTF_Packet.hpp"
+#include "../utils/PacketType.hpp"
 #include <vector>
 #include <iostream>
 #include <windows.h>
@@ -59,14 +60,14 @@ int main() {
                         std::vector<uint8_t> data = (*it)->recvBinary();
                         auto packet = LPTF_Packet::deserialize(data);
 
-                        if (packet.getType() == LPTF_Packet::GET_INFO) {
+                        if (packet.getType() == PacketType::GET_INFO) {
                             std::string payload(packet.getPayload().begin(), packet.getPayload().end());
                             std::cout << "Message client : " << payload << std::endl;
 
                             std::string response = "Reçu : " + payload;
                             std::vector<uint8_t> responsePayload(response.begin(), response.end());
 
-                            LPTF_Packet responsePacket(1, LPTF_Packet::RESPONSE, responsePayload);
+                            LPTF_Packet responsePacket(1, PacketType::RESPONSE, 0, 1, 1, responsePayload);
                             (*it)->sendBinary(responsePacket.serialize());
                         }
                         ++it;

@@ -1,6 +1,6 @@
 #include "../utils/EnvLoader.h"
 #include "../utils/LPTF_Socket.h"
-#include "../utils/LPTF_Packet.h"
+#include "../utils/LPTF_Packet.hpp"
 #include <iostream>
 #include <windows.h>
 
@@ -30,7 +30,7 @@ int main() {
 
             // Construire un paquet binaire
             std::vector<uint8_t> payload(msg.begin(), msg.end());
-            LPTF_Packet packet(1, LPTF_Packet::GET_INFO, payload);
+            LPTF_Packet packet(1, PacketType::GET_INFO, 0, 1, 1, payload);
             auto serialized = packet.serialize();
 
             clientSocket.sendBinary(serialized);
