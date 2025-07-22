@@ -7,6 +7,10 @@
 #define byte win_byte_override
 
 #ifdef _WIN32
+// prevent Windows headers from defining min/max macros
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #pragma comment(lib, "ws2_32.lib")

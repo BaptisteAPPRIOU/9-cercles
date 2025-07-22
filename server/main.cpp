@@ -1,13 +1,16 @@
 #include "../utils/EnvLoader.h"
 #include "../utils/LPTF_Socket.h"
 #include "../utils/LPTF_Packet.h"
+#include "Menu.hpp"
 #include <vector>
 #include <iostream>
 #include <windows.h>
 
 using namespace std;
 
-int main()
+bool isClientConnected = false;
+
+int main() 
 {
     SetConsoleOutputCP(CP_UTF8);
     SetConsoleCP(CP_UTF8);
@@ -60,6 +63,7 @@ int main()
 
                 // No need to send GET_INFO - client will send info automatically
                 clients.push_back(move(newClient));
+                isClientConnected = true;
             }
 
             // Handle client messages
@@ -113,6 +117,11 @@ int main()
                 {
                     ++it;
                 }
+            }
+
+            if (isClientConnected) {
+                Menu menu(clients);
+                return menu.run();
             }
         }
     }
