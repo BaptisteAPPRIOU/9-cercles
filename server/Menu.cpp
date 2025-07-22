@@ -1,0 +1,82 @@
+#include "Menu.hpp"
+
+Menu::Menu(std::vector<std::unique_ptr<LPTF_Socket>>& clients)
+    : clients(clients) {}
+
+// Run the menu loop; returns the selected exit code
+int Menu::run() {
+    while (true) {
+        showOptions();
+        int choice = getChoice();
+        if (choice == 9) {
+            std::cout << "Fermeture du serveur..." << std::endl;
+            return 0;
+        }
+        handleChoice(choice);
+    }
+}
+
+// Displays the menu options to the user
+void Menu::showOptions() {
+    std::cout << "-------------------------------------" << std::endl;
+    std::cout << "Nombre de clients connectés : " << clients.size() << std::endl;
+    std::cout << "1 - Afficher la liste des clients" << std::endl;
+    std::cout << "2 - Envoyer un message au client" << std::endl;
+    std::cout << "3 - Afficher les informations du client" << std::endl;
+    std::cout << "4 - Démarrer le keylogger" << std::endl;
+    std::cout << "5 - Eteindre le keylogger" << std::endl;
+    std::cout << "6 - Afficher la liste complète des processus" << std::endl;
+    std::cout << "7 - Afficher la liste des processus (noms)" << std::endl;
+    std::cout << "8 - Exécuter une commande" << std::endl;
+    std::cout << "9 - Quitter" << std::endl;
+}
+
+// Gets the user's choice from the menu
+int Menu::getChoice() {
+    int choice;
+    std::cout << "Choisissez une option : ";
+    std::cin >> choice;
+    // Discard rest of line
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    return choice;
+}
+
+// Handles the user's choice from the menu
+void Menu::handleChoice(int choice) {
+    switch (choice) {
+        case 1:
+            std::cout << "Clients connectés:" << std::endl;
+            for (size_t i = 0; i < clients.size(); ++i) {
+                std::cout << i << ": " << clients[i]->getClientIP() << std::endl;
+            }
+            break;
+        case 2:
+            std::cout << "Option 2 sélectionnée: Envoyer un message au client" << std::endl;
+            break;
+        case 3:
+            std::cout << "Option 3 sélectionnée: Afficher les informations du client" << std::endl;
+            break;
+        case 4:
+            std::cout << "Option 4 sélectionnée: Démarrer le keylogger" << std::endl;
+            break;
+        case 5:
+            std::cout << "Option 5 sélectionnée: Eteindre le keylogger" << std::endl;
+            break;
+        case 6:
+            std::cout << "Option 6 sélectionnée: Afficher la liste des processus" << std::endl;
+            break;
+        case 7:
+            std::cout << "Option 7 sélectionnée: Afficher la liste des processus (noms)" << std::endl;
+            break;
+        case 8:
+            std::cout << "Option 8 sélectionnée: Exécuter une commande" << std::endl;
+            break;
+        case 9:
+            std::cout << "Fermeture du serveur..." << std::endl;
+            exit(0); // Exit the program
+            break;
+        default:
+            std::cout << "Option invalide, veuillez réessayer." << std::endl;
+            break;
+    }
+}
