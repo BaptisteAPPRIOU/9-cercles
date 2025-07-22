@@ -77,7 +77,7 @@ int main()
                         vector<uint8_t> data = (*it)->recvBinary();
                         auto packet = LPTF_Packet::deserialize(data);
 
-                        if (packet.getType() == LPTF_Packet::GET_INFO)
+                        if (packet.getType() == PacketType::GET_INFO)
                         {
                             string payload(packet.getPayload().begin(), packet.getPayload().end());
 
@@ -91,7 +91,7 @@ int main()
                                 // Send acknowledgment
                                 string ack = "Informations système reçues avec succès";
                                 vector<uint8_t> ackPayload(ack.begin(), ack.end());
-                                LPTF_Packet ackPacket(1, LPTF_Packet::RESPONSE, ackPayload);
+                                LPTF_Packet ackPacket(1, PacketType::RESPONSE, 0, 1, 1, ackPayload);
                                 (*it)->sendBinary(ackPacket.serialize());
                             }
                             else
@@ -101,7 +101,7 @@ int main()
                                 // Send regular response
                                 string response = "Reçu : " + payload;
                                 vector<uint8_t> responsePayload(response.begin(), response.end());
-                                LPTF_Packet responsePacket(1, LPTF_Packet::RESPONSE, responsePayload);
+                                LPTF_Packet responsePacket(1, PacketType::RESPONSE, 0, 1, 1, responsePayload);
                                 (*it)->sendBinary(responsePacket.serialize());
                             }
                         }
