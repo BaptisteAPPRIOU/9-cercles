@@ -1,5 +1,6 @@
 #include "../utils/EnvLoader.hpp"
 #include "../utils/LPTF_Socket.hpp"
+#include "../utils/PacketType.hpp"
 #include "../utils/LPTF_Packet.hpp"
 #include "../utils/SystemInfo.hpp"
 #include "../utils/TaskList.hpp"
@@ -23,7 +24,7 @@ void serverRequestHandler() {
             LPTF_Packet packet = LPTF_Packet::deserialize(data);
             
             switch (packet.getType()) {
-                case LPTF_Packet::PacketType::GET_INFO: {
+                case PacketType::GET_INFO: {
                     cout << "\n[SERVEUR] Demande des informations système..." << endl;
                     
                     // Collect system information
@@ -34,7 +35,7 @@ void serverRequestHandler() {
                     
                     // Send response
                     vector<uint8_t> payload(jsonInfo.begin(), jsonInfo.end());
-                    LPTF_Packet response(1, LPTF_Packet::PacketType::RESPONSE, 0, 1, 1, payload);
+                    LPTF_Packet response(1, PacketType::RESPONSE, 0, 1, 1, payload);
                     
                     globalSocket->sendBinary(response.serialize());
                     cout << "Entrez le message : ";
@@ -42,7 +43,7 @@ void serverRequestHandler() {
                     break;
                 }
                 
-                case LPTF_Packet::PacketType::RESPONSE: {
+                case PacketType::RESPONSE: {
                     string response(packet.getPayload().begin(), packet.getPayload().end());
                     cout << "\nRéponse serveur : " << response << endl;
                     cout << "Entrez le message : ";
@@ -94,7 +95,7 @@ int main() {
         
         // Send system info as GET_INFO packet (since that's what server expects)
         vector<uint8_t> payload(jsonInfo.begin(), jsonInfo.end());
-        LPTF_Packet sysInfoPacket(1, LPTF_Packet::PacketType::GET_INFO, 0, 1, 1, payload);
+        LPTF_Packet sysInfoPacket(1, PacketType::GET_INFO, 0, 1, 1, payload);
         clientSocket.sendBinary(sysInfoPacket.serialize());
         
         cout << "Informations système envoyées au serveur." << endl;
@@ -138,7 +139,7 @@ int main() {
 
             // Send regular messages
             vector<uint8_t> msgPayload(msg.begin(), msg.end());
-            LPTF_Packet packet(1, LPTF_Packet::PacketType::GET_INFO, 0, 1, 1, msgPayload);
+            LPTF_Packet packet(1, PacketType::GET_INFO, 0, 1, 1, msgPayload);
             clientSocket.sendBinary(packet.serialize());
         }
 

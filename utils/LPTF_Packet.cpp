@@ -1,5 +1,7 @@
 #include "LPTF_Packet.hpp"
-
+#include "PacketType.hpp"
+#include <vector>
+#include <stdexcept>
 
 using namespace std;
 
@@ -81,7 +83,7 @@ LPTF_Packet LPTF_Packet::deserialize(const vector<uint8_t> &data)
 }
 
 uint8_t LPTF_Packet::getVersion() const { return version; }
-LPTF_Packet::PacketType LPTF_Packet::getType() const { return type; }
+PacketType LPTF_Packet::getType() const { return type; }
 uint8_t LPTF_Packet::getFlags() const { return flags; }
 uint16_t LPTF_Packet::getPacketId() const { return packetId; }
 uint32_t LPTF_Packet::getSessionId() const { return sessionId; }

