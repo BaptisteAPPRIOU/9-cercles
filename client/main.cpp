@@ -4,6 +4,7 @@
 #include "../utils/LPTF_Packet.hpp"
 #include "../utils/SystemInfo.hpp"
 #include "../utils/TaskList.hpp"
+#include "../utils/NetworkInfoFactory.hpp"
 #include <iostream>
 #include <windows.h>
 #include <thread>
@@ -70,6 +71,32 @@ void serverRequestHandler() {
 int main() {
     SetConsoleOutputCP(CP_UTF8);
     SetConsoleCP(CP_UTF8);
+
+
+
+    // test des fonction getipaddresses getmacaddresses de collecte d'informations réseau
+    //! to delete later
+     auto network = NetworkInfoFactory::create();
+
+    std::cout << "IP Addresses:\n";
+    for (const auto& ip : network->getIPAddresses()) {
+        std::cout << "  " << ip << "\n";
+    }
+    std::cout << "MAC Addresses:\n";
+    for (const auto& mac : network->getMACAddresses()) {
+        std::cout << "  " << mac << "\n";
+    }
+
+    // Active IP and MAC addresses
+    std::cout << "Active IP Addresses:\n";
+    for (const auto& ip : network->getActiveIPAddresses()) {
+        std::cout << "  " << ip << "\n";
+    }
+    std::cout << "Active MAC Addresses:\n";
+    for (const auto& mac : network->getActiveMACAddresses()) {
+        std::cout << "  " << mac << "\n";
+    }
+    // fin de test des fonction de collecte d'informations réseau
 
     try {
         LPTF_Socket::initialize();
