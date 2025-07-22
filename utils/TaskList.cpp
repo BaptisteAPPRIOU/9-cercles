@@ -1,9 +1,4 @@
-#include "TaskList.h"
-#include <iostream>
-#include <cstdlib>
-#include <cstdio>
-#include <sstream> 
-#include <algorithm>
+#include "TaskList.hpp"
 
 // Executes the "tasklist" command and prints the list of running processes to the console.
 // Returns true if the command executed successfully, false otherwise.

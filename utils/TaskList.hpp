@@ -1,8 +1,13 @@
-#ifndef PROCESS_LISTER_H
-#define PROCESS_LISTER_H
+#ifndef PROCESS_LISTER_HPP
+#define PROCESS_LISTER_HPP
 
 #include <string>
 #include <vector>
+#include <cstdio>
+#include <cstdlib>
+#include <sstream> 
+#include <iostream>
+#include <algorithm>
 
 class ProcessLister {
 public:
@@ -13,4 +18,4 @@ private:
     const std::string command = "tasklist";
 };
 
-#endif 
+#endif // PROCESS_LISTER_HPP

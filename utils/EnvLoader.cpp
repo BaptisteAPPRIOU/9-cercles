@@ -1,39 +1,39 @@
-#include "EnvLoader.h"
+#include "EnvLoader.hpp"
 
-map<string, string> EnvLoader::loadEnv(const string& path) {
-    ifstream file(path);
-    map<string, string> env;
-    string line;
+std::map<std::string, std::string> EnvLoader::loadEnv(const std::string& path) {
+    std::ifstream file(path);
+    std::map<std::string, std::string> env;
+    std::string line;
 
     while (getline(file, line)) {
         auto delimiterPos = line.find('=');
-        if (delimiterPos == string::npos) continue;
-        string key = line.substr(0, delimiterPos);
-        string value = line.substr(delimiterPos + 1);
+        if (delimiterPos == std::string::npos) continue;
+        std::string key = line.substr(0, delimiterPos);
+        std::string value = line.substr(delimiterPos + 1);
         env[key] = value;
     }
 
     return env;
 }
 
-string EnvLoader::loadIP(const string& filepath) {
+std::string EnvLoader::loadIP(const std::string& filepath) {
     auto env = loadEnv(filepath);
     auto it = env.find("IP");
     if (it == env.end()) {
-        throw runtime_error("EnvLoader: 'IP' not found in env file");
+        throw std::runtime_error("EnvLoader: 'IP' not found in env file");
     }
     return it->second;
 }
 
-int EnvLoader::loadPort(const string& filepath) {
+int EnvLoader::loadPort(const std::string& filepath) {
     auto env = loadEnv(filepath);
     auto it = env.find("PORT");
     if (it == env.end()) {
-        throw runtime_error("EnvLoader: 'PORT' not found in env file");
+        throw std::runtime_error("EnvLoader: 'PORT' not found in env file");
     }
     try {
-        return stoi(it->second);
+        return std::stoi(it->second);
     } catch (...) {
-        throw runtime_error(string("EnvLoader: invalid PORT value: ") + it->second);
+        throw std::runtime_error(std::string("EnvLoader: invalid PORT value: ") + it->second);
     }
 }

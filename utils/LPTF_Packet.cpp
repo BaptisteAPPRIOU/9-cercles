@@ -1,4 +1,5 @@
 #include "LPTF_Packet.hpp"
+#include "LPTF_Packet.hpp"
 
 LPTF_Packet::LPTF_Packet(
     uint8_t version,

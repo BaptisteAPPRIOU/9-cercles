@@ -1,8 +1,20 @@
-#ifndef SYSTEMINFO_H
-#define SYSTEMINFO_H
+#ifndef SYSTEMINFO_HPP
+#define SYSTEMINFO_HPP
 
-#include <string>
 #include <map>
+#include <string>
+#include <sstream>
+
+#ifdef _WIN32
+    #include <windows.h>
+    #include <lmcons.h>
+    #pragma comment(lib, "advapi32.lib")
+#else
+    #include <unistd.h>
+    #include <sys/utsname.h>
+    #include <pwd.h>
+#endif
+
 
 class SystemInfo {
 public:
@@ -12,4 +24,5 @@ public:
     static std::string getOperatingSystem();
     static std::string toJson(const std::map<std::string, std::string>& info);
 };
-#endif // SYSTEMINFO_H
+
+#endif // SYSTEMINFO_HPP
