@@ -1,11 +1,10 @@
-#ifndef LPTF_PACKET_H
-#define LPTF_PACKET_H
+#ifndef LPTF_PACKET_HPP
+#define LPTF_PACKET_HPP
 
 #include <vector>
 #include <string>
 #include <cstdint>
 #include <stdexcept>
-using namespace std;
 
 class LPTF_Packet {
 public:
@@ -17,19 +16,19 @@ public:
         RESPONSE = 0xFF
     };
 
-    LPTF_Packet(uint8_t version, PacketType type, const vector<uint8_t>& payload);
+    LPTF_Packet(uint8_t version, PacketType type, const std::vector<uint8_t>& payload);
 
-    vector<uint8_t> serialize() const;
-    static LPTF_Packet deserialize(const vector<uint8_t>& data);
+    std::vector<uint8_t> serialize() const;
+    static LPTF_Packet deserialize(const std::vector<uint8_t>& data);
 
     uint8_t getVersion() const;
     PacketType getType() const;
-    const vector<uint8_t>& getPayload() const;
+    const std::vector<uint8_t>& getPayload() const;
 
 private:
     uint8_t version;
     PacketType type;
-    vector<uint8_t> payload;
+    std::vector<uint8_t> payload;
 };
 
-#endif // LPTF_PACKET_H
+#endif // LPTF_PACKET_HPP

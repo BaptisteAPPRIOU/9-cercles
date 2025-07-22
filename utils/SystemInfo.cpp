@@ -1,15 +1,4 @@
-#include "SystemInfo.h"
-#include <sstream>
-
-#ifdef _WIN32
-    #include <windows.h>
-    #include <lmcons.h>
-    #pragma comment(lib, "advapi32.lib")
-#else
-    #include <unistd.h>
-    #include <sys/utsname.h>
-    #include <pwd.h>
-#endif
+#include "SystemInfo.hpp"
 
 std::map<std::string, std::string> SystemInfo::getSystemInfo() {
     std::map<std::string, std::string> info;

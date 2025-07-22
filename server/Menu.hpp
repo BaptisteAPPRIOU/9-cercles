@@ -1,8 +1,8 @@
 #ifndef MENU_HPP
 #define MENU_HPP
 
-#include "LPTF_Socket.h"
-#include "LPTF_Packet.h"
+#include "../utils/LPTF_Socket.hpp"
+#include "../utils/LPTF_Packet.hpp"
 #include <vector>
 #include <memory>
 #include <limits>

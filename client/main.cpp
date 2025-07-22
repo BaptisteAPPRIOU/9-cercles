@@ -1,8 +1,8 @@
-#include "../utils/EnvLoader.h"
-#include "../utils/LPTF_Socket.h"
-#include "../utils/LPTF_Packet.h"
-#include "../utils/SystemInfo.h"
-#include "../utils/TaskList.h"
+#include "../utils/EnvLoader.hpp"
+#include "../utils/LPTF_Socket.hpp"
+#include "../utils/LPTF_Packet.hpp"
+#include "../utils/SystemInfo.hpp"
+#include "../utils/TaskList.hpp"
 #include <iostream>
 #include <windows.h>
 #include <thread>
