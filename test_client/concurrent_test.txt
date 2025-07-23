@@ -4,15 +4,15 @@
 connect
 wait 500
 send Client message 1
-expect Client message 1
+expect Message reçu !
 wait 100
 send Client message 2
-expect Client message 2
+expect Message reçu !
 wait 100
 send Client message 3
-expect Client message 3
+expect Message reçu !
 wait 100
 send Final message from client
-expect Final message from client
+expect Message reçu !
 wait 500
 disconnect

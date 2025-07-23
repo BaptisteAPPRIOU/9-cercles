@@ -1,4 +1,4 @@
 connect
 send Bonjour from Client 2
-expect Bonjour from Client 2
+expect Message reçu !
 disconnect

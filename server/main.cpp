@@ -4,15 +4,23 @@
 #include "../utils/EnvLoader.h"
 using namespace std;
 
-int main() {
+int main(int argc, char* argv[]) {
     cout << "Serveur démarrage..." << endl;
 
     try {
         LPTF_Socket::initialize();
 
+        std::string envPath = "../../.env";
+        if (argc > 1) {
+            envPath = argv[1];
+            std::cout << "Using custom .env path: " << envPath << std::endl;
+        } else {
+            std::cout << "Using default .env path: " << envPath << std::endl;
+        }
+        
         LPTF_Socket serveur;
-        auto env = EnvLoader::loadEnv("../../.env");
-        int port = EnvLoader::loadPort("../../.env");
+        auto env = EnvLoader::loadEnv(envPath);
+        int port = EnvLoader::loadPort(envPath);
         serveur.bindSocket(port);
         serveur.listenSocket();
 

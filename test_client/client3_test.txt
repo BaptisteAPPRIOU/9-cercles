@@ -1,4 +1,4 @@
 connect
 send Hola from Client 3
-expect Hola from Client 3
+expect Message reçu !
 disconnect

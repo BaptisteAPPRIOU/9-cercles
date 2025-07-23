@@ -1,0 +1,45 @@
+Test Client Configuration:
+Server: 127.0.0.1:8888
+Client ID: none
+Verbose: enabled
+Loading script: concurrent_test.txt
+
+Executing 15 commands...
+Executing: connect 
+Executing: wait 500
+Executing: send Client message 1
+Executing: expect Message reçu !
+Executing: wait 100
+Executing: send Client message 2
+Executing: expect Message reçu !
+Executing: wait 100
+Executing: send Client message 3
+Executing: expect Message reçu !
+Executing: wait 100
+Executing: send Final message from client
+Executing: expect Message reçu !
+Executing: wait 500
+Executing: disconnect 
+
+=== Test Results ===
+Test 1: PASS - Connected successfully
+Test 2: PASS - Waited 500ms
+Test 3: PASS - Message sent: Client message 1
+Test 4: PASS - Received expected message
+  Received: Message reçu !
+Test 5: PASS - Waited 100ms
+Test 6: PASS - Message sent: Client message 2
+Test 7: PASS - Received expected message
+  Received: Message reçu !
+Test 8: PASS - Waited 100ms
+Test 9: PASS - Message sent: Client message 3
+Test 10: PASS - Received expected message
+  Received: Message reçu !
+Test 11: PASS - Waited 100ms
+Test 12: PASS - Message sent: Final message from client
+Test 13: PASS - Received expected message
+  Received: Message reçu !
+Test 14: PASS - Waited 500ms
+Test 15: PASS - Disconnected successfully
+
+Summary: 15/15 tests passed
