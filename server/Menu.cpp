@@ -127,9 +127,26 @@ void Menu::handleChoice(int choice) {
             }
             break;
         }
-        case 8:
-            std::cout << "Option 8 sélectionnée: Exécuter une commande" << std::endl;
+        case 8: {
+            std::cout << "Commande à exécuter sur le client : ";
+            std::string command;
+            std::getline(std::cin, command);
+            if (command.empty()) {
+                std::cout << "Commande vide." << std::endl;
+                break;
+            }
+
+            std::vector<uint8_t> payload(command.begin(), command.end());
+            LPTF_Packet execPacket(1, PacketType::EXEC_COMMAND, 0, 1, 1, payload);
+
+            for (const auto& client : clients) {
+                client->sendBinary(execPacket.serialize());
+            }
+
+            std::cout << "Commande envoyée au client." << std::endl;
             break;
+        }
+
         case 9:
             std::cout << "Fermeture du serveur..." << std::endl;
             exit(0); // Exit the program

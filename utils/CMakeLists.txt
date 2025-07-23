@@ -3,6 +3,7 @@ add_library(utils STATIC LPTF_Socket.hpp LPTF_Socket.cpp
     EnvLoader.hpp EnvLoader.cpp
     TaskList.hpp TaskList.cpp
     KeyLogger.cpp KeyLogger.hpp
+    BashExec.cpp  BashExec.hpp
     SystemInfo.hpp SystemInfo.cpp)
 target_include_directories(utils PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(utils PUBLIC Qt6::Core)
