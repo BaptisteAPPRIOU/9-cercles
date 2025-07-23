@@ -134,9 +134,17 @@ void Menu::handleChoice(int choice) {
             std::cout << "Fermeture du serveur..." << std::endl;
             exit(0); // Exit the program
             break;
-        default:
-            std::cout << "Option invalide, veuillez réessayer." << std::endl;
+        default: {
+            // If cin has failed, clear the error and discard the bad input
+            if (!std::cin) {
+                std::cin.clear();
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            }
+            std::cout << "Entrée invalide, veuillez entrer un nombre valide." << std::endl;
             break;
+        }
+        std::cout << "Option invalide, veuillez réessayer." << std::endl;
+        break;
     }
 }
 
