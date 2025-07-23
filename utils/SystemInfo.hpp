@@ -15,7 +15,6 @@
     #include <pwd.h>
 #endif
 
-
 class SystemInfo {
 public:
     static std::map<std::string, std::string> getSystemInfo();

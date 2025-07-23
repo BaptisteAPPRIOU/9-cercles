@@ -146,7 +146,6 @@ void Menu::handleChoice(int choice) {
             std::cout << "Commande envoyée au client." << std::endl;
             break;
         }
-
         case 9:
             std::cout << "Fermeture du serveur..." << std::endl;
             exit(0); // Exit the program

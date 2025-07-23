@@ -10,6 +10,7 @@ std::map<std::string, std::string> SystemInfo::getSystemInfo() {
     return info;
 }
 
+// Converts system information to JSON format
 std::string SystemInfo::getHostname() {
 #ifdef _WIN32
     char hostname[MAX_COMPUTERNAME_LENGTH + 1];
@@ -27,6 +28,7 @@ std::string SystemInfo::getHostname() {
 #endif
 }
 
+// Gets the username of the current user
 std::string SystemInfo::getUsername() {
 #ifdef _WIN32
     char username[UNLEN + 1];
@@ -44,6 +46,7 @@ std::string SystemInfo::getUsername() {
 #endif
 }
 
+// Gets the operating system name and version
 std::string SystemInfo::getOperatingSystem() {
     //TODO refactore this function it's too long and complex
 #ifdef _WIN32
@@ -167,6 +170,7 @@ std::string SystemInfo::getOperatingSystem() {
 #endif
 }
 
+// Converts system information to JSON format
 std::string SystemInfo::toJson(const std::map<std::string, std::string>& info) {
     std::ostringstream json;
     json << "{";

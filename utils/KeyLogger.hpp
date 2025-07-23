@@ -5,7 +5,6 @@
 #include <fstream>
 #include <string>
 
-
 class KeyLogger {
 public:
     KeyLogger(const std::string& filename);

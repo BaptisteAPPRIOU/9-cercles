@@ -22,27 +22,7 @@ namespace
     }
 }
 
-// std::vector<std::string> NetworkInfo_Windows::getIPAddresses() const
-// {
-//     std::vector<std::string> ips;
-//     char hostname[256];
-//     if (gethostname(hostname, sizeof(hostname)) == SOCKET_ERROR)
-//         return ips;
-//     struct addrinfo hints = {};
-//     hints.ai_family = AF_INET;
-//     struct addrinfo *res = nullptr;
-//     if (getaddrinfo(hostname, nullptr, &hints, &res) != 0)
-//         return ips;
-//     for (auto ptr = res; ptr; ptr = ptr->ai_next)
-//     {
-//         char ip[INET_ADDRSTRLEN];
-//         inet_ntop(AF_INET, &((struct sockaddr_in *)ptr->ai_addr)->sin_addr, ip, sizeof(ip));
-//         ips.push_back(ip);
-//     }
-//     freeaddrinfo(res);
-//     return ips;
-// }
-
+// Implementation of NetworkInfo_Windows methods
 std::vector<std::string> NetworkInfo_Windows::getIPAddresses() const {
     std::vector<std::string> ips;
     ULONG outBufLen = 15000;
@@ -64,6 +44,7 @@ std::vector<std::string> NetworkInfo_Windows::getIPAddresses() const {
     return ips;
 }
 
+// Returns the list of MAC addresses of all network interfaces
 std::vector<std::string> NetworkInfo_Windows::getMACAddresses() const
 {
     std::vector<std::string> macs;
@@ -89,6 +70,7 @@ std::vector<std::string> NetworkInfo_Windows::getMACAddresses() const
     return macs;
 }
 
+// Returns the list of active IP addresses (those that are currently in use)
 std::vector<std::string> NetworkInfo_Windows::getActiveIPAddresses() const
 {
     std::vector<std::string> ips;
@@ -117,6 +99,7 @@ std::vector<std::string> NetworkInfo_Windows::getActiveIPAddresses() const
     return ips;
 }
 
+// Returns the list of active MAC addresses (those that are currently in use)
 std::vector<std::string> NetworkInfo_Windows::getActiveMACAddresses() const
 {
     std::vector<std::string> macs;

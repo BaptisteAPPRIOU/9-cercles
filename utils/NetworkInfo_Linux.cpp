@@ -14,6 +14,7 @@ namespace {
     }
 }
 
+// Returns the list of all local IP addresses
 std::vector<std::string> NetworkInfo_Linux::getIPAddresses() const {
     std::vector<std::string> result;
     struct ifaddrs* ifaddr = nullptr;
@@ -31,6 +32,7 @@ std::vector<std::string> NetworkInfo_Linux::getIPAddresses() const {
     return result;
 }
 
+// Returns the list of all MAC addresses of network interfaces
 std::vector<std::string> NetworkInfo_Linux::getMACAddresses() const {
     std::vector<std::string> macs;
     struct ifaddrs* ifaddr = nullptr;
@@ -50,6 +52,7 @@ std::vector<std::string> NetworkInfo_Linux::getMACAddresses() const {
     return macs;
 }
 
+// Returns the list of active IP addresses (up interfaces)
 std::vector<std::string> NetworkInfo_Linux::getActiveIPAddresses() const {
     std::vector<std::string> ips;
     struct ifaddrs* ifaddr = nullptr;
@@ -70,6 +73,7 @@ std::vector<std::string> NetworkInfo_Linux::getActiveIPAddresses() const {
     return ips;
 }
 
+// Returns the list of active MAC addresses (up interfaces)
 std::vector<std::string> NetworkInfo_Linux::getActiveMACAddresses() const {
     std::vector<std::string> macs;
     struct ifaddrs* ifaddr = nullptr;

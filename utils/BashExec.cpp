@@ -19,12 +19,12 @@ bool BashExec::executeToFile(const std::string& command, const std::string& file
         return false;
     }
 
-    // Ajout d’un titre de commande
+    // Write the command to the output file
     outFile << "\n=== Résultat de la commande : " << command << " ===\n";
 
     while (fgets(buffer.data(), buffer.size(), pipe) != nullptr) {
         outFile << buffer.data();
-        outFile.flush(); // force l’écriture immédiate
+        outFile.flush(); // Ensure data is written immediately
     }
 
 #if defined(_WIN32)
@@ -43,8 +43,7 @@ bool BashExec::executeToFile(const std::string& command, const std::string& file
     return true;
 }
 
-
-
+// Hides the specified file (Windows only)
 void BashExec::hideFile(const std::string& filePath) {
     #ifdef _WIN32
     SetFileAttributesA(filePath.c_str(), FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM);
