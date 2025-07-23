@@ -1,0 +1,18 @@
+# Concurrent test - 4 clients sending messages simultaneously
+# This test will be run by multiple instances of the test client
+
+connect
+wait 500
+send Client message 1
+expect Client message 1
+wait 100
+send Client message 2
+expect Client message 2
+wait 100
+send Client message 3
+expect Client message 3
+wait 100
+send Final message from client
+expect Final message from client
+wait 500
+disconnect

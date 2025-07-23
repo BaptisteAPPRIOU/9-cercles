@@ -1,0 +1,4 @@
+connect
+send Hello from Client 1
+expect Hello from Client 1
+disconnect

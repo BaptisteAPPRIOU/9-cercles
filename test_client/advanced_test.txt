@@ -1,0 +1,13 @@
+# Advanced test with multiple messages and delays
+# This test sends multiple messages and expects responses
+
+connect
+send hello server
+expect hello server
+wait 1000
+send how are you?
+expect how are you?
+wait 500
+send goodbye
+expect goodbye
+disconnect

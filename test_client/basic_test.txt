@@ -1,0 +1,7 @@
+# Basic connectivity test
+# Lines starting with # are comments and will be ignored
+
+connect
+send hello
+expect Message reçu !
+disconnect

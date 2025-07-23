@@ -1,0 +1,15 @@
+# Stress test - multiple rapid messages
+# Tests server's ability to handle multiple messages quickly
+
+connect
+send message1
+expect message1
+send message2
+expect message2
+send message3
+expect message3
+send message4
+expect message4
+send message5
+expect message5
+disconnect

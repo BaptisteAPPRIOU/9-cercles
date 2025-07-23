@@ -1,10 +1,12 @@
 #ifndef LPTF_SOCKET_H
 #define LPTF_SOCKET_H
 
+
 #ifdef _WIN32
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #pragma comment(lib, "ws2_32.lib")
+typedef int ssize_t;
 #else
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -43,7 +45,7 @@ public:
     string recvMsg();
     string getClientIP();
 
-    void closeSocket();
+
 };
 
 #endif

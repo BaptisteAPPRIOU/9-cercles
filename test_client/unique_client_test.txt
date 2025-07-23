@@ -1,0 +1,17 @@
+# Unique client test - each client sends different messages
+# Use with --client-id parameter to make messages unique
+
+connect
+wait 200
+send Hello from client ID_PLACEHOLDER - message 1
+expect Hello from client ID_PLACEHOLDER - message 1
+wait 100
+send Client ID_PLACEHOLDER sending burst message
+expect Client ID_PLACEHOLDER sending burst message
+wait 50
+send Rapid message from ID_PLACEHOLDER
+expect Rapid message from ID_PLACEHOLDER
+wait 300
+send Final sync test from client ID_PLACEHOLDER
+expect Final sync test from client ID_PLACEHOLDER
+disconnect
