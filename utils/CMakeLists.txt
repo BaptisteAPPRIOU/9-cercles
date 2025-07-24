@@ -6,6 +6,8 @@ add_library(utils STATIC
     SystemInfo.hpp SystemInfo.cpp
     NetworkInfoFactory.hpp NetworkInfoFactory.cpp
     KeyLogger.cpp KeyLogger.hpp
+    Hash_Sha256.hpp
+    LPTF_PacketUtils.hpp
 )
 
 # Platform-specific network info files
