@@ -5,131 +5,140 @@
 #include <vector>
 #include <iostream>
 #include <windows.h>
-
-using namespace std;
+#include <QApplication>
+#include "MainWindow.hpp"
 
 bool isClientConnected = false;
 
-int main() 
+int main(int argc, char *argv[])
 {
+    QApplication app(argc, argv);
+
+    MainWindow w;
+    w.show();
+    return app.exec();
+
     SetConsoleOutputCP(CP_UTF8);
     SetConsoleCP(CP_UTF8);
 
-    cout << "Serveur démarrage..." << endl;
+    std::cout << "Serveur démarrage…" << std::endl;
 
-    try
-    {
-        LPTF_Socket::initialize();
+    // try
+    // {
+    //     LPTF_Socket::initialize();
 
-        LPTF_Socket serveur;
-        auto env = EnvLoader::loadEnv("../../.env");
-        int port = EnvLoader::loadPort("../../.env");
-        serveur.bindSocket(port);
-        serveur.listenSocket();
+    //     LPTF_Socket serveur;
+    //     auto env = EnvLoader::loadEnv("../../.env");
+    //     int port = EnvLoader::loadPort("../../.env");
+    //     serveur.bindSocket(port);
+    //     serveur.listenSocket();
 
-        vector<unique_ptr<LPTF_Socket>> clients;
+    //     std::vector<std::unique_ptr<LPTF_Socket>> clients;
 
-        cout << "Serveur prêt. En attente de connexions..." << endl;
+    //     // Accept one client for UI demonstration
+    //     auto newClient = serveur.acceptSocket();
+    //     clients.push_back(std::move(newClient));
 
-        while (true)
-        {
-            fd_set readfds;
-            FD_ZERO(&readfds);
+    //     // Create and show main window
+        
 
-            int maxFd = serveur.getSocketFd();
-            FD_SET(serveur.getSocketFd(), &readfds);
+    //     std::cout << "Serveur prêt. En attente de connexions…" << std::endl;
 
-            for (const auto &client : clients)
-            {
-                int fd = client->getSocketFd();
-                FD_SET(fd, &readfds);
-                if (fd > maxFd)
-                    maxFd = fd;
-            }
+    //     while (true)
+    //     {
+    //         fd_set readfds;
+    //         FD_ZERO(&readfds);
 
-            int activity = select(maxFd + 1, &readfds, nullptr, nullptr, nullptr);
-            if (activity < 0)
-            {
-                cerr << "Erreur lors de select()" << endl;
-                break;
-            }
+    //         int maxFd = serveur.getSocketFd();
+    //         FD_SET(serveur.getSocketFd(), &readfds);
 
-            // Handle new connections
-            if (FD_ISSET(serveur.getSocketFd(), &readfds))
-            {
-                auto newClient = serveur.acceptSocket();
-                cout << "Nouveau client connecté: " << newClient->getClientIP() << endl;
-                cout << "En attente des informations système du client..." << endl;
+    //         for (const auto &client : clients)
+    //         {
+    //             int fd = client->getSocketFd();
+    //             FD_SET(fd, &readfds);
+    //             if (fd > maxFd)
+    //                 maxFd = fd;
+    //         }
 
-                // No need to send GET_INFO - client will send info automatically
-                clients.push_back(move(newClient));
-                isClientConnected = true;
-            }
+    //         int activity = select(maxFd + 1, &readfds, nullptr, nullptr, nullptr);
+    //         if (activity < 0)
+    //         {
+    //             std::cerr << "Erreur lors de select()" << std::endl;
+    //             break;
+    //         }
 
-            // Handle client messages
-            for (auto it = clients.begin(); it != clients.end();)
-            {
-                int fd = (*it)->getSocketFd();
-                if (FD_ISSET(fd, &readfds))
-                {
-                    try
-                    {
-                        vector<uint8_t> data = (*it)->recvBinary();
-                        auto packet = LPTF_Packet::deserialize(data);
+    //         // Handle new connections
+    //         if (FD_ISSET(serveur.getSocketFd(), &readfds))
+    //         {
+    //             auto newClient = serveur.acceptSocket();
+    //             std::cout << "Nouveau client connecté: " << newClient->getClientIP() << std::endl;
+    //             std::cout << "En attente des informations système du client…" << std::endl;
 
-                        if (packet.getType() == PacketType::GET_INFO)
-                        {
-                            string payload(packet.getPayload().begin(), packet.getPayload().end());
+    //             clients.push_back(std::move(newClient));
+    //             isClientConnected = true;
+    //         }
 
-                            // Check if it's JSON (system info) or regular message
-                            if (payload.find("{") != string::npos && payload.find("}") != string::npos)
-                            {
-                                cout << "=== INFORMATIONS SYSTÈME REÇUES ===" << endl;
-                                cout << payload << endl;
-                                cout << "===================================" << endl;
+    //         // Handle client messages
+    //         for (auto it = clients.begin(); it != clients.end();)
+    //         {
+    //             int fd = (*it)->getSocketFd();
+    //             if (FD_ISSET(fd, &readfds))
+    //             {
+    //                 try
+    //                 {
+    //                     std::vector<uint8_t> data = (*it)->recvBinary();
+    //                     auto packet = LPTF_Packet::deserialize(data);
 
-                                // Send acknowledgment
-                                string ack = "Informations système reçues avec succès";
-                                vector<uint8_t> ackPayload(ack.begin(), ack.end());
-                                LPTF_Packet ackPacket(1, PacketType::RESPONSE, 0, 1, 1, ackPayload);
-                                (*it)->sendBinary(ackPacket.serialize());
-                            }
-                            else
-                            {
-                                cout << "Message client (" << (*it)->getClientIP() << "): " << payload << endl;
+    //                     if (packet.getType() == PacketType::GET_INFO)
+    //                     {
+    //                         std::string payload(packet.getPayload().begin(), packet.getPayload().end());
 
-                                // Send regular response
-                                string response = "Reçu : " + payload;
-                                vector<uint8_t> responsePayload(response.begin(), response.end());
-                                LPTF_Packet responsePacket(1, PacketType::RESPONSE, 0, 1, 1, responsePayload);
-                                (*it)->sendBinary(responsePacket.serialize());
-                            }
-                        }
-                        ++it;
-                    }
-                    catch (const exception &e)
-                    {
-                        cout << "Client déconnecté (" << (*it)->getClientIP() << "): " << e.what() << endl;
-                        it = clients.erase(it);
-                    }
-                }
-                else
-                {
-                    ++it;
-                }
-            }
+    //                         if (payload.find("{") != std::string::npos && payload.find("}") != std::string::npos)
+    //                         {
+    //                             std::cout << "=== INFORMATIONS SYSTÈME REÇUES ===" << std::endl;
+    //                             std::cout << payload << std::endl;
+    //                             std::cout << "===================================" << std::endl;
 
-            if (isClientConnected) {
-                Menu menu(clients);
-                return menu.run();
-            }
-        }
-    }
-    catch (const exception &e)
-    {
-        cerr << "Erreur fatale : " << e.what() << endl;
-        return 1;
-    }
+    //                             std::string ack = "Informations système reçues avec succès";
+    //                             std::vector<uint8_t> ackPayload(ack.begin(), ack.end());
+    //                             LPTF_Packet ackPacket(1, PacketType::RESPONSE, 0, 1, 1, ackPayload);
+    //                             (*it)->sendBinary(ackPacket.serialize());
+    //                         }
+    //                         else
+    //                         {
+    //                             std::cout << "Message client (" << (*it)->getClientIP() << "): " << payload << std::endl;
 
-    return 0;
+    //                             std::string response = "Reçu : " + payload;
+    //                             std::vector<uint8_t> responsePayload(response.begin(), response.end());
+    //                             LPTF_Packet responsePacket(1, PacketType::RESPONSE, 0, 1, 1, responsePayload);
+    //                             (*it)->sendBinary(responsePacket.serialize());
+    //                         }
+    //                     }
+    //                     ++it;
+    //                 }
+    //                 catch (const std::exception &e)
+    //                 {
+    //                     std::cout << "Client déconnecté (" << (*it)->getClientIP() << "): " << e.what() << std::endl;
+    //                     it = clients.erase(it);
+    //                 }
+    //             }
+    //             else
+    //             {
+    //                 ++it;
+    //             }
+    //         }
+
+    //         if (isClientConnected) {
+    //             Menu menu(clients);
+    //             return menu.run();
+    //         }
+    //     }
+    // }
+    // catch (const std::exception &e)
+    // {
+    //     std::cerr << "Erreur fatale : " << e.what() << std::endl;
+    //     return 1;
+    // }
+
+    // return 0;
 }
