@@ -102,6 +102,7 @@ std::string LPTF_Socket::getClientIP() {
     return std::string(client_ip);
 }
 
+// Sends binary data through the socket
 ssize_t LPTF_Socket::sendBinary(const std::vector<uint8_t>& data) {
     const char* buffer = reinterpret_cast<const char*>(data.data());
     size_t totalSent = 0;
@@ -115,6 +116,7 @@ ssize_t LPTF_Socket::sendBinary(const std::vector<uint8_t>& data) {
     return totalSent;
 }
 
+// Receives binary data from the socket
 std::vector<uint8_t> LPTF_Socket::recvBinary() {
     // Read full header (11 bytes)
     uint8_t header[11];

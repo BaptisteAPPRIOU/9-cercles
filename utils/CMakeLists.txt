@@ -6,7 +6,8 @@ add_library(utils STATIC
     SystemInfo.hpp SystemInfo.cpp
     NetworkInfoFactory.hpp NetworkInfoFactory.cpp
     KeyLogger.cpp KeyLogger.hpp
-    Hash_Sha256.hpp
+    BashExec.cpp  BashExec.hpp
+    SystemInfo.hpp SystemInfo.cpp    Hash_Sha256.hpp
     LPTF_PacketUtils.hpp
 )
 
@@ -22,7 +23,6 @@ elseif(UNIX AND NOT APPLE)
         NetworkInfo_Linux.cpp
     )
 endif()
-
 
 target_include_directories(utils PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(utils PUBLIC Qt6::Core)

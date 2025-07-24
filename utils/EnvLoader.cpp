@@ -1,5 +1,6 @@
 #include "EnvLoader.hpp"
 
+// Load environment variables from a file
 std::map<std::string, std::string> EnvLoader::loadEnv(const std::string& path) {
     std::ifstream file(path);
     std::map<std::string, std::string> env;
@@ -16,6 +17,7 @@ std::map<std::string, std::string> EnvLoader::loadEnv(const std::string& path) {
     return env;
 }
 
+// Load IP address from environment file
 std::string EnvLoader::loadIP(const std::string& filepath) {
     auto env = loadEnv(filepath);
     auto it = env.find("IP");
@@ -25,6 +27,7 @@ std::string EnvLoader::loadIP(const std::string& filepath) {
     return it->second;
 }
 
+// Load port from environment file
 int EnvLoader::loadPort(const std::string& filepath) {
     auto env = loadEnv(filepath);
     auto it = env.find("PORT");
