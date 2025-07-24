@@ -1,5 +1,5 @@
 // NetworkInfo_Windows.cpp
-#include "../utils/NetworkInfo_Windows.hpp"
+#include "NetworkInfo_Windows.hpp"
 
 namespace
 {

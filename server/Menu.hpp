@@ -1,11 +1,11 @@
 #ifndef MENU_HPP
 #define MENU_HPP
 
-#include "../utils/LPTF_Socket.hpp"
-#include "../utils/LPTF_Packet.hpp"
-#include "../utils/SystemInfo.hpp"
-#include "../utils/PacketType.hpp"
-#include "../utils/TaskList.hpp"
+#include "../utils/LPTF/LPTF_Socket.hpp"
+#include "../utils/LPTF/LPTF_Packet.hpp"
+#include "../utils/SystemInfo/SystemInfo.hpp"
+#include "../utils/LPTF/LPTF_PacketType.hpp"
+#include "../utils/SystemInfo/TaskList.hpp"
 #include <vector>
 #include <memory>
 #include <limits>
