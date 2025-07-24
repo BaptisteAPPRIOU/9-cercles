@@ -2,7 +2,7 @@
 #ifndef NETWORKINFOFACTORY_HPP
 #define NETWORKINFOFACTORY_HPP
 
-#include "../utils/INetworkInfo.hpp"
+#include "INetworkInfo.hpp"
 #include <memory>
 
 class NetworkInfoFactory {

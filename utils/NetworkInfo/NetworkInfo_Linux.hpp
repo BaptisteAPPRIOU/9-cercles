@@ -1,7 +1,7 @@
 // NetworkInfo_Linux.hpp
 #ifndef NETWORKINFO_LINUX_HPP
 #define NETWORKINFO_LINUX_HPP
-#include "../utils/INetworkInfo.hpp"
+#include "INetworkInfo.hpp"
 #if defined(__linux__) || (defined(__unix__) && !defined(__APPLE__))
 #include <ifaddrs.h>
 #include <netinet/in.h>

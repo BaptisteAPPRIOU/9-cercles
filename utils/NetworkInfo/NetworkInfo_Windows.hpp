@@ -2,7 +2,7 @@
 #ifndef NETWORKINFO_WINDOWS_HPP
 #define NETWORKINFO_WINDOWS_HPP
 
-#include "../utils/INetworkInfo.hpp"
+#include "INetworkInfo.hpp"
 
 #include <winsock2.h>
 #include <iphlpapi.h>

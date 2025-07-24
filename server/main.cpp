@@ -1,6 +1,6 @@
 #include "../utils/EnvLoader.hpp"
-#include "../utils/LPTF_Socket.hpp"
-#include "../utils/LPTF_Packet.hpp"
+#include "../utils/LPTF/LPTF_Socket.hpp"
+#include "../utils/LPTF/LPTF_Packet.hpp"
 #include "Menu.hpp"
 #include <vector>
 #include <iostream>

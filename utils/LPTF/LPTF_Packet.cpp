@@ -1,5 +1,5 @@
 #include "LPTF_Packet.hpp"
-#include "PacketType.hpp"
+#include "LPTF_PacketType.hpp"
 
 using namespace std;
 

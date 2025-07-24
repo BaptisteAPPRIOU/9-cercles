@@ -1,13 +1,13 @@
-add_library(utils STATIC
-    LPTF_Socket.hpp LPTF_Socket.cpp
-    LPTF_Packet.hpp LPTF_Packet.cpp
-    EnvLoader.hpp EnvLoader.cpp
-    TaskList.hpp TaskList.cpp
-    SystemInfo.hpp SystemInfo.cpp
-    NetworkInfoFactory.hpp NetworkInfoFactory.cpp
-    KeyLogger.cpp KeyLogger.hpp
-    BashExec.cpp  BashExec.hpp
-    SystemInfo.hpp SystemInfo.cpp)
+file(GLOB_RECURSE UTILS_SRC
+    CONFIGURE_DEPENDS
+    LPTF/*.cpp LPTF/*.hpp
+    SystemInfo/*.cpp SystemInfo/*.hpp
+    CommandSystem/*.cpp CommandSystem/*.hpp
+    *.cpp *.hpp
+)
+
+add_library(utils STATIC ${UTILS_SRC})
+
 
 # Platform-specific network info files
 if (WIN32)
