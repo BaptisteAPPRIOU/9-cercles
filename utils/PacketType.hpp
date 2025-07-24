@@ -8,8 +8,12 @@ enum class PacketType : uint8_t {
         KEYLOG        = 0x02,
         PROCESS_LIST  = 0x03,
         EXEC_COMMAND  = 0x04,
+        // Auth types
+        AUTH_CHALLENGE = 0xA0,
+        AUTH_PROOF     = 0xA1,
+        AUTH_RESULT    = 0xA2,
         RESPONSE      = 0xFF,
-        PACKET_ERROR= 0xFE,
+        PACKET_ERROR  = 0xFE,
 };
 
 #endif
