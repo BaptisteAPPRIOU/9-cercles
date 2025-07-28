@@ -24,10 +24,10 @@
      </rect>
     </property>
     <property name="frameShape">
-     <enum>QFrame::Shape::StyledPanel</enum>
+     <enum>QFrame::StyledPanel</enum>
     </property>
     <property name="frameShadow">
-     <enum>QFrame::Shadow::Raised</enum>
+     <enum>QFrame::Raised</enum>
     </property>
     <widget class="QListWidget" name="clientListWidget">
      <property name="enabled">
@@ -42,7 +42,7 @@
       </rect>
      </property>
      <property name="layoutDirection">
-      <enum>Qt::LayoutDirection::LeftToRight</enum>
+      <enum>Qt::LeftToRight</enum>
      </property>
      <item>
       <property name="text">
@@ -79,22 +79,37 @@
      </property>
      <item>
       <property name="text">
-       <string>Option 1</string>
+       <string>Afficher les informations du client</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>Option 2</string>
+       <string>Démarrer le keylogger</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>Option 3</string>
+       <string>Eteindre le keylogger</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>Option 4</string>
+       <string>Afficher la liste complète des processus</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Afficher la liste des processus (noms)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Déconnecter le client sélectionné (Prévision)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Analyse de données du client sélectionné (Prévision)</string>
       </property>
      </item>
     </widget>
@@ -109,10 +124,10 @@
      </rect>
     </property>
     <property name="frameShape">
-     <enum>QFrame::Shape::StyledPanel</enum>
+     <enum>QFrame::StyledPanel</enum>
     </property>
     <property name="frameShadow">
-     <enum>QFrame::Shadow::Raised</enum>
+     <enum>QFrame::Raised</enum>
     </property>
     <widget class="QTabWidget" name="tabWidget">
      <property name="geometry">

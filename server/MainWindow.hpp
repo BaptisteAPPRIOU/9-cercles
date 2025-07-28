@@ -4,6 +4,8 @@
 #include <QMainWindow>
 #include <QListWidget>
 #include <QMap>
+#include <QMessageBox>
+
 #include <vector>
 #include <memory>
 #include "../utils/LPTF/LPTF_Socket.hpp"
@@ -29,6 +31,9 @@ private:
 signals:
   void sendToClient(const QString& clientId, const QString& message);
 
+
+private slots:
+    void onSelectionButtonClicked();
 };
 
 #endif // MAINWINDOW_HPP
