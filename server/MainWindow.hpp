@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include <vector>
 #include <memory>
-#include "../utils/LPTF_Socket.hpp"
+#include "../utils/LPTF/LPTF_Socket.hpp"
 
 namespace Ui {
 class MainWindow;
