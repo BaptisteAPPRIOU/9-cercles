@@ -1,34 +1,44 @@
 #include "../utils/LPTF/LPTF_Socket.hpp"
 #include "ServerApp.hpp"
-#include <thread>
-#include <iostream>
-#include <windows.h>
 
 #include <QApplication>
 #include "MainWindow.hpp"
 
+#include <thread>
+#include <iostream>
+#include <windows.h>
+
 int main(int argc, char *argv[])
 {
+    // Démarrage de l'IHM Qt
     QApplication app(argc, argv);
-
-    // 1) Crée l’UI
     MainWindow w;
     w.show();
 
-    // 2) Lance le serveur en arrière‑plan en lui passant &w
+    // Réattache une console pour afficher std::cout / std::cerr
+#ifdef _WIN32
+    AllocConsole();
+    freopen("CONOUT$", "w", stdout);
+    freopen("CONOUT$", "w", stderr);
+#endif
+
+    // Initialisation de Winsock avant toute création de socket
+    try {
+        LPTF_Socket::initialize();
+    } catch (const std::exception& e) {
+        std::cerr << "Winsock init failed: " << e.what() << std::endl;
+        return 1;
+    }
+
+    // Lance le serveur en arrière-plan
     std::thread([&w](){
-        std::cout << "Serveur prêt. avant try \n";
         try {
-            std::cout << "Serveur prêt. \n";
             ServerApp server("../../.env", &w);
-            std::cout << "Serveur prêt2. \n";
             server.run();
-            std::cout << "Serveur prêt.3 \n";
         } catch (const std::exception& e) {
-            // log si besoin
+            std::cerr << "Server exception: " << e.what() << std::endl;
         }
     }).detach();
 
-    // 3) Boucle Qt
     return app.exec();
 }

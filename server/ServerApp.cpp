@@ -49,7 +49,8 @@ ServerApp::~ServerApp() {
 }
 
 int ServerApp::run() {
-    qDebug() <<  "test before try\n";
+    SetConsoleOutputCP(CP_UTF8);
+    SetConsoleCP(CP_UTF8);
     try {
         qDebug() << "Serveur prêt. En attente de connexions…\n";
 
@@ -113,7 +114,6 @@ int ServerApp::run() {
                             );
                         }
 
-                        qDebug() << "Print before echo/ack";
                         // Echo/Ack
                         std::string response = "Reçu : " + payload;
                         std::vector<uint8_t> respPayload(response.begin(), response.end());
@@ -130,7 +130,6 @@ int ServerApp::run() {
                         (*it)->sendBinary(respPkt.serialize());
 
                         ++it;
-                        qDebug() << "Print after ack";
                     } catch (const std::exception& e) {
                         std::string ip = (*it)->getClientIP();
                         std::cout << "Client déconnecté (" << ip << "): " << e.what() << "\n";
