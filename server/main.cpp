@@ -1,4 +1,4 @@
-#include "../utils/LPTF/LPTF_Socket.hpp"   // pour LPTF_Socket::initialize()
+#include "../utils/LPTF/LPTF_Socket.hpp"
 #include "ServerApp.hpp"
 #include <thread>
 #include <iostream>
@@ -9,28 +9,26 @@
 
 int main(int argc, char *argv[])
 {
-    // 1) Initialisation de Winsock (avant toute socket)
-    try {
-        LPTF_Socket::initialize();
-    }
-    catch (const std::exception& e) {
-        std::cerr << "Fatal: Winsock init failed: " << e.what() << std::endl;
-        return 1;
-    }
+    QApplication app(argc, argv);
 
-    // 2) Lance le serveur en arrière‑plan
-    std::thread([](){
+    // 1) Crée l’UI
+    MainWindow w;
+    w.show();
+
+    // 2) Lance le serveur en arrière‑plan en lui passant &w
+    std::thread([&w](){
+        std::cout << "Serveur prêt. avant try \n";
         try {
-            ServerApp server("../../.env");
+            std::cout << "Serveur prêt. \n";
+            ServerApp server("../../.env", &w);
+            std::cout << "Serveur prêt2. \n";
             server.run();
+            std::cout << "Serveur prêt.3 \n";
         } catch (const std::exception& e) {
-            // On peut logger dans un fichier, ou simplement ignorer
+            // log si besoin
         }
     }).detach();
 
-    // 3) Démarre l'IHM Qt
-    QApplication app(argc, argv);
-    MainWindow w;
-    w.show();
+    // 3) Boucle Qt
     return app.exec();
 }

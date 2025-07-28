@@ -1,23 +1,45 @@
 #include "ServerApp.hpp"
-#include <iostream>
-#include <windows.h>
-#include <limits>
+#include "MainWindow.hpp"
 
-ServerApp::ServerApp(const std::string& envFilePath)
+#include <QMetaObject>
+#include <QString>
+#include <QObject>
+#include <QDebug>
+
+#include <iostream>
+#include <memory>
+#include <stdexcept>
+#include <cstring>
+
+#ifdef _WIN32
+  #include <winsock2.h>   // for select(), FD_* on Windows
+  #include <ws2tcpip.h>
+  #pragma comment(lib, "ws2_32.lib")
+#else
+  #include <sys/select.h>
+#endif
+
+ServerApp::ServerApp(const std::string& envFilePath, MainWindow* ui)
   : m_envPath(envFilePath)
+  , m_ui(ui)
 {
-    // Console UTF-8
+    // Console en UTF-8
+#ifdef _WIN32
     SetConsoleOutputCP(CP_UTF8);
     SetConsoleCP(CP_UTF8);
+#endif
 
-    // Load environment
+    // Charger .env et récupérer le port
     EnvLoader::loadEnv(m_envPath);
     int port = EnvLoader::loadPort(m_envPath);
-
     std::cout << "ServerApp: binding on port " << port << "...\n";
 
-    // Initialize Winsock & bind/listen
+    // Initialiser Winsock et le socket serveur
+#ifdef _WIN32
     LPTF_Socket::initialize();
+#else
+    LPTF_Socket::initialize();
+#endif
     m_serverSocket.bindSocket(port);
     m_serverSocket.listenSocket();
 }
@@ -27,120 +49,100 @@ ServerApp::~ServerApp() {
 }
 
 int ServerApp::run() {
-    try
-    {
-        LPTF_Socket::initialize();
+    qDebug() <<  "test before try\n";
+    try {
+        qDebug() << "Serveur prêt. En attente de connexions…\n";
 
-        LPTF_Socket serveur;
-        auto env = EnvLoader::loadEnv("../../.env");
-        int port = EnvLoader::loadPort("../../.env");
-        serveur.bindSocket(port);
-        serveur.listenSocket();
-
-        std::vector<std::unique_ptr<LPTF_Socket>> clients;
-
-        // Accept one client for UI demonstration
-        auto newClient = serveur.acceptSocket();
-        clients.push_back(std::move(newClient));
-
-        // Create and show main window
-        
-
-        std::cout << "Serveur prêt. En attente de connexions…" << std::endl;
-
-        while (true)
-        {
+        while (true) {
+            // Préparation des fd_set
             fd_set readfds;
             FD_ZERO(&readfds);
 
-            int maxFd = serveur.getSocketFd();
-            FD_SET(serveur.getSocketFd(), &readfds);
+            int listenFd = m_serverSocket.getSocketFd();
+            FD_SET(listenFd, &readfds);
+            int maxFd = listenFd;
 
-            for (const auto &client : clients)
-            {
+            for (const auto& client : m_clients) {
                 int fd = client->getSocketFd();
                 FD_SET(fd, &readfds);
-                if (fd > maxFd)
-                    maxFd = fd;
+                if (fd > maxFd) maxFd = fd;
             }
 
             int activity = select(maxFd + 1, &readfds, nullptr, nullptr, nullptr);
-            if (activity < 0)
-            {
-                std::cerr << "Erreur lors de select()" << std::endl;
+            if (activity < 0) {
+                std::cerr << "Erreur lors de select(): " << std::strerror(errno) << "\n";
                 break;
             }
 
-            // Handle new connections
-            if (FD_ISSET(serveur.getSocketFd(), &readfds))
-            {
-                auto newClient = serveur.acceptSocket();
-                std::cout << "Nouveau client connecté: " << newClient->getClientIP() << std::endl;
-                std::cout << "En attente des informations système du client…" << std::endl;
+            // Nouvelle connexion
+            if (FD_ISSET(listenFd, &readfds)) {
+                qDebug() << "Print new connect";
+                auto newClient = m_serverSocket.acceptSocket();
+                std::string ip = newClient->getClientIP();
+                m_clients.push_back(std::move(newClient));
 
-                clients.push_back(std::move(newClient));
-                isClientConnected = true;
+                if (m_ui) {
+                    QString qip = QString::fromStdString(ip);
+                    QMetaObject::invokeMethod(
+                        m_ui,
+                        "addClientTab",
+                        Qt::QueuedConnection,
+                        Q_ARG(QString, qip)
+                    );
+                }
             }
 
-            // Handle client messages
-            for (auto it = clients.begin(); it != clients.end();)
-            {
+            // Lecture et dispatch des messages
+            for (auto it = m_clients.begin(); it != m_clients.end();) {
                 int fd = (*it)->getSocketFd();
-                if (FD_ISSET(fd, &readfds))
-                {
-                    try
-                    {
-                        std::vector<uint8_t> data = (*it)->recvBinary();
+                if (FD_ISSET(fd, &readfds)) {
+                    try {
+                        auto data = (*it)->recvBinary();
                         auto packet = LPTF_Packet::deserialize(data);
+                        std::string payload(packet.getPayload().begin(), packet.getPayload().end());
 
-                        if (packet.getType() == PacketType::GET_INFO)
-                        {
-                            std::string payload(packet.getPayload().begin(), packet.getPayload().end());
-
-                            if (payload.find("{") != std::string::npos && payload.find("}") != std::string::npos)
-                            {
-                                std::cout << "=== INFORMATIONS SYSTÈME REÇUES ===" << std::endl;
-                                std::cout << payload << std::endl;
-                                std::cout << "===================================" << std::endl;
-
-                                std::string ack = "Informations système reçues avec succès";
-                                std::vector<uint8_t> ackPayload(ack.begin(), ack.end());
-                                LPTF_Packet ackPacket(1, PacketType::RESPONSE, 0, 1, 1, ackPayload);
-                                (*it)->sendBinary(ackPacket.serialize());
-                            }
-                            else
-                            {
-                                std::cout << "Message client (" << (*it)->getClientIP() << "): " << payload << std::endl;
-
-                                std::string response = "Reçu : " + payload;
-                                std::vector<uint8_t> responsePayload(response.begin(), response.end());
-                                LPTF_Packet responsePacket(1, PacketType::RESPONSE, 0, 1, 1, responsePayload);
-                                (*it)->sendBinary(responsePacket.serialize());
-                            }
+                        if (m_ui) {
+                            QString qip = QString::fromStdString((*it)->getClientIP());
+                            QString qtxt = QString::fromStdString(payload);
+                            QMetaObject::invokeMethod(
+                                m_ui,
+                                "appendClientOutput",
+                                Qt::QueuedConnection,
+                                Q_ARG(QString, qip),
+                                Q_ARG(QString, qtxt)
+                            );
                         }
+
+                        qDebug() << "Print before echo/ack";
+                        // Echo/Ack
+                        std::string response = "Reçu : " + payload;
+                        std::vector<uint8_t> respPayload(response.begin(), response.end());
+
+                        // on construit le paquet avec TOUS les paramètres du constructeur :
+                        LPTF_Packet respPkt(
+                            1,                      // version
+                            PacketType::RESPONSE,   // type
+                            0,                      // flags
+                            0,                      // packetId
+                            0,                      // sessionId
+                            respPayload            // payload
+                        );
+                        (*it)->sendBinary(respPkt.serialize());
+
                         ++it;
+                        qDebug() << "Print after ack";
+                    } catch (const std::exception& e) {
+                        std::string ip = (*it)->getClientIP();
+                        std::cout << "Client déconnecté (" << ip << "): " << e.what() << "\n";
+                        it = m_clients.erase(it);
                     }
-                    catch (const std::exception &e)
-                    {
-                        std::cout << "Client déconnecté (" << (*it)->getClientIP() << "): " << e.what() << std::endl;
-                        it = clients.erase(it);
-                    }
-                }
-                else
-                {
+                } else {
                     ++it;
                 }
             }
-
-            if (isClientConnected) {
-                Menu menu(clients);
-                return menu.run();
-            }
         }
-    }
-    catch (const std::exception &e)
-    {
-        std::cerr << "Erreur fatale : " << e.what() << std::endl;
+    } catch (const std::exception& e) {
+        std::cerr << "Erreur fatale dans ServerApp : " << e.what() << "\n";
         return 1;
     }
 
