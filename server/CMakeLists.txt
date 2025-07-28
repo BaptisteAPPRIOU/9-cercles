@@ -14,6 +14,7 @@ add_executable(server
     Menu.cpp
     MainWindow.cpp
     MainWindow.ui
+    ServerApp.cpp
 )
 target_link_libraries(server
     PRIVATE Qt6::Core Qt6::Network Qt6::Widgets utils
