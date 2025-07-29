@@ -10,22 +10,28 @@
 #include <string>
 #include <iostream>
 #include <cstring>
+#include <QObject>
 
 #ifdef _WIN32
-  #include <winsock2.h>
-  #include <ws2tcpip.h>
-  #pragma comment(lib, "ws2_32.lib")
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#pragma comment(lib, "ws2_32.lib")
 #else
-  #include <sys/select.h>
+#include <sys/select.h>
 #endif
 
-class ServerApp {
+class ServerApp : public QObject
+{
+    Q_OBJECT
 public:
     // charge .env, init Winsock, bind & listen
-    explicit ServerApp(const std::string& envFilePath);
+    explicit ServerApp(const std::string &envFilePath);
     ~ServerApp();
 
     void run();
+
+signals:
+    void clientConnected(const QString &clientInfo);
 
 private:
     LPTF_Socket m_serverSocket;
