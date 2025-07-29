@@ -2,7 +2,7 @@
 #define MAINWINDOW_HPP
 
 #include "../utils/LPTF/LPTF_Socket.hpp"
-#include "ui_MainWindow.h"  // generated from MainWindow.ui
+#include "ui_MainWindow.h" // generated from MainWindow.ui
 #include <QMainWindow>
 #include <QListWidget>
 #include <QStringList>
@@ -12,30 +12,35 @@
 #include <vector>
 #include <memory>
 
-namespace Ui {
-class MainWindow;
+namespace Ui
+{
+    class MainWindow;
 }
 
-class MainWindow : public QMainWindow {
+class MainWindow : public QMainWindow
+{
     Q_OBJECT
 public:
-    explicit MainWindow(QWidget* parent = nullptr);
+    explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    void addClientTab(const QString& clientId);
-    void appendClientOutput(const QString& clientId, const QString& text);
+    void addClientTab(const QString &clientId);
+    void appendClientOutput(const QString &clientId, const QString &text);
     void refreshClients();
 
-private:
-    Ui::MainWindow* ui;
-    QMap<QString, QListWidget*> clientTabs;
+    // Call this after constructing MainWindow to connect to ServerApp
+    void connectToServerApp(QObject *serverApp);
+
+public slots:
+    void onSelectionButtonClicked();
+    void onClientConnected(const QString &clientInfo);
 
 signals:
-  void sendToClient(const QString& clientId, const QString& message);
+    void sendToClient(const QString &clientId, const QString &message);
 
-
-private slots:
-    void onSelectionButtonClicked();
+private:
+    Ui::MainWindow *ui;
+    QMap<QString, QListWidget *> clientTabs;
 };
 
 #endif // MAINWINDOW_HPP

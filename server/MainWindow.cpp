@@ -5,21 +5,48 @@ MainWindow::MainWindow(QWidget* parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    // No clients for now → listWidget will remain empty
 }
 
-MainWindow::~MainWindow() {
+MainWindow::~MainWindow()
+{
     delete ui;
 }
 
-void MainWindow::refreshClients() {
-    ui->listWidget->clear();
-    QStringList items;
-    // for (const auto& client : clients) {
-    //     items << QString::fromStdString(client->getClientIP());
-    // }
-    ui->listWidget->addItems(items);
+void MainWindow::onClientConnected(const QString& clientInfo)
+{
+    // Add to client list widget if not already present
+    QListWidget* listWidget = ui->clientListWidget;
+    bool exists = false;
+    for (int i = 0; i < listWidget->count(); ++i) 
+    {
+        if (listWidget->item(i)->text() == clientInfo) 
+        {
+            exists = true;
+            break;
+        }
+    }
+    if (!exists)
+    {
+        listWidget->addItem(clientInfo);
+    }
+    // Optionally, add a tab for the client
+    addClientTab(clientInfo);
 }
+
+void MainWindow::connectToServerApp(QObject* serverApp) 
+{
+    // Connect the signal from ServerApp to this slot
+    connect(serverApp, SIGNAL(clientConnected(QString)), this, SLOT(onClientConnected(QString)));
+}
+
+// void MainWindow::refreshClients() {
+//     ui->clientListWidget->clear();
+//     QStringList items;
+//     // for (const auto& client : clients) {
+//     //     items << QString::fromStdString(client->getClientIP());
+//     // }
+//     ui->clientListWidget->addItems(items);
+// }
 
 void MainWindow::addClientTab(const QString& clientId) {
     if (clientTabs.contains(clientId)) return;
@@ -38,48 +65,6 @@ void MainWindow::addClientTab(const QString& clientId) {
     clientTabs[clientId] = outList;
 
     // emit sendToClient(clientId, msg);  // you define a signal sendToClient(...)
-}
-
-void MainWindow::appendClientOutput(const QString& clientId, const QString& text) {
-    if (!clientTabs.contains(clientId)) return;
-    clientTabs[clientId]->addItem(text);
-}
-
-void MainWindow::addClientTab(const QString& clientId) {
-    if (clientTabs.contains(clientId)) return;
-
-    // 1) Créer le widget de page et son layout
-    QWidget* page = new QWidget;
-    QVBoxLayout* vlay = new QVBoxLayout(page);
-
-    // 2) La zone d’output
-    QListWidget* outList = new QListWidget;
-    vlay->addWidget(outList);
-
-    // 3) La ligne de commande + bouton d’envoi
-    QHBoxLayout* hlay = new QHBoxLayout;
-    QLabel* lbl = new QLabel("Message :");
-    QLineEdit* edit = new QLineEdit;
-    QPushButton* btn = new QPushButton("Envoyer");
-    hlay->addWidget(lbl);
-    hlay->addWidget(edit);
-    hlay->addWidget(btn);
-    vlay->addLayout(hlay);
-
-    // 4) Ajouter dans le QTabWidget
-    int idx = ui->tabWidget->addTab(page, clientId);
-    ui->tabWidget->setCurrentIndex(idx);
-
-    // 5) Sauvegarder la QListWidget pour mises à jour futures
-    clientTabs[clientId] = outList;
-
-    // 6) Connecter le bouton pour émettre un signal vers ton contrôleur réseau
-    connect(btn, &QPushButton::clicked, this, [this, clientId, edit]() {
-        QString msg = edit->text();
-        if (msg.isEmpty()) return;
-        emit sendToClient(clientId, msg);  // tu définis un signal sendToClient(...)
-        edit->clear();
-    });
 }
 
 void MainWindow::appendClientOutput(const QString& clientId, const QString& text) {
