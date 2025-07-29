@@ -44,16 +44,6 @@
      <property name="layoutDirection">
       <enum>Qt::LeftToRight</enum>
      </property>
-     <item>
-      <property name="text">
-       <string>Client 1</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Client 2</string>
-      </property>
-     </item>
     </widget>
     <widget class="QPushButton" name="selectionButton">
      <property name="geometry">
