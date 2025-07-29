@@ -5,6 +5,7 @@
 #include "MainWindow.hpp"
 
 #include <QApplication>
+#include <QThread>
 #include <thread>
 #include <iostream>
 #include <windows.h>
@@ -14,15 +15,23 @@ int main(int argc, char *argv[])
     // 0) Initialize WSA once, before any LPTF_Socket calls
     LPTF_Socket::initialize();
 
-    // 1) Launch the server in a detached thread
-    std::thread([](){
-        ServerApp server("../../.env");  // m_serverSocket will be constructed after WSAStartup
-        server.run();
-    }).detach();
-
-    // Start the Qt GUI (just the window, without server/UI logic for now)
     QApplication app(argc, argv);
     MainWindow w;
+
+    // Create ServerApp with QThread
+    QThread* serverThread = new QThread;
+    ServerApp* serverApp = new ServerApp("../../.env");
+    serverApp->moveToThread(serverThread);
+
+    // Connect signal/slot with Qt5 syntax
+    QObject::connect(serverApp, &ServerApp::clientConnected, &w, &MainWindow::onClientConnected);
+    QObject::connect(serverThread, &QThread::started, serverApp, &ServerApp::run);
+    QObject::connect(&app, &QApplication::aboutToQuit, serverThread, &QThread::quit);
+    QObject::connect(serverThread, &QThread::finished, serverApp, &QObject::deleteLater);
+    QObject::connect(serverThread, &QThread::finished, serverThread, &QObject::deleteLater);
+
+    serverThread->start();
+
     w.show();
     return app.exec();
 }
