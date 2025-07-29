@@ -1,24 +1,36 @@
-#pragma once
+#ifndef SERVERAPP_HPP
+#define SERVERAPP_HPP
+
 #include "../utils/EnvLoader.hpp"
 #include "../utils/LPTF/LPTF_Socket.hpp"
 #include "../utils/LPTF/LPTF_Packet.hpp"
-#include "../utils/LPTF/LPTF_PacketType.hpp"  
 
 #include <vector>
 #include <memory>
 #include <string>
+#include <iostream>
+#include <cstring>
 
-// Forward declaration pour ne pas inclure Qt ici
-class MainWindow;
+#ifdef _WIN32
+  #include <winsock2.h>
+  #include <ws2tcpip.h>
+  #pragma comment(lib, "ws2_32.lib")
+#else
+  #include <sys/select.h>
+#endif
 
 class ServerApp {
 public:
-    explicit ServerApp(const std::string& envFilePath, MainWindow* ui);
+    // charge .env, init Winsock, bind & listen
+    explicit ServerApp(const std::string& envFilePath);
     ~ServerApp();
-    int run();
+
+    void run();
+
 private:
     LPTF_Socket m_serverSocket;
     std::vector<std::unique_ptr<LPTF_Socket>> m_clients;
-    std::string m_envPath;
-    MainWindow* m_ui { nullptr };
+    std::string m_envFilePath;
 };
+
+#endif // SERVERAPP_HPP
