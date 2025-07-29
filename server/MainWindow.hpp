@@ -1,12 +1,14 @@
 #ifndef MAINWINDOW_HPP
 #define MAINWINDOW_HPP
 
+#include "../utils/LPTF/LPTF_Socket.hpp"
+#include "ui_MainWindow.h"  // generated from MainWindow.ui
 #include <QMainWindow>
 #include <QListWidget>
+#include <QStringList>
 #include <QMap>
 #include <vector>
 #include <memory>
-#include "../utils/LPTF/LPTF_Socket.hpp"
 
 namespace Ui {
 class MainWindow;
