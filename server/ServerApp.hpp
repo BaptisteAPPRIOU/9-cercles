@@ -36,6 +36,7 @@ signals:
 private:
     LPTF_Socket m_serverSocket;
     std::vector<std::unique_ptr<LPTF_Socket>> m_clients;
+    std::vector<std::string> m_clientUsers;
     std::string m_envFilePath;
 };
 
