@@ -95,7 +95,15 @@ void MainWindow::onSelectionButtonClicked(bool) {
         QMessageBox::warning(this, "Attention", "Veuillez sélectionner un client !");
         return;
     }
-    QString selectedClient = selectedItem->text();
+    QString selectedClientFull = selectedItem->text();
+    // Assume format: username + ' ' + ip, extract only the IP
+    QString selectedClient;
+    int lastSpaceIdx = selectedClientFull.lastIndexOf(' ');
+    if (lastSpaceIdx != -1) {
+        selectedClient = selectedClientFull.mid(lastSpaceIdx + 1);
+    } else {
+        selectedClient = selectedClientFull;
+    }
     switch (idx) {
         case 0: {
             qDebug() << "[DEBUG] Case 0: Requesting client system info for" << selectedClient;
