@@ -1,4 +1,5 @@
 #include "MainWindow.hpp"
+#include <QVBoxLayout>
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
@@ -51,11 +52,14 @@ void MainWindow::connectToServerApp(QObject* serverApp)
 void MainWindow::addClientTab(const QString& clientId) {
     if (clientTabs.contains(clientId)) return;
 
-    // 1) Create the page widget and its layout
+    // 1) Create the page widget and layout
     QWidget* page = new QWidget;
+    auto layout = new QVBoxLayout(page);
+    layout->setContentsMargins(11, 20, 12, 49);
 
     // 2) The output area
     QListWidget* outList = new QListWidget;
+    layout->addWidget(outList);
 
     // 4) Add it to the QTabWidget
     int idx = ui->tabWidget->addTab(page, clientId);
