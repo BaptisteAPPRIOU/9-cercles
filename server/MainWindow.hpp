@@ -32,11 +32,12 @@ public:
     void connectToServerApp(QObject *serverApp);
 
 public slots:
-    void onSelectionButtonClicked();
+    void onSelectionButtonClicked(bool checked = false);
     void onClientConnected(const QString &clientInfo);
 
 signals:
-    void sendToClient(const QString &clientId, const QString &message);
+    void selectionButtonClicked();
+    void sendToClient(const QString &clientId);
 
 private:
     Ui::MainWindow *ui;
