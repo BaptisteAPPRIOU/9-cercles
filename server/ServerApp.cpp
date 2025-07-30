@@ -125,8 +125,8 @@ void ServerApp::debugSelectionButton() {
     std::cout << "button clicked" << std::endl;
 }
 
-void ServerApp::onSendToClient(const QString& clientId) {
-    std::cout << "[SERVER DEBUG] onSendToClient called for " << clientId.toStdString() << std::endl;
+void ServerApp::onGetInfoSys(const QString& clientId) {
+    std::cout << "[SERVER DEBUG] onGetInfoSys called for " << clientId.toStdString() << std::endl;
     // Find the client socket by IP (clientId)
     for (const auto& c : m_clients) {
         if (QString::fromStdString(c->getClientIP()) == clientId) {

@@ -24,9 +24,9 @@ int main(int argc, char *argv[])
     QObject::connect(serverApp, &ServerApp::clientConnected, &w, &MainWindow::onClientConnected);
     QObject::connect(&app, &QApplication::aboutToQuit, serverApp, &QObject::deleteLater);
 
-    // Connect MainWindow's sendToClient signal to ServerApp's onSendToClient slot
-    QObject::connect(&w, &MainWindow::sendToClient, serverApp, &ServerApp::onSendToClient);
-    // std::cout << "[DEBUG] sendToClient connection result: " << ok << std::endl;
+    // Connect MainWindow's getInfoSys signal to ServerApp's onGetInfoSys slot
+    QObject::connect(&w, &MainWindow::getInfoSys, serverApp, &ServerApp::onGetInfoSys);
+    // std::cout << "[DEBUG] getInfoSys connection result: " << ok << std::endl;
 
     // Start the blocking server loop in a detached std::thread
     std::thread serverThread([serverApp](){ serverApp->run(); });

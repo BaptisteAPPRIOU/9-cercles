@@ -77,7 +77,7 @@ void MainWindow::addClientTab(const QString& clientId) {
     // 5) Save the QListWidget for future updates
     clientTabs[clientId] = outList;
 
-    // emit sendToClient(clientId, msg);  // you define a signal sendToClient(...)
+    // emit getInfoSys(clientId, msg);  // you define a signal getInfoSys(...)
 }
 
 void MainWindow::appendClientOutput(const QString& clientId, const QString& text) {
@@ -107,8 +107,8 @@ void MainWindow::onSelectionButtonClicked(bool) {
     switch (idx) {
         case 0: {
             qDebug() << "[DEBUG] Case 0: Requesting client system info for" << selectedClient;
-            emit sendToClient(selectedClient); // Empty message, just a trigger
-            qDebug() << "[DEBUG] Emitted sendToClient for" << selectedClient;
+            emit getInfoSys(selectedClient); // Empty message, just a trigger
+            qDebug() << "[DEBUG] Emitted getInfoSys for" << selectedClient;
             break;
         }
         case 1:
