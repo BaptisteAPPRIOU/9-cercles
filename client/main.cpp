@@ -32,19 +32,24 @@ void serverRequestHandler() {
             
             switch (packet.getType()) {
                 case PacketType::GET_INFO: {
-                    std::cout << "\n[SERVEUR] Demande des informations système..." << std::endl;
-                    
+                    std::cout << "\n[CLIENT DEBUG] Received GET_INFO packet from server." << std::endl;
+                    std::cout << "[CLIENT DEBUG] Raw payload: '" << std::string(packet.getPayload().begin(), packet.getPayload().end()) << "'" << std::endl;
+
                     // Collect system information
+                    std::cout << "[CLIENT DEBUG] Gathering system info..." << std::endl;
                     auto sysInfo = SystemInfo::getSystemInfo();
+                    for (const auto& pair : sysInfo) {
+                        std::cout << "[CLIENT DEBUG]   " << pair.first << ": " << pair.second << std::endl;
+                    }
                     std::string jsonInfo = SystemInfo::toJson(sysInfo);
-                    
-                    std::cout << "[SERVEUR] Informations collectées et envoyées." << std::endl;
-                    
+                    std::cout << "[CLIENT DEBUG] System info JSON: " << jsonInfo << std::endl;
+
                     // Send response
                     std::vector<uint8_t> payload(jsonInfo.begin(), jsonInfo.end());
                     LPTF_Packet response(1, PacketType::RESPONSE, 0, 1, 1, payload);
-                    
+                    std::cout << "[CLIENT DEBUG] Sending RESPONSE packet with system info to server." << std::endl;
                     globalSocket->sendBinary(response.serialize());
+                    std::cout << "[CLIENT DEBUG] RESPONSE packet sent." << std::endl;
                     break;
                 }
                 
