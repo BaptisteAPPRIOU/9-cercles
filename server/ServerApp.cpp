@@ -55,48 +55,68 @@ void ServerApp::run()
             break;
         }
 
-        // New connection?
+        // New connection: store socket and placeholder for username
         if (FD_ISSET(listenFd, &readfds))
         {
             auto newCl = m_serverSocket.acceptSocket();
-            std::string ip = newCl->getClientIP();
-            std::cout << "Client connecté: " << ip << "\n";
+            std::cout << "Client connecté: " << newCl->getClientIP() << " (awaiting user info)\n";
             m_clients.push_back(std::move(newCl));
-            // Emit signal to notify UI
-            emit clientConnected(QString::fromStdString(ip));
+            m_clientUsers.push_back(std::string());
         }
 
         // Read from existing clients
-        for (auto it = m_clients.begin(); it != m_clients.end();)
+        for (size_t idx = 0; idx < m_clients.size(); )
         {
-            int fd = (*it)->getSocketFd();
+            auto &client = m_clients[idx];
+            int fd = client->getSocketFd();
             if (FD_ISSET(fd, &readfds))
             {
                 try
                 {
-                    auto data = (*it)->recvBinary();
+                    auto data = client->recvBinary();
                     auto pkt = LPTF_Packet::deserialize(data);
                     std::string msg(pkt.getPayload().begin(), pkt.getPayload().end());
-                    std::cout << "Reçu de " << (*it)->getClientIP() << " : " << msg << "\n";
-
+                    // Handle initial GET_INFO to extract actual username
+                    if (pkt.getType() == PacketType::GET_INFO)
+                    {
+                        const std::string key = "\"username\":\"";
+                        std::string username;
+                        auto pos = msg.find(key);
+                        if (pos != std::string::npos)
+                        {
+                            pos += key.length();
+                            auto end = msg.find('"', pos);
+                            if (end != std::string::npos)
+                                username = msg.substr(pos, end - pos);
+                        }
+                        m_clientUsers[idx] = username;
+                        std::string ip = client->getClientIP();
+                        std::string clientInfo = username + " " + ip;
+                        std::cout << "Client info received: " << clientInfo << "\n";
+                        emit clientConnected(QString::fromStdString(clientInfo));
+                        ++idx;
+                        continue;
+                    }
+                    std::cout << "Reçu de " << client->getClientIP() << " : " << msg << "\n";
                     // Echo back
                     std::string resp = "ACK: " + msg;
                     std::vector<uint8_t> pay(resp.begin(), resp.end());
                     LPTF_Packet ack(1, PacketType::RESPONSE, 0, 0, 0, pay);
-                    (*it)->sendBinary(ack.serialize());
-
-                    ++it;
+                    client->sendBinary(ack.serialize());
+                    ++idx;
                 }
                 catch (const std::exception &e)
                 {
-                    std::cout << "Déconnexion de " << (*it)->getClientIP()
+                    std::cout << "Déconnexion de " << client->getClientIP()
                               << " (" << e.what() << ")\n";
-                    it = m_clients.erase(it);
+                    m_clients.erase(m_clients.begin() + idx);
+                    m_clientUsers.erase(m_clientUsers.begin() + idx);
+                    // do not increment idx, next element shifts into current idx
                 }
             }
             else
             {
-                ++it;
+                ++idx;
             }
         }
     }
