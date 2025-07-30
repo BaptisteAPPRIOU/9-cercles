@@ -105,16 +105,25 @@ void ServerApp::debugSelectionButton() {
     std::cout << "button clicked" << std::endl;
 }
 
-void ServerApp::onSendToClient(const QString& clientId, const QString& message) {
-    std::cout << "[SERVER DEBUG] onSendToClient called for " << clientId.toStdString() << " with message: " << message.toStdString() << std::endl;
+void ServerApp::onSendToClient(const QString& clientId) {
+    std::cout << "[SERVER DEBUG] onSendToClient called for " << clientId.toStdString() << std::endl;
     // Find the client socket by IP (clientId)
     for (const auto& c : m_clients) {
         if (QString::fromStdString(c->getClientIP()) == clientId) {
             std::cout << "[SERVER DEBUG] Found client socket for " << clientId.toStdString() << std::endl;
-            std::vector<uint8_t> payload(message.toStdString().begin(), message.toStdString().end());
-            LPTF_Packet pkt(1, PacketType::GET_INFO, 0, 0, 0, payload);
-            c->sendBinary(pkt.serialize());
+            // Send GET_INFO request with empty payload
+            LPTF_Packet request(1, PacketType::GET_INFO, 0, 1, 1, {});
+            c->sendBinary(request.serialize());
             std::cout << "[SERVER DEBUG] Sent GET_INFO packet to client " << clientId.toStdString() << std::endl;
+            // Receive response from client
+            try {
+                auto data = c->recvBinary();
+                auto packet = LPTF_Packet::deserialize(data);
+                std::string payload(packet.getPayload().begin(), packet.getPayload().end());
+                std::cout << "[SERVER DEBUG] Received response from client " << clientId.toStdString() << ": " << payload << std::endl;
+            } catch (const std::exception& e) {
+                std::cerr << "[SERVER DEBUG] Error receiving or deserializing response from client " << clientId.toStdString() << ": " << e.what() << std::endl;
+            }
             return;
         }
     }

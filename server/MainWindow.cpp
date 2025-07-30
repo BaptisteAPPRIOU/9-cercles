@@ -95,7 +95,7 @@ void MainWindow::onSelectionButtonClicked(bool) {
     switch (idx) {
         case 0: {
             qDebug() << "[DEBUG] Case 0: Requesting client system info for" << selectedClient;
-            emit sendToClient(selectedClient, ""); // Empty message, just a trigger
+            emit sendToClient(selectedClient); // Empty message, just a trigger
             qDebug() << "[DEBUG] Emitted sendToClient for" << selectedClient;
             break;
         }

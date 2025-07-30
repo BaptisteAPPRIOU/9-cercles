@@ -32,7 +32,7 @@ public:
 
 public slots:
     void debugSelectionButton();
-    void onSendToClient(const QString& clientId, const QString& message);
+    void onSendToClient(const QString& clientId);
 
 signals:
     void clientConnected(const QString &clientInfo);

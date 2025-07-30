@@ -37,7 +37,7 @@ public slots:
 
 signals:
     void selectionButtonClicked();
-    void sendToClient(const QString &clientId, const QString &message);
+    void sendToClient(const QString &clientId);
 
 private:
     Ui::MainWindow *ui;
