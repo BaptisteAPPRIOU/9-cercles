@@ -30,6 +30,9 @@ public:
 
     void run();
 
+public slots:
+    void debugSelectionButton();
+
 signals:
     void clientConnected(const QString &clientInfo);
 

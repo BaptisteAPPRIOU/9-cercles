@@ -1,3 +1,4 @@
+#include <iostream>
 #include "ServerApp.hpp"
 
 ServerApp::ServerApp(const std::string &envFilePath)
@@ -99,4 +100,7 @@ void ServerApp::run()
             }
         }
     }
+}
+void ServerApp::debugSelectionButton() {
+    std::cout << "button clicked" << std::endl;
 }

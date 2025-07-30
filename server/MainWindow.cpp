@@ -4,7 +4,15 @@ MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
+    qDebug() << "[DEBUG] MainWindow constructor: before setupUi";
     ui->setupUi(this);
+    qDebug() << "[DEBUG] MainWindow constructor: after setupUi";
+    qDebug() << "[DEBUG] MainWindow constructor: before connect";
+    bool ok = connect(ui->selectionButton, &QPushButton::clicked, this, &MainWindow::onSelectionButtonClicked);
+    qDebug() << "[DEBUG] MainWindow constructor: connect result =" << ok;
+    connect(ui->selectionButton, &QPushButton::clicked, [](){
+        qDebug() << "[DEBUG] Lambda: selectionButton clicked!";
+    });
 }
 
 MainWindow::~MainWindow()
@@ -72,10 +80,13 @@ void MainWindow::appendClientOutput(const QString& clientId, const QString& text
     clientTabs[clientId]->addItem(text);
 }
 
-void MainWindow::onSelectionButtonClicked() {
- int idx = ui->comboBox->currentIndex();
- QListWidgetItem* selectedItem = ui->clientListWidget->currentItem();
-     if (!selectedItem) {
+void MainWindow::onSelectionButtonClicked(bool) {
+    qDebug() << "[DEBUG] onSelectionButtonClicked called";
+    qDebug() << "[DEBUG] About to emit selectionButtonClicked";
+    emit selectionButtonClicked();
+    int idx = ui->comboBox->currentIndex();
+    QListWidgetItem* selectedItem = ui->clientListWidget->currentItem();
+    if (!selectedItem) {
         QMessageBox::warning(this, "Attention", "Veuillez sélectionner un client !");
         return;
     }

@@ -30,6 +30,9 @@ int main(int argc, char *argv[])
     QObject::connect(serverThread, &QThread::finished, serverApp, &QObject::deleteLater);
     QObject::connect(serverThread, &QThread::finished, serverThread, &QObject::deleteLater);
 
+    // Connect MainWindow's selectionButtonClicked signal to ServerApp's debugSelectionButton slot
+    QObject::connect(&w, &MainWindow::selectionButtonClicked, serverApp, &ServerApp::debugSelectionButton, Qt::QueuedConnection);
+
     serverThread->start();
 
     w.show();
