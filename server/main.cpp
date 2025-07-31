@@ -5,7 +5,6 @@
 #include "MainWindow.hpp"
 
 #include <QApplication>
-#include <QThread>
 #include <thread>
 #include <iostream>
 #include <windows.h>
@@ -20,23 +19,18 @@ int main(int argc, char *argv[])
 
     // Create ServerApp and move it to a QThread
     ServerApp *serverApp = new ServerApp("../../.env");
-    QThread *serverThread = new QThread;
-    serverApp->moveToThread(serverThread);
 
     // Connect ServerApp signals to UI
     QObject::connect(serverApp, &ServerApp::clientConnected, &w, &MainWindow::onClientConnected);
     QObject::connect(serverApp, &ServerApp::clientResponse, &w, &MainWindow::onClientResponse);
     QObject::connect(&app, &QApplication::aboutToQuit, serverApp, &QObject::deleteLater);
-    QObject::connect(&app, &QApplication::aboutToQuit, serverThread, &QThread::quit);
-    QObject::connect(serverThread, &QThread::finished, serverThread, &QObject::deleteLater);
 
     // Connect MainWindow's getInfoSys signal to ServerApp's onGetInfoSys slot
     QObject::connect(&w, &MainWindow::getInfoSys, serverApp, &ServerApp::onGetInfoSys);
 
     // Start the blocking server loop in the QThread
-    QObject::connect(serverThread, &QThread::started, serverApp, [serverApp]()
-                     { serverApp->run(); });
-    serverThread->start();
+    std::thread serverThread([serverApp](){ serverApp->run(); });
+    serverThread.detach();
 
     w.show();
     return app.exec();
