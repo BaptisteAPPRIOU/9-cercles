@@ -8,6 +8,13 @@
 #include <QStringList>
 #include <QMap>
 #include <QMessageBox>
+#include <QString>
+#include <QByteArray>
+#include <QPushButton>
+#include <QDebug>
+
+#include "../utils/LPTF/LPTF_Packet.hpp"
+#include "../utils/LPTF/LPTF_PacketType.hpp"
 
 #include <vector>
 #include <memory>
@@ -25,27 +32,24 @@ public:
     ~MainWindow();
 
     void addClientTab(const QString &clientId);
-    void appendClientOutput(const QString &clientId, const QString &text);
     void refreshClients();
 
-    // Call this after constructing MainWindow to connect to ServerApp
-    void connectToServerApp(QObject *serverApp);
+signals:
+    void sendToClient(const QString &clientId, const QByteArray &data);
+    void getInfoSys(const QString &clientId);
+    void requestProcessList(const QString &clientId, bool namesOnly);
 
 public slots:
-    void onSelectionButtonClicked(bool checked = false);
-    void onClientConnected(const QString &clientInfo);
-    void onClientResponse(const QString &clientId, const QString &response);
-
-private:
-    void addResponseToTab(const QString &clientId, const QString &response);
-
-signals:
-    void selectionButtonClicked();
-    void getInfoSys(const QString &clientId);
+    void onSelectionButtonClicked();
+    void onClientConnected(const QString &clientInfo, uint32_t sessionId);
+    void onClientResponse(const QString& clientId, const QString& text);
+    void appendClientOutput(const QString &clientId, const QString &text);
 
 private:
     Ui::MainWindow *ui;
     QMap<QString, QListWidget *> clientTabs;
+    QMap<QString, uint32_t> m_sessionIds;   // sessionId par clientId
+    uint32_t               m_nextPacketId = 0;
 };
 
 #endif // MAINWINDOW_HPP
