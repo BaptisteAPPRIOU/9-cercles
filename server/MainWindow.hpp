@@ -34,6 +34,10 @@ public:
 public slots:
     void onSelectionButtonClicked(bool checked = false);
     void onClientConnected(const QString &clientInfo);
+    void onClientResponse(const QString &clientId, const QString &response);
+
+private:
+    void addResponseToTab(const QString &clientId, const QString &response);
 
 signals:
     void selectionButtonClicked();

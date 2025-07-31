@@ -1,5 +1,6 @@
 #include <iostream>
 #include "ServerApp.hpp"
+#include <QCoreApplication>
 
 ServerApp::ServerApp(const std::string &envFilePath)
     : m_envFilePath(envFilePath)
@@ -31,6 +32,9 @@ void ServerApp::run()
 
     while (true)
     {
+        // Allow queued signals/slots to be processed
+        QCoreApplication::processEvents();
+
         // Prepare fd_set
         fd_set readfds;
         FD_ZERO(&readfds);
@@ -65,7 +69,7 @@ void ServerApp::run()
         }
 
         // Read from existing clients
-        for (size_t idx = 0; idx < m_clients.size(); )
+        for (size_t idx = 0; idx < m_clients.size();)
         {
             auto &client = m_clients[idx];
             int fd = client->getSocketFd();
@@ -94,6 +98,7 @@ void ServerApp::run()
                         std::string clientInfo = username + " " + ip;
                         std::cout << "Client info received: " << clientInfo << "\n";
                         emit clientConnected(QString::fromStdString(clientInfo));
+                        emit clientResponse(QString::fromStdString(clientInfo), QString::fromStdString(msg));
                         ++idx;
                         continue;
                     }
@@ -121,32 +126,71 @@ void ServerApp::run()
         }
     }
 }
-void ServerApp::debugSelectionButton() {
+void ServerApp::debugSelectionButton()
+{
     std::cout << "button clicked" << std::endl;
 }
 
-void ServerApp::onGetInfoSys(const QString& clientId) {
+void ServerApp::onGetInfoSys(const QString &clientId)
+{
     std::cout << "[SERVER DEBUG] onGetInfoSys called for " << clientId.toStdString() << std::endl;
-    // Find the client socket by IP (clientId)
-    for (const auto& c : m_clients) {
-        if (QString::fromStdString(c->getClientIP()) == clientId) {
+    for (const auto &c : m_clients)
+    {
+        if (QString::fromStdString(c->getClientIP()) == clientId)
+        {
             std::cout << "[SERVER DEBUG] Found client socket for " << clientId.toStdString() << std::endl;
-            // Send GET_INFO request with empty payload
             LPTF_Packet request(1, PacketType::GET_INFO, 0, 1, 1, {});
             c->sendBinary(request.serialize());
             std::cout << "[SERVER DEBUG] Sent GET_INFO packet to client " << clientId.toStdString() << std::endl;
-            // Receive response from client
-            try {
-                auto data = c->recvBinary();
-                auto packet = LPTF_Packet::deserialize(data);
-                std::string payload(packet.getPayload().begin(), packet.getPayload().end());
-                std::cout << "[SERVER DEBUG] Received response from client " << clientId.toStdString() << ": " << payload << std::endl;
-            } catch (const std::exception& e) {
-                std::cerr << "[SERVER DEBUG] Error receiving or deserializing response from client " << clientId.toStdString() << ": " << e.what() << std::endl;
-            }
             return;
         }
     }
     std::cout << "[SERVER DEBUG] No client found for " << clientId.toStdString() << std::endl;
-    return;
 }
+
+// void ServerApp::onGetInfoSys(const QString& clientId) {
+//     std::cout << "[SERVER DEBUG] onGetInfoSys called for " << clientId.toStdString() << std::endl;
+//     // Find the client socket by IP (clientId)
+//     for (const auto& c : m_clients) {
+//         if (QString::fromStdString(c->getClientIP()) == clientId) {
+//             std::cout << "[SERVER DEBUG] Found client socket for " << clientId.toStdString() << std::endl;
+//             // Send GET_INFO request with empty payload
+//             LPTF_Packet request(1, PacketType::GET_INFO, 0, 1, 1, {});
+//             c->sendBinary(request.serialize());
+//             std::cout << "[SERVER DEBUG] Sent GET_INFO packet to client " << clientId.toStdString() << std::endl;
+//             // Receive response from client
+//             std::string payload;
+//             try {
+//                 auto data = c->recvBinary();
+//                 auto packet = LPTF_Packet::deserialize(data);
+//                 payload = std::string(packet.getPayload().begin(), packet.getPayload().end());
+//                 std::cout << "[SERVER DEBUG] Received response from client " << clientId.toStdString() << ": " << payload << std::endl;
+//             } catch (const std::exception& e) {
+//                 std::cerr << "[SERVER DEBUG] Error receiving or deserializing response from client " << clientId.toStdString() << ": " << e.what() << std::endl;
+//             }
+//             try {
+//                 // Extract username from payload (assume JSON: {"username":"..."})
+//                 std::string username;
+//                 const std::string key = "\"username\":\"";
+//                 auto pos = payload.find(key);
+//                 if (pos != std::string::npos) {
+//                     pos += key.length();
+//                     auto end = payload.find('"', pos);
+//                     if (end != std::string::npos)
+//                         username = payload.substr(pos, end - pos);
+//                 }
+//                 std::string clientip = c->getClientIP();
+//                 std::string userAndIp = username + " " + clientip;
+//                 // Emit signal with response
+//                 emit clientResponse(QString::fromStdString(userAndIp), QString::fromStdString(payload));
+//                 std::cout << "[SERVER DEBUG] Emitted clientResponse signal for " << userAndIp << std::endl;
+//                 std::cout << "[SERVER DEBUG] Response payload: " << payload << std::endl;
+//             } catch (const std::exception& e) {
+//                 std::cerr << "[SERVER DEBUG] Error emitting clientResponse signal: " << e.what() << std::endl;
+//             }
+//             return;
+//         }
+//     }
+//     std::cout << "[SERVER DEBUG] No client found for " << clientId.toStdString() << std::endl;
+//     return;
+// }

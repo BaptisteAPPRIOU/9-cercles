@@ -32,11 +32,11 @@ public:
 
 public slots:
     void debugSelectionButton();
-    void onGetInfoSys(const QString& clientId);
+    void onGetInfoSys(const QString &clientId);
 
 signals:
     void clientConnected(const QString &clientInfo);
-
+    void clientResponse(const QString &userAndIp, const QString &response);
 
 private:
     LPTF_Socket m_serverSocket;

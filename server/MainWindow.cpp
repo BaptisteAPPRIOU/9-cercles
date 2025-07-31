@@ -80,9 +80,18 @@ void MainWindow::addClientTab(const QString& clientId) {
     // emit getInfoSys(clientId, msg);  // you define a signal getInfoSys(...)
 }
 
-void MainWindow::appendClientOutput(const QString& clientId, const QString& text) {
-    if (!clientTabs.contains(clientId)) return;
-    clientTabs[clientId]->addItem(text);
+void MainWindow::appendClientOutput(const QString& userAndIp, const QString& text) {
+    if (!clientTabs.contains(userAndIp)) return;
+    clientTabs[userAndIp]->addItem(text);
+}
+
+void MainWindow::onClientResponse(const QString& userAndIp, const QString& response) {
+    addResponseToTab(userAndIp, response);
+}
+
+void MainWindow::addResponseToTab(const QString& userAndIp, const QString& response) {
+    if (!clientTabs.contains(userAndIp)) return;
+    clientTabs[userAndIp]->addItem(response);
 }
 
 void MainWindow::onSelectionButtonClicked(bool) {
