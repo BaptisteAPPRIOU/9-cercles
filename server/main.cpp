@@ -8,27 +8,37 @@
 #include <thread>
 #include <iostream>
 #include <windows.h>
+#include <QDebug>
 
 int main(int argc, char *argv[])
 {
-    // 0) Initialize WSA once, before any LPTF_Socket calls
     LPTF_Socket::initialize();
 
     QApplication app(argc, argv);
     MainWindow w;
 
-    // Create ServerApp and run it in a background std::thread
-    ServerApp* serverApp = new ServerApp("../../.env");
+    ServerApp *serverApp = new ServerApp("../../.env");
 
-    // Connect ServerApp signals to UI
-    QObject::connect(serverApp, &ServerApp::clientConnected, &w, &MainWindow::onClientConnected);
+    // Connexions
+    bool ok1 = QObject::connect(serverApp, &ServerApp::clientConnected,
+                                &w, &MainWindow::onClientConnected);
+    qDebug() << "connect clientConnected→onClientConnected:" << ok1;
+
+    bool ok2 = QObject::connect(serverApp, &ServerApp::clientResponse,
+                                &w, &MainWindow::onClientResponse);
+    qDebug() << "connect clientResponse→onClientResponse:" << ok2;
+
+    bool ok3 = QObject::connect(&w, &MainWindow::getInfoSys,
+                                serverApp, &ServerApp::onGetInfoSys);
+    qDebug() << "connect getInfoSys→onGetInfoSys:" << ok3;
+
+    bool ok4 = QObject::connect(&w, &MainWindow::requestProcessList,
+                                serverApp, &ServerApp::onRequestProcessList);
+    qDebug() << "connect requestProcessList→onRequestProcessList:" << ok4;
+
     QObject::connect(&app, &QApplication::aboutToQuit, serverApp, &QObject::deleteLater);
 
-    // Connect MainWindow's sendToClient signal to ServerApp's onSendToClient slot
-    QObject::connect(&w, &MainWindow::sendToClient, serverApp, &ServerApp::onSendToClient);
-    // std::cout << "[DEBUG] sendToClient connection result: " << ok << std::endl;
-
-    // Start the blocking server loop in a detached std::thread
+    // Thread bloquant serveur
     std::thread serverThread([serverApp](){ serverApp->run(); });
     serverThread.detach();
 
