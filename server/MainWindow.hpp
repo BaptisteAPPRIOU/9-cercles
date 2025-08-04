@@ -1,28 +1,21 @@
 #ifndef MAINWINDOW_HPP
 #define MAINWINDOW_HPP
 
-#include "../utils/LPTF/LPTF_Socket.hpp"
-#include "ui_MainWindow.h" // generated from MainWindow.ui
+#include "ui_MainWindow.h"
 #include <QMainWindow>
 #include <QListWidget>
-#include <QStringList>
 #include <QMap>
 #include <QMessageBox>
 #include <QString>
 #include <QByteArray>
 #include <QPushButton>
 #include <QDebug>
+#include <QVBoxLayout>
 
 #include "../utils/LPTF/LPTF_Packet.hpp"
 #include "../utils/LPTF/LPTF_PacketType.hpp"
 
-#include <vector>
-#include <memory>
-
-namespace Ui
-{
-    class MainWindow;
-}
+namespace Ui { class MainWindow; }
 
 class MainWindow : public QMainWindow
 {
@@ -32,7 +25,6 @@ public:
     ~MainWindow();
 
     void addClientTab(const QString &clientId);
-    void refreshClients();
 
 signals:
     void sendToClient(const QString &clientId, const QByteArray &data);
@@ -50,8 +42,8 @@ public slots:
 private:
     Ui::MainWindow *ui;
     QMap<QString, QListWidget *> clientTabs;
-    QMap<QString, uint32_t> m_sessionIds;   // sessionId par clientId
-    uint32_t               m_nextPacketId = 0;
+    QMap<QString, uint32_t> m_sessionIds;
+    uint32_t m_nextPacketId = 0;
 };
 
 #endif // MAINWINDOW_HPP
