@@ -3,6 +3,9 @@
 
 #include "PacketType.hpp"
 
+
+
+#include "../utils/PacketType.hpp"
 #include <vector>
 #include <string>
 #include <cstdint>
