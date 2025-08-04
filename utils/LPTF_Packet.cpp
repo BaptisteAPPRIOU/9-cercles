@@ -1,6 +1,8 @@
 #include "LPTF_Packet.hpp"
 #include "PacketType.hpp"
 
+using namespace std;
+
 LPTF_Packet::LPTF_Packet(
     uint8_t version,
     PacketType type,
@@ -31,7 +33,7 @@ LPTF_Packet &LPTF_Packet::operator=(const LPTF_Packet &other)
 LPTF_Packet::~LPTF_Packet() = default;
 
 // Serialize the packet to a byte vector
-vector<uint8_t> LPTF_Packet::serialize() const
+std::vector<uint8_t> LPTF_Packet::serialize() const
 {
     vector<uint8_t> data;
     data.push_back(version);
@@ -83,4 +85,4 @@ PacketType LPTF_Packet::getType() const { return type; }
 uint8_t LPTF_Packet::getFlags() const { return flags; }
 uint16_t LPTF_Packet::getPacketId() const { return packetId; }
 uint32_t LPTF_Packet::getSessionId() const { return sessionId; }
-const vector<uint8_t> &LPTF_Packet::getPayload() const { return payload; }
+const std::vector<uint8_t> &LPTF_Packet::getPayload() const { return payload; }
