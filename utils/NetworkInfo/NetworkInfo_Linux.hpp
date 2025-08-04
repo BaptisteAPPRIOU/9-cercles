@@ -5,6 +5,8 @@
 #define NETWORKINFO_LINUX_HPP
 
 #include "INetworkInfo.hpp"
+#include <cstring>
+#include <sstream>
 #if defined(__linux__) || (defined(__unix__) && !defined(__APPLE__))
 #include <ifaddrs.h>
 #include <netinet/in.h>

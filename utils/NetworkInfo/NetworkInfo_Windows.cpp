@@ -1,7 +1,5 @@
 // NetworkInfo_Windows.cpp
 #include "NetworkInfo_Windows.hpp"
-#include <sstream>
-#include <iomanip>
 
 namespace
 {

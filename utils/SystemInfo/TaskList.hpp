@@ -1,21 +1,23 @@
-#ifndef PROCESS_LISTER_HPP
-#define PROCESS_LISTER_HPP
+#pragma once
 
 #include <string>
 #include <vector>
+
 #include <cstdio>
 #include <cstdlib>
-#include <sstream> 
+#include <sstream>
 #include <iostream>
-#include <algorithm>
 
 class ProcessLister {
 public:
+    ProcessLister() = default;
+    ~ProcessLister() = default;
+    ProcessLister(const ProcessLister&) = default;
+    ProcessLister& operator=(const ProcessLister&) = default;
+
     bool listProcesses() const;
     std::vector<std::string> getExeList() const;
 
 private:
-    const std::string command = "tasklist";
+    static const std::string command;
 };
-
-#endif // PROCESS_LISTER_HPP

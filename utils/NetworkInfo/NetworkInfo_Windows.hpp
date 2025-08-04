@@ -5,7 +5,8 @@
 #include <iphlpapi.h>
 #include <ws2tcpip.h>
 
-
+#include <sstream>
+#include <iomanip>
 
 /**
  * @class NetworkInfo_Windows

@@ -22,6 +22,14 @@ public:
     static std::string getUsername();
     static std::string getOperatingSystem();
     static std::string toJson(const std::map<std::string, std::string>& info);
+
+private:
+#ifdef _WIN32
+    static std::string getWindowsProductAndBuild();
+    static std::string getWindowsVersionViaRTL();
+    static std::string smartWindowsVersionName(const std::string& prod, const std::string& buildStr);
+#endif
 };
+
 
 #endif // SYSTEMINFO_HPP

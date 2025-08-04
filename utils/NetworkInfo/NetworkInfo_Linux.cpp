@@ -1,6 +1,4 @@
 #include "NetworkInfo_Linux.hpp"
-#include <cstring>
-#include <sstream>
 
 #if defined(__linux__) || (defined(__unix__) && !defined(__APPLE__))
 
