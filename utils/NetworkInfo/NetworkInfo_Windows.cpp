@@ -1,9 +1,15 @@
 // NetworkInfo_Windows.cpp
 #include "NetworkInfo_Windows.hpp"
+#include <sstream>
+#include <iomanip>
 
 namespace
 {
-    // Filters: skip virtual adapters, loopback, etc.
+    /**
+     * @brief Checks if the adapter is a physical interface.
+     * @param aa Pointer to the IP_ADAPTER_ADDRESSES structure.
+     * @return True if the adapter is a physical interface, false otherwise.
+     */
     bool isPhysical(const IP_ADAPTER_ADDRESSES *aa)
     {
         // Physical Ethernet or Wi-Fi, and interface UP
@@ -22,7 +28,6 @@ namespace
     }
 }
 
-// Implementation of NetworkInfo_Windows methods
 std::vector<std::string> NetworkInfo_Windows::getIPAddresses() const {
     std::vector<std::string> ips;
     ULONG outBufLen = 15000;
@@ -44,7 +49,6 @@ std::vector<std::string> NetworkInfo_Windows::getIPAddresses() const {
     return ips;
 }
 
-// Returns the list of MAC addresses of all network interfaces
 std::vector<std::string> NetworkInfo_Windows::getMACAddresses() const
 {
     std::vector<std::string> macs;
@@ -70,7 +74,6 @@ std::vector<std::string> NetworkInfo_Windows::getMACAddresses() const
     return macs;
 }
 
-// Returns the list of active IP addresses (those that are currently in use)
 std::vector<std::string> NetworkInfo_Windows::getActiveIPAddresses() const
 {
     std::vector<std::string> ips;
@@ -99,7 +102,6 @@ std::vector<std::string> NetworkInfo_Windows::getActiveIPAddresses() const
     return ips;
 }
 
-// Returns the list of active MAC addresses (those that are currently in use)
 std::vector<std::string> NetworkInfo_Windows::getActiveMACAddresses() const
 {
     std::vector<std::string> macs;

@@ -3,7 +3,6 @@
 
 #include <string>
 #include <vector>
-#include <iomanip>
 
 /**
  * @class INetworkInfo

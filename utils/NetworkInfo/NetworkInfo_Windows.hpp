@@ -1,21 +1,24 @@
 // NetworkInfo_Windows.hpp
-#ifndef NETWORKINFO_WINDOWS_HPP
-#define NETWORKINFO_WINDOWS_HPP
-
+#pragma once
 #include "INetworkInfo.hpp"
-
 #include <winsock2.h>
 #include <iphlpapi.h>
 #include <ws2tcpip.h>
-#include <sstream>
+
 
 
 /**
  * @class NetworkInfo_Windows
  * @brief Provides network information for Windows systems.
  */
-class NetworkInfo_Windows : public INetworkInfo {
+class NetworkInfo_Windows final : public INetworkInfo {
 public:
+    NetworkInfo_Windows() = default;
+    NetworkInfo_Windows(const NetworkInfo_Windows&) = default;
+    NetworkInfo_Windows& operator=(const NetworkInfo_Windows&) = default;
+    NetworkInfo_Windows(NetworkInfo_Windows&&) noexcept = default;
+    NetworkInfo_Windows& operator=(NetworkInfo_Windows&&) noexcept = default;
+    ~NetworkInfo_Windows() override = default;
     /**
      * @brief Gets all local IP addresses.
      * @return Vector of IP address strings.
@@ -40,5 +43,3 @@ public:
      */
     std::vector<std::string> getActiveMACAddresses() const override;
 };
-
-#endif

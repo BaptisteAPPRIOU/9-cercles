@@ -1,6 +1,9 @@
 // NetworkInfo_Linux.hpp
+#pragma once
+
 #ifndef NETWORKINFO_LINUX_HPP
 #define NETWORKINFO_LINUX_HPP
+
 #include "INetworkInfo.hpp"
 #if defined(__linux__) || (defined(__unix__) && !defined(__APPLE__))
 #include <ifaddrs.h>
@@ -10,8 +13,6 @@
 #include <net/if.h>
 #include <unistd.h>
 #endif
-#include <cstring>
-#include <sstream>
 
 
 /**
@@ -20,6 +21,13 @@
  */
 class NetworkInfo_Linux : public INetworkInfo {
 public:
+    NetworkInfo_Linux() = default;
+    NetworkInfo_Linux(const NetworkInfo_Linux&) = default;
+    NetworkInfo_Linux& operator=(const NetworkInfo_Linux&) = default;
+    NetworkInfo_Linux(NetworkInfo_Linux&&) noexcept = default;
+    NetworkInfo_Linux& operator=(NetworkInfo_Linux&&) noexcept = default;
+    ~NetworkInfo_Linux() override = default;
+
     /**
      * @brief Gets all local IP addresses.
      * @return Vector of IP address strings.
