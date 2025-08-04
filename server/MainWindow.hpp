@@ -11,6 +11,7 @@
 #include <QPushButton>
 #include <QDebug>
 #include <QVBoxLayout>
+#include <QInputDialog>
 
 #include "../utils/LPTF/LPTF_Packet.hpp"
 #include "../utils/LPTF/LPTF_PacketType.hpp"
@@ -25,6 +26,7 @@ public:
     ~MainWindow();
 
     void addClientTab(const QString &clientId);
+    void executeCommand(const QString &clientId);
 
 signals:
     void sendToClient(const QString &clientId, const QByteArray &data);
