@@ -10,15 +10,15 @@
 #include <windows.h>
 #endif
 
-class BashExec {
+class BashExec
+{
 public:
     // Executes a system command and writes the output to a hidden file.
     // Returns true if writing was successful.
-    static bool executeToFile(const std::string& command, const std::string& filePath);
+    static bool executeToFile(const std::string &command, const std::string &filePath);
 
     // Hides the specified file (Windows only).
-    static void hideFile(const std::string& filePath);
-
+    static void hideFile(const std::string &filePath);
 };
 
 #endif // BASHEXEC_HPP
