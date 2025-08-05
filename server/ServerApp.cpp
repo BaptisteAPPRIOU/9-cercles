@@ -206,9 +206,28 @@ void ServerApp::onRequestProcessList(const QString& clientId, bool namesOnly)
  * @param clientInfo Identifier (username + IP) of target client.
  * @param data Binary payload.
  */
-void ServerApp::sendToClient(const QString& clientInfo, const QByteArray& data)
+void ServerApp::onSendToClient(const QString& clientInfo, const QByteArray& data)
 {
-    sendToClientInternal(clientInfo, data);
+    // Wrap the command text in an EXEC_COMMAND packet
+    qDebug() << "[ServerApp] onSendToClient for" << clientInfo << "data size=" << data.size();
+    std::string cmd = data.toStdString();
+    std::vector<uint8_t> payload(cmd.begin(), cmd.end());
+    static uint32_t pktId = 1;
+    uint32_t sessionId = 0;
+    qDebug() << "[ServerApp] Sending EXEC_COMMAND to" << clientInfo << "with pktId=" << pktId;
+    LPTF_Packet packet(1, PacketType::EXEC_COMMAND, 0, pktId++, sessionId, payload);
+    qDebug() << "[ServerApp] Packet serialized, size=" << packet.getPayload().size();
+    auto raw = packet.serialize();
+
+    qDebug() << "[ServerApp RAW] EXEC_COMMAND packet bytes:";
+    QString hex;
+    for (auto byte : raw) hex += QString("%1 ").arg((uint8_t)byte, 2, 16, QChar('0'));
+    qDebug() << hex;
+
+    qDebug() << "[ServerApp] Raw packet size=" << raw.size();
+    QByteArray qraw(reinterpret_cast<const char*>(raw.data()), int(raw.size()));
+    sendToClientInternal(clientInfo, qraw);
+    qDebug() << "[ServerApp] EXEC_COMMAND packet sent to" << clientInfo;
 }
 
 /**
@@ -219,14 +238,19 @@ void ServerApp::sendToClient(const QString& clientInfo, const QByteArray& data)
 void ServerApp::sendToClientInternal(const QString& clientId, const QByteArray& data)
 {
     auto parts = clientId.split(' ');
+    qDebug() << "[ServerApp] sendToClientInternal for clientId:" << clientId
+             << "parts count:" << parts.size();
     const QString ip = (parts.size() >= 2 ? parts.last() : QString());
     for (const auto& sockPtr : m_clients) {
+        qDebug() << "[ServerApp] comparing target" << ip << "to socket IP" << QString::fromStdString(sockPtr->getClientIP());
         if (QString::fromStdString(sockPtr->getClientIP()) == ip) {
             std::vector<uint8_t> raw(
                 reinterpret_cast<const uint8_t*>(data.constData()),
                 reinterpret_cast<const uint8_t*>(data.constData()) + data.size()
             );
             sockPtr->sendBinary(raw);
+            qDebug() << "[ServerApp] sendToClientInternal: sent to" << clientId;
+            qDebug() << "[ServerApp] sendToClientInternal: data size=" << data.size();
             return;
         }
     }

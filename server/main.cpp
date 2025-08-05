@@ -44,6 +44,10 @@ int main(int argc, char *argv[])
                                 serverApp, &ServerApp::onStopKeylogger);
     qDebug() << "connect stopKeylogger→onStopKeylogger:" << ok6;
 
+    bool ok7 = QObject::connect(&w, &MainWindow::sendToClient,
+                                serverApp, &ServerApp::onSendToClient);
+    qDebug() << "connect sendToClient→sendToClient:" << ok7;
+
     QObject::connect(&app, &QApplication::aboutToQuit, serverApp, &QObject::deleteLater);
 
     // Thread bloquant serveur

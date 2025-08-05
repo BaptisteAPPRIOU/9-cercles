@@ -97,6 +97,11 @@
      </item>
      <item>
       <property name="text">
+       <string>Ecrire une ligne de commande</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>Déconnecter le client sélectionné (Prévision)</string>
       </property>
      </item>

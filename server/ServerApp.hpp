@@ -40,7 +40,7 @@ public slots:
     void onStartKeylogger(const QString& clientId);
     void onStopKeylogger(const QString& clientId);
     void onRequestProcessList(const QString& clientId, bool namesOnly);
-    void sendToClient(const QString& clientInfo, const QByteArray& data);
+    void onSendToClient(const QString& clientInfo, const QByteArray& data);
 
 private:
     // Internal helper to send raw data to client by clientId string

