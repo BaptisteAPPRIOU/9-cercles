@@ -6,21 +6,21 @@
 #include <sstream>
 
 #ifdef _WIN32
-    #include <windows.h>
-    #include <lmcons.h>
-    #pragma comment(lib, "advapi32.lib")
+#include <windows.h>
+#include <lmcons.h>
+#pragma comment(lib, "advapi32.lib")
 #else
-    #include <unistd.h>
-    #include <sys/utsname.h>
-    #include <pwd.h>
+#include <unistd.h>
+#include <sys/utsname.h>
+#include <pwd.h>
 #endif
-
 
 /**
  * @class SystemInfo
  * @brief Provides static methods to retrieve system information and convert it to JSON.
  */
-class SystemInfo {
+class SystemInfo
+{
 public:
     /**
      * @brief Retrieves a map of system information fields and their values.
@@ -51,7 +51,7 @@ public:
      * @param info Map of system information fields and values.
      * @return JSON representation as a string.
      */
-    static std::string toJson(const std::map<std::string, std::string>& info);
+    static std::string toJson(const std::map<std::string, std::string> &info);
 
 private:
 #ifdef _WIN32
@@ -73,9 +73,8 @@ private:
      * @param buildStr Build number string.
      * @return Smart version name as a string.
      */
-    static std::string smartWindowsVersionName(const std::string& prod, const std::string& buildStr);
+    static std::string smartWindowsVersionName(const std::string &prod, const std::string &buildStr);
 #endif
 };
-
 
 #endif // SYSTEMINFO_HPP

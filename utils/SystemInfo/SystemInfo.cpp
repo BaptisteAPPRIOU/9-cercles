@@ -1,50 +1,58 @@
 #include "SystemInfo.hpp"
 
-std::map<std::string, std::string> SystemInfo::getSystemInfo() {
+std::map<std::string, std::string> SystemInfo::getSystemInfo()
+{
     std::map<std::string, std::string> info;
-    
+
     info["hostname"] = getHostname();
     info["username"] = getUsername();
     info["operating_system"] = getOperatingSystem();
-    
+
     return info;
 }
 
-std::string SystemInfo::getHostname() {
+std::string SystemInfo::getHostname()
+{
 #ifdef _WIN32
     char hostname[MAX_COMPUTERNAME_LENGTH + 1];
     DWORD size = sizeof(hostname);
-    if (GetComputerNameA(hostname, &size)) {
+    if (GetComputerNameA(hostname, &size))
+    {
         return std::string(hostname);
     }
     return "Unknown";
 #else
     char hostname[256];
-    if (gethostname(hostname, sizeof(hostname)) == 0) {
+    if (gethostname(hostname, sizeof(hostname)) == 0)
+    {
         return std::string(hostname);
     }
     return "Unknown";
 #endif
 }
 
-std::string SystemInfo::getUsername() {
+std::string SystemInfo::getUsername()
+{
 #ifdef _WIN32
     char username[UNLEN + 1];
     DWORD size = sizeof(username);
-    if (GetUserNameA(username, &size)) {
+    if (GetUserNameA(username, &size))
+    {
         return std::string(username);
     }
     return "Unknown";
 #else
-    struct passwd* pw = getpwuid(getuid());
-    if (pw) {
+    struct passwd *pw = getpwuid(getuid());
+    if (pw)
+    {
         return std::string(pw->pw_name);
     }
     return "Unknown";
 #endif
 }
 
-std::string SystemInfo::getOperatingSystem() {
+std::string SystemInfo::getOperatingSystem()
+{
 #ifdef _WIN32
     // Try registry first
     std::string prodAndBuild = getWindowsProductAndBuild();
@@ -57,7 +65,8 @@ std::string SystemInfo::getOperatingSystem() {
     return "Windows (version unknown)";
 #else
     struct utsname unameData;
-    if (uname(&unameData) == 0) {
+    if (uname(&unameData) == 0)
+    {
         std::ostringstream oss;
         oss << unameData.sysname << " " << unameData.release;
         return oss.str();
@@ -67,11 +76,13 @@ std::string SystemInfo::getOperatingSystem() {
 }
 
 #ifdef _WIN32
-std::string SystemInfo::getWindowsProductAndBuild() {
+std::string SystemInfo::getWindowsProductAndBuild()
+{
     HKEY hKey;
-    if (RegOpenKeyExA(HKEY_LOCAL_MACHINE, 
-                      "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion", 
-                      0, KEY_READ, &hKey) == ERROR_SUCCESS) {
+    if (RegOpenKeyExA(HKEY_LOCAL_MACHINE,
+                      "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion",
+                      0, KEY_READ, &hKey) == ERROR_SUCCESS)
+    {
         char productName[256] = {0};
         char buildNumber[64] = {0};
         DWORD size = sizeof(productName);
@@ -80,17 +91,21 @@ std::string SystemInfo::getWindowsProductAndBuild() {
         bool hasBuildNumber = false;
         std::string result;
 
-        if (RegQueryValueExA(hKey, "ProductName", NULL, NULL, (LPBYTE)productName, &size) == ERROR_SUCCESS) {
+        if (RegQueryValueExA(hKey, "ProductName", NULL, NULL, (LPBYTE)productName, &size) == ERROR_SUCCESS)
+        {
             result = std::string(productName);
             hasProductName = true;
         }
-        if (RegQueryValueExA(hKey, "CurrentBuild", NULL, NULL, (LPBYTE)buildNumber, &buildSize) == ERROR_SUCCESS) {
+        if (RegQueryValueExA(hKey, "CurrentBuild", NULL, NULL, (LPBYTE)buildNumber, &buildSize) == ERROR_SUCCESS)
+        {
             hasBuildNumber = true;
         }
         RegCloseKey(hKey);
 
-        if (hasProductName) {
-            if (hasBuildNumber) {
+        if (hasProductName)
+        {
+            if (hasBuildNumber)
+            {
                 result = smartWindowsVersionName(result, buildNumber);
             }
             return result;
@@ -99,12 +114,15 @@ std::string SystemInfo::getWindowsProductAndBuild() {
     return "";
 }
 
-std::string SystemInfo::smartWindowsVersionName(const std::string& prod, const std::string& buildStr) {
+std::string SystemInfo::smartWindowsVersionName(const std::string &prod, const std::string &buildStr)
+{
     int build = std::stoi(buildStr);
     std::string result = prod;
     // Windows 11 detection logic
-    if (build >= 22000) {
-        if (result.find("Windows 10") != std::string::npos) {
+    if (build >= 22000)
+    {
+        if (result.find("Windows 10") != std::string::npos)
+        {
             if (result.find("Pro") != std::string::npos)
                 result = build >= 26000 ? "Windows 11 Pro 24H2" : "Windows 11 Pro";
             else if (result.find("Home") != std::string::npos)
@@ -113,32 +131,43 @@ std::string SystemInfo::smartWindowsVersionName(const std::string& prod, const s
                 result = build >= 26000 ? "Windows 11 24H2" : "Windows 11";
         }
         result += " (Build " + buildStr + ")";
-    } else {
+    }
+    else
+    {
         result += " (Build " + buildStr + ")";
     }
     return result;
 }
 
-std::string SystemInfo::getWindowsVersionViaRTL() {
+std::string SystemInfo::getWindowsVersionViaRTL()
+{
     HMODULE hMod = GetModuleHandleW(L"kernel32.dll");
-    if (hMod) {
-        typedef NTSTATUS (WINAPI* RtlGetVersionPtr)(PRTL_OSVERSIONINFOW);
+    if (hMod)
+    {
+        typedef NTSTATUS(WINAPI * RtlGetVersionPtr)(PRTL_OSVERSIONINFOW);
         RtlGetVersionPtr RtlGetVersion = (RtlGetVersionPtr)GetProcAddress(hMod, "RtlGetVersion");
-        if (RtlGetVersion) {
-            RTL_OSVERSIONINFOW osvi = { 0 };
+        if (RtlGetVersion)
+        {
+            RTL_OSVERSIONINFOW osvi = {0};
             osvi.dwOSVersionInfoSize = sizeof(osvi);
-            if (RtlGetVersion(&osvi) == 0) {
+            if (RtlGetVersion(&osvi) == 0)
+            {
                 std::ostringstream oss;
-                if (osvi.dwMajorVersion == 10 && osvi.dwBuildNumber >= 22000) {
+                if (osvi.dwMajorVersion == 10 && osvi.dwBuildNumber >= 22000)
+                {
                     if (osvi.dwBuildNumber >= 26000)
                         oss << "Windows 11 24H2 (Build " << osvi.dwBuildNumber << ")";
                     else if (osvi.dwBuildNumber >= 22621)
                         oss << "Windows 11 22H2 (Build " << osvi.dwBuildNumber << ")";
                     else
                         oss << "Windows 11 (Build " << osvi.dwBuildNumber << ")";
-                } else if (osvi.dwMajorVersion == 10) {
+                }
+                else if (osvi.dwMajorVersion == 10)
+                {
                     oss << "Windows 10 (Build " << osvi.dwBuildNumber << ")";
-                } else {
+                }
+                else
+                {
                     oss << "Windows " << osvi.dwMajorVersion << "." << osvi.dwMinorVersion
                         << " (Build " << osvi.dwBuildNumber << ")";
                 }
@@ -150,17 +179,20 @@ std::string SystemInfo::getWindowsVersionViaRTL() {
 }
 #endif
 
-std::string SystemInfo::toJson(const std::map<std::string, std::string>& info) {
+std::string SystemInfo::toJson(const std::map<std::string, std::string> &info)
+{
     std::ostringstream json;
     json << "{";
-    
+
     bool first = true;
-    for (const auto& pair : info) {
-        if (!first) json << ",";
+    for (const auto &pair : info)
+    {
+        if (!first)
+            json << ",";
         json << "\"" << pair.first << "\":\"" << pair.second << "\"";
         first = false;
     }
-    
+
     json << "}";
     return json.str();
 }

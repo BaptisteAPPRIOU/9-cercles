@@ -8,12 +8,12 @@
 #include <sstream>
 #include <iostream>
 
-
 /**
  * @class ProcessLister
  * @brief Provides methods to list running processes and retrieve executable names.
  */
-class ProcessLister {
+class ProcessLister
+{
 public:
     /**
      * @brief Default constructor.
@@ -29,14 +29,14 @@ public:
      * @brief Copy constructor.
      * @param other The ProcessLister to copy from.
      */
-    ProcessLister(const ProcessLister&) = default;
+    ProcessLister(const ProcessLister &) = default;
 
     /**
      * @brief Copy assignment operator.
      * @param other The ProcessLister to copy from.
      * @return Reference to this ProcessLister.
      */
-    ProcessLister& operator=(const ProcessLister&) = default;
+    ProcessLister &operator=(const ProcessLister &) = default;
 
     /**
      * @brief Lists running processes using a system command.
