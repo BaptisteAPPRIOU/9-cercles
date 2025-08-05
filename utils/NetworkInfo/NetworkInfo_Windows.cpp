@@ -1,9 +1,13 @@
 // NetworkInfo_Windows.cpp
-#include "../utils/NetworkInfo_Windows.hpp"
+#include "NetworkInfo_Windows.hpp"
 
 namespace
 {
-    // Filters: skip virtual adapters, loopback, etc.
+    /**
+     * @brief Checks if the adapter is a physical interface.
+     * @param aa Pointer to the IP_ADAPTER_ADDRESSES structure.
+     * @return True if the adapter is a physical interface, false otherwise.
+     */
     bool isPhysical(const IP_ADAPTER_ADDRESSES *aa)
     {
         // Physical Ethernet or Wi-Fi, and interface UP
@@ -22,18 +26,22 @@ namespace
     }
 }
 
-// Implementation of NetworkInfo_Windows methods
-std::vector<std::string> NetworkInfo_Windows::getIPAddresses() const {
+std::vector<std::string> NetworkInfo_Windows::getIPAddresses() const
+{
     std::vector<std::string> ips;
     ULONG outBufLen = 15000;
-    IP_ADAPTER_ADDRESSES* adapters = (IP_ADAPTER_ADDRESSES*)malloc(outBufLen);
+    IP_ADAPTER_ADDRESSES *adapters = (IP_ADAPTER_ADDRESSES *)malloc(outBufLen);
 
-    if (GetAdaptersAddresses(AF_INET, 0, nullptr, adapters, &outBufLen) == NO_ERROR) {
-        for (auto* aa = adapters; aa; aa = aa->Next) {
-            for (IP_ADAPTER_UNICAST_ADDRESS* ua = aa->FirstUnicastAddress; ua; ua = ua->Next) {
-                if (ua->Address.lpSockaddr->sa_family == AF_INET) {
+    if (GetAdaptersAddresses(AF_INET, 0, nullptr, adapters, &outBufLen) == NO_ERROR)
+    {
+        for (auto *aa = adapters; aa; aa = aa->Next)
+        {
+            for (IP_ADAPTER_UNICAST_ADDRESS *ua = aa->FirstUnicastAddress; ua; ua = ua->Next)
+            {
+                if (ua->Address.lpSockaddr->sa_family == AF_INET)
+                {
                     char ip[INET_ADDRSTRLEN];
-                    sockaddr_in* sa = (sockaddr_in*)ua->Address.lpSockaddr;
+                    sockaddr_in *sa = (sockaddr_in *)ua->Address.lpSockaddr;
                     inet_ntop(AF_INET, &(sa->sin_addr), ip, sizeof(ip));
                     ips.push_back(ip);
                 }
@@ -44,7 +52,6 @@ std::vector<std::string> NetworkInfo_Windows::getIPAddresses() const {
     return ips;
 }
 
-// Returns the list of MAC addresses of all network interfaces
 std::vector<std::string> NetworkInfo_Windows::getMACAddresses() const
 {
     std::vector<std::string> macs;
@@ -70,7 +77,6 @@ std::vector<std::string> NetworkInfo_Windows::getMACAddresses() const
     return macs;
 }
 
-// Returns the list of active IP addresses (those that are currently in use)
 std::vector<std::string> NetworkInfo_Windows::getActiveIPAddresses() const
 {
     std::vector<std::string> ips;
@@ -99,7 +105,6 @@ std::vector<std::string> NetworkInfo_Windows::getActiveIPAddresses() const
     return ips;
 }
 
-// Returns the list of active MAC addresses (those that are currently in use)
 std::vector<std::string> NetworkInfo_Windows::getActiveMACAddresses() const
 {
     std::vector<std::string> macs;

