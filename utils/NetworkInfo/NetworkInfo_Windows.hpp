@@ -12,13 +12,14 @@
  * @class NetworkInfo_Windows
  * @brief Provides network information for Windows systems.
  */
-class NetworkInfo_Windows final : public INetworkInfo {
+class NetworkInfo_Windows final : public INetworkInfo
+{
 public:
     NetworkInfo_Windows() = default;
-    NetworkInfo_Windows(const NetworkInfo_Windows&) = default;
-    NetworkInfo_Windows& operator=(const NetworkInfo_Windows&) = default;
-    NetworkInfo_Windows(NetworkInfo_Windows&&) noexcept = default;
-    NetworkInfo_Windows& operator=(NetworkInfo_Windows&&) noexcept = default;
+    NetworkInfo_Windows(const NetworkInfo_Windows &) = default;
+    NetworkInfo_Windows &operator=(const NetworkInfo_Windows &) = default;
+    NetworkInfo_Windows(NetworkInfo_Windows &&) noexcept = default;
+    NetworkInfo_Windows &operator=(NetworkInfo_Windows &&) noexcept = default;
     ~NetworkInfo_Windows() override = default;
     /**
      * @brief Gets all local IP addresses.

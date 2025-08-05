@@ -5,12 +5,12 @@
 #include "INetworkInfo.hpp"
 #include <memory>
 
-
 /**
  * @class NetworkInfoFactory
  * @brief Factory for creating platform-specific INetworkInfo implementations.
  */
-class NetworkInfoFactory {
+class NetworkInfoFactory
+{
 public:
     /**
      * @brief Creates a platform-specific INetworkInfo instance.

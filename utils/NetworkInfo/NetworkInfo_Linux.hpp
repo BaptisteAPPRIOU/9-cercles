@@ -16,18 +16,18 @@
 #include <unistd.h>
 #endif
 
-
 /**
  * @class NetworkInfo_Linux
  * @brief Provides network information for Linux systems.
  */
-class NetworkInfo_Linux : public INetworkInfo {
+class NetworkInfo_Linux : public INetworkInfo
+{
 public:
     NetworkInfo_Linux() = default;
-    NetworkInfo_Linux(const NetworkInfo_Linux&) = default;
-    NetworkInfo_Linux& operator=(const NetworkInfo_Linux&) = default;
-    NetworkInfo_Linux(NetworkInfo_Linux&&) noexcept = default;
-    NetworkInfo_Linux& operator=(NetworkInfo_Linux&&) noexcept = default;
+    NetworkInfo_Linux(const NetworkInfo_Linux &) = default;
+    NetworkInfo_Linux &operator=(const NetworkInfo_Linux &) = default;
+    NetworkInfo_Linux(NetworkInfo_Linux &&) noexcept = default;
+    NetworkInfo_Linux &operator=(NetworkInfo_Linux &&) noexcept = default;
     ~NetworkInfo_Linux() override = default;
 
     /**
@@ -54,6 +54,5 @@ public:
      */
     std::vector<std::string> getActiveMACAddresses() const override;
 };
-
 
 #endif // NETWORKINFO_LINUX_HPP

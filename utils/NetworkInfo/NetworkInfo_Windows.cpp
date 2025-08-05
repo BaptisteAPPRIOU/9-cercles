@@ -26,17 +26,22 @@ namespace
     }
 }
 
-std::vector<std::string> NetworkInfo_Windows::getIPAddresses() const {
+std::vector<std::string> NetworkInfo_Windows::getIPAddresses() const
+{
     std::vector<std::string> ips;
     ULONG outBufLen = 15000;
-    IP_ADAPTER_ADDRESSES* adapters = (IP_ADAPTER_ADDRESSES*)malloc(outBufLen);
+    IP_ADAPTER_ADDRESSES *adapters = (IP_ADAPTER_ADDRESSES *)malloc(outBufLen);
 
-    if (GetAdaptersAddresses(AF_INET, 0, nullptr, adapters, &outBufLen) == NO_ERROR) {
-        for (auto* aa = adapters; aa; aa = aa->Next) {
-            for (IP_ADAPTER_UNICAST_ADDRESS* ua = aa->FirstUnicastAddress; ua; ua = ua->Next) {
-                if (ua->Address.lpSockaddr->sa_family == AF_INET) {
+    if (GetAdaptersAddresses(AF_INET, 0, nullptr, adapters, &outBufLen) == NO_ERROR)
+    {
+        for (auto *aa = adapters; aa; aa = aa->Next)
+        {
+            for (IP_ADAPTER_UNICAST_ADDRESS *ua = aa->FirstUnicastAddress; ua; ua = ua->Next)
+            {
+                if (ua->Address.lpSockaddr->sa_family == AF_INET)
+                {
                     char ip[INET_ADDRSTRLEN];
-                    sockaddr_in* sa = (sockaddr_in*)ua->Address.lpSockaddr;
+                    sockaddr_in *sa = (sockaddr_in *)ua->Address.lpSockaddr;
                     inet_ntop(AF_INET, &(sa->sin_addr), ip, sizeof(ip));
                     ips.push_back(ip);
                 }

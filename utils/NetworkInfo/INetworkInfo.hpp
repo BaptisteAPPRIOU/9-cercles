@@ -8,7 +8,8 @@
  * @class INetworkInfo
  * @brief Interface for retrieving network information (IP and MAC addresses).
  */
-class INetworkInfo {
+class INetworkInfo
+{
 public:
     /**
      * @brief Virtual destructor.
