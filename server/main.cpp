@@ -51,7 +51,8 @@ int main(int argc, char *argv[])
     QObject::connect(&app, &QApplication::aboutToQuit, serverApp, &QObject::deleteLater);
 
     // Thread bloquant serveur
-    std::thread serverThread([serverApp](){ serverApp->run(); });
+    std::thread serverThread([serverApp]()
+                             { serverApp->run(); });
     serverThread.detach();
 
     w.show();

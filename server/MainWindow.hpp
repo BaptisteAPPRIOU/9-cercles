@@ -16,7 +16,10 @@
 #include "../utils/LPTF/LPTF_Packet.hpp"
 #include "../utils/LPTF/LPTF_PacketType.hpp"
 
-namespace Ui { class MainWindow; }
+namespace Ui
+{
+    class MainWindow;
+}
 
 class MainWindow : public QMainWindow
 {
@@ -38,7 +41,7 @@ signals:
 public slots:
     void onSelectionButtonClicked();
     void onClientConnected(const QString &clientInfo, uint32_t sessionId);
-    void onClientResponse(const QString& clientId, const QString& text);
+    void onClientResponse(const QString &clientId, const QString &text);
     void appendClientOutput(const QString &clientId, const QString &text);
 
 private:

