@@ -9,7 +9,8 @@
  * @class LPTF_Packet
  * @brief Represents a packet in the LPTF protocol, with serialization and deserialization support.
  */
-class LPTF_Packet {
+class LPTF_Packet
+{
 public:
     /**
      * @brief Constructs a packet with the given parameters.
@@ -26,34 +27,33 @@ public:
         uint8_t flags,
         uint16_t packetId,
         uint32_t sessionId,
-        const std::vector<uint8_t>& payload
-    );
+        const std::vector<uint8_t> &payload);
 
     /**
      * @brief Copy constructor.
      * @param other Packet to copy from.
      */
-    LPTF_Packet(const LPTF_Packet& other);
+    LPTF_Packet(const LPTF_Packet &other);
 
     /**
      * @brief Move constructor.
      * @param other Packet to move from.
      */
-    LPTF_Packet(LPTF_Packet&& other) noexcept;
+    LPTF_Packet(LPTF_Packet &&other) noexcept;
 
     /**
      * @brief Copy assignment operator.
      * @param other Packet to copy from.
      * @return Reference to this packet.
      */
-    LPTF_Packet& operator=(const LPTF_Packet& other);
+    LPTF_Packet &operator=(const LPTF_Packet &other);
 
     /**
      * @brief Move assignment operator.
      * @param other Packet to move from.
      * @return Reference to this packet.
      */
-    LPTF_Packet& operator=(LPTF_Packet&& other) noexcept;
+    LPTF_Packet &operator=(LPTF_Packet &&other) noexcept;
 
     /**
      * @brief Destructor.
@@ -72,7 +72,7 @@ public:
      * @return Deserialized LPTF_Packet object.
      * @throws std::runtime_error if the data is invalid.
      */
-    static LPTF_Packet deserialize(const std::vector<uint8_t>& data);
+    static LPTF_Packet deserialize(const std::vector<uint8_t> &data);
 
     /**
      * @brief Gets the protocol version.
@@ -108,7 +108,7 @@ public:
      * @brief Gets the packet payload.
      * @return Reference to the payload vector.
      */
-    const std::vector<uint8_t>& getPayload() const;
+    const std::vector<uint8_t> &getPayload() const;
 
 private:
     uint8_t version;

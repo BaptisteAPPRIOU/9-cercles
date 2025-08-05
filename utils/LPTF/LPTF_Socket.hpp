@@ -27,7 +27,8 @@
  *
  * Provides methods for socket creation, connection, data transmission, and reception.
  */
-class LPTF_Socket {
+class LPTF_Socket
+{
 public:
     /**
      * @brief Default constructor. Creates a new socket.
@@ -46,25 +47,25 @@ public:
     /**
      * @brief Deleted copy constructor (socket is unique).
      */
-    LPTF_Socket(const LPTF_Socket&) = delete;
+    LPTF_Socket(const LPTF_Socket &) = delete;
 
     /**
      * @brief Deleted copy assignment operator (socket is unique).
      */
-    LPTF_Socket& operator=(const LPTF_Socket&) = delete;
+    LPTF_Socket &operator=(const LPTF_Socket &) = delete;
 
     /**
      * @brief Move constructor.
      * @param other Socket to move from.
      */
-    LPTF_Socket(LPTF_Socket&& other) noexcept;
+    LPTF_Socket(LPTF_Socket &&other) noexcept;
 
     /**
      * @brief Move assignment operator.
      * @param other Socket to move from.
      * @return Reference to this socket.
      */
-    LPTF_Socket& operator=(LPTF_Socket&& other) noexcept;
+    LPTF_Socket &operator=(LPTF_Socket &&other) noexcept;
 
     /**
      * @brief Destructor. Closes the socket if open.
@@ -104,14 +105,14 @@ public:
      * @param ip IP address of the server.
      * @param port Port number of the server.
      */
-    void connectSocket(const std::string& ip, int port);
+    void connectSocket(const std::string &ip, int port);
 
     /**
      * @brief Sends a string message over the socket.
      * @param msg Message to send.
      * @return Number of bytes sent, or -1 on error.
      */
-    ssize_t sendMsg(const std::string& msg) const;
+    ssize_t sendMsg(const std::string &msg) const;
 
     /**
      * @brief Receives a string message from the socket.
@@ -130,7 +131,7 @@ public:
      * @param data Vector of bytes to send.
      * @return Number of bytes sent, or -1 on error.
      */
-    ssize_t sendBinary(const std::vector<uint8_t>& data) const;
+    ssize_t sendBinary(const std::vector<uint8_t> &data) const;
 
     /**
      * @brief Receives binary data from the socket.
