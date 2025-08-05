@@ -3,7 +3,6 @@
 #if defined(__linux__) || (defined(__unix__) && !defined(__APPLE__))
 
 namespace {
-    // Filter interface names: skip loopback, docker, virtual, etc.
     bool isPhysicalIface(const std::string& name) {
         return !(name == "lo" ||
                 name.find("docker") == 0 ||
@@ -14,7 +13,6 @@ namespace {
     }
 }
 
-// Returns the list of all local IP addresses
 std::vector<std::string> NetworkInfo_Linux::getIPAddresses() const {
     std::vector<std::string> result;
     struct ifaddrs* ifaddr = nullptr;
@@ -32,7 +30,6 @@ std::vector<std::string> NetworkInfo_Linux::getIPAddresses() const {
     return result;
 }
 
-// Returns the list of all MAC addresses of network interfaces
 std::vector<std::string> NetworkInfo_Linux::getMACAddresses() const {
     std::vector<std::string> macs;
     struct ifaddrs* ifaddr = nullptr;
@@ -52,7 +49,6 @@ std::vector<std::string> NetworkInfo_Linux::getMACAddresses() const {
     return macs;
 }
 
-// Returns the list of active IP addresses (up interfaces)
 std::vector<std::string> NetworkInfo_Linux::getActiveIPAddresses() const {
     std::vector<std::string> ips;
     struct ifaddrs* ifaddr = nullptr;
@@ -73,7 +69,6 @@ std::vector<std::string> NetworkInfo_Linux::getActiveIPAddresses() const {
     return ips;
 }
 
-// Returns the list of active MAC addresses (up interfaces)
 std::vector<std::string> NetworkInfo_Linux::getActiveMACAddresses() const {
     std::vector<std::string> macs;
     struct ifaddrs* ifaddr = nullptr;
@@ -87,7 +82,7 @@ std::vector<std::string> NetworkInfo_Linux::getActiveMACAddresses() const {
         if (!(ifa->ifa_flags & IFF_UP)) continue;
 
         struct sockaddr_ll* s = (struct sockaddr_ll*)ifa->ifa_addr;
-        if (s->sll_halen == 6) { // standard Ethernet MAC
+        if (s->sll_halen == 6) {
             std::ostringstream oss;
             for (int i = 0; i < 6; ++i) {
                 if (i) oss << ":";
@@ -99,5 +94,4 @@ std::vector<std::string> NetworkInfo_Linux::getActiveMACAddresses() const {
     freeifaddrs(ifaddr);
     return macs;
 }
-
 #endif

