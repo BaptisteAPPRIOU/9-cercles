@@ -18,6 +18,20 @@ ServerApp::ServerApp(const std::string &envFilePath)
 
     m_serverSocket.bindSocket(port);
     m_serverSocket.listenSocket();
+
+    // Initialize Postgres database connection
+
+    if (!m_dbManager.connect(
+            "localhost", // Hostname or IP of the Postgres server
+            5432,        // Default Postgres port
+            "postgres",  // Database name
+            "postgres",  // Database user
+            "Admin123"   // Database password
+            ))
+    {
+        std::cerr << "Failed to connect to database: " << m_dbManager.lastError().toStdString() << "\n";
+        throw std::runtime_error("Database connection failed");
+    }
 }
 
 /**
