@@ -11,7 +11,6 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 add_executable(server
     main.cpp
-    Menu.cpp Menu.hpp
     MainWindow.cpp MainWindow.hpp
     MainWindow.ui
     ServerApp.cpp
