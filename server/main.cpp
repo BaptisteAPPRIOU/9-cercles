@@ -5,11 +5,19 @@
 #include "MainWindow.hpp"
 
 #include <QApplication>
+#include <QTimer>
 #include <thread>
 #include <iostream>
 #include <windows.h>
 #include <QDebug>
 
+/**
+ * @brief Point d'entrée principal du serveur.
+ * 
+ * Lors du lancement, la GUI du serveur charge les informations
+ * de la base de données et les rend accessibles à l'utilisateur
+ * avec une distinction graphique entre les clients online et offline.
+ */
 int main(int argc, char *argv[])
 {
     LPTF_Socket::initialize();
@@ -48,6 +56,14 @@ int main(int argc, char *argv[])
                                 serverApp, &ServerApp::onSendToClient);
     qDebug() << "connect sendToClient→sendToClient:" << ok7;
 
+    bool ok8 = QObject::connect(serverApp, &ServerApp::clientDisconnected,
+                                &w, &MainWindow::onClientDisconnected);
+    qDebug() << "connect clientDisconnected→onClientDisconnected:" << ok8;
+
+    bool ok9 = QObject::connect(serverApp, &ServerApp::clientsLoadedFromDatabase,
+                                &w, &MainWindow::onClientsLoadedFromDatabase);
+    qDebug() << "connect clientsLoadedFromDatabase→onClientsLoadedFromDatabase:" << ok9;
+
     QObject::connect(&app, &QApplication::aboutToQuit, serverApp, &QObject::deleteLater);
 
     // Thread bloquant serveur
@@ -56,5 +72,11 @@ int main(int argc, char *argv[])
     serverThread.detach();
 
     w.show();
+    
+    // Load clients from database after GUI is shown
+    QTimer::singleShot(100, [serverApp]() {
+        serverApp->loadClientsFromDatabase();
+    });
+    
     return app.exec();
 }
