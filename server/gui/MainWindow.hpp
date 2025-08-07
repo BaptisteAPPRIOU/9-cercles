@@ -12,6 +12,8 @@
 #include <QDebug>
 #include <QVBoxLayout>
 #include <QInputDialog>
+#include <QMap>
+#include <QVariant>
 
 #include "../utils/LPTF/LPTF_Packet.hpp"
 #include "../utils/LPTF/LPTF_PacketType.hpp"
@@ -30,6 +32,8 @@ public:
 
     void addClientTab(const QString &clientId);
     void executeCommand(const QString &clientId);
+    void updateClientStatus(const QString &clientInfo, bool isOnline);
+    QListWidgetItem* findClientItem(const QString &clientInfo);
 
 signals:
     void sendToClient(const QString &clientId, const QByteArray &data);
@@ -43,6 +47,8 @@ public slots:
     void onClientConnected(const QString &clientInfo, uint32_t sessionId);
     void onClientResponse(const QString &clientId, const QString &text);
     void appendClientOutput(const QString &clientId, const QString &text);
+    void onClientDisconnected(const QString &clientInfo);
+    void onClientsLoadedFromDatabase(const QList<QMap<QString, QVariant>> &clients);
 
 private:
     Ui::MainWindow *ui;

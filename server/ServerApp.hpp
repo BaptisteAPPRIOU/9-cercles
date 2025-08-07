@@ -33,9 +33,14 @@ public:
 
     void run();
 
+    // New method to load clients from database
+    void loadClientsFromDatabase();
+
 signals:
     void clientConnected(const QString &clientInfo, uint32_t sessionId);
     void clientResponse(const QString &clientInfo, const QString &text);
+    void clientDisconnected(const QString &clientInfo);
+    void clientsLoadedFromDatabase(const QList<QMap<QString, QVariant>> &clients);
 
 public slots:
     void onGetInfoSys(const QString &clientId);
@@ -47,6 +52,8 @@ public slots:
 private:
     // Internal helper to send raw data to client by clientId string
     void sendToClientInternal(const QString &clientId, const QByteArray &data);
+
+    QPair<QString, QString> getUsernameAndIpFromClientInfo(const QString& clientInfo);
 
     // Helper pieces used by run() to keep it short:
     void prepareFdSet(fd_set &readfds, int &maxFd, int &listenFd);

