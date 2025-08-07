@@ -5,7 +5,7 @@
 #include "../utils/LPTF/LPTF_Socket.hpp"
 #include "../utils/LPTF/LPTF_Packet.hpp"
 
-#include "database/Postgres.hpp"
+#include "database/LPTF_Database.hpp"
 
 #include <vector>
 #include <memory>
@@ -64,7 +64,7 @@ private:
     std::vector<std::unique_ptr<LPTF_Socket>> m_clients;
     std::vector<std::string> m_clientUsers;
     std::string m_envFilePath;
-    Postgres m_dbManager;
+    LPTF_database m_dbManager;
 };
 
 #endif // SERVERAPP_HPP

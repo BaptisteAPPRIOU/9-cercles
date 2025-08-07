@@ -13,16 +13,14 @@ set(SERVER_SOURCES
     main.cpp
     ServerApp.cpp
     gui/MainWindow.cpp
-    gui/Menu.cpp
-    database/Postgres.cpp
+    database/LPTF_Database.cpp
     # Ajoute d'autres sources ici si besoin
 )
 
 set(SERVER_HEADERS
     ServerApp.hpp
     gui/MainWindow.hpp
-    gui/Menu.hpp
-    database/Postgres.hpp
+    database/LPTF_Database.hpp
 )
 
 set(SERVER_UIS
