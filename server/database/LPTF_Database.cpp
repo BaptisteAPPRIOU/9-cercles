@@ -1,13 +1,13 @@
-#include "Postgres.hpp"
+#include "LPTF_database.hpp"
 
 
-Postgres::Postgres()
+LPTF_database::LPTF_database()
     : connectionName_("my_connection")
 {
     db_ = QSqlDatabase::addDatabase("QPSQL", connectionName_);
 }
 
-Postgres::~Postgres()
+LPTF_database::~LPTF_database()
 {
     if (db_.isOpen()) db_.close();
     QSqlDatabase::removeDatabase(connectionName_);
@@ -16,7 +16,7 @@ Postgres::~Postgres()
 // --- Canonical (Coplien) ---
 
 // Constructeur de copie
-Postgres::Postgres(const Postgres& other)
+LPTF_database::LPTF_database(const LPTF_database& other)
     : connectionName_(other.connectionName_)
 {
     db_ = QSqlDatabase::addDatabase("QPSQL", connectionName_);
@@ -24,7 +24,7 @@ Postgres::Postgres(const Postgres& other)
 }
 
 // Opérateur d'affectation de copie
-Postgres& Postgres::operator=(const Postgres& other)
+LPTF_database& LPTF_database::operator=(const LPTF_database& other)
 {
     if (this != &other) {
         if (db_.isOpen()) db_.close();
@@ -36,14 +36,14 @@ Postgres& Postgres::operator=(const Postgres& other)
 }
 
 // Move constructor
-Postgres::Postgres(Postgres&& other) noexcept
+LPTF_database::LPTF_database(LPTF_database&& other) noexcept
     : db_(std::move(other.db_)), connectionName_(std::move(other.connectionName_))
 {
     // On laisse other dans un état valide mais vide
 }
 
 // Move assignment
-Postgres& Postgres::operator=(Postgres&& other) noexcept
+LPTF_database& LPTF_database::operator=(LPTF_database&& other) noexcept
 {
     if (this != &other) {
         if (db_.isOpen()) db_.close();
@@ -56,7 +56,7 @@ Postgres& Postgres::operator=(Postgres&& other) noexcept
 
 // ---
 
-bool Postgres::connect(const QString& host, int port, const QString& dbName, const QString& user, const QString& password)
+bool LPTF_database::connect(const QString& host, int port, const QString& dbName, const QString& user, const QString& password)
 {
     db_.setHostName(host);
     db_.setPort(port);
@@ -72,17 +72,17 @@ bool Postgres::connect(const QString& host, int port, const QString& dbName, con
     return true;
 }
 
-bool Postgres::isConnected() const
+bool LPTF_database::isConnected() const
 {
     return db_.isOpen();
 }
 
-QString Postgres::lastError() const
+QString LPTF_database::lastError() const
 {
     return db_.lastError().text();
 }
 
-QSqlDatabase& Postgres::database()
+QSqlDatabase& LPTF_database::database()
 {
     return db_;
 }
@@ -91,7 +91,7 @@ QSqlDatabase& Postgres::database()
 
 // --- Client management ---
 
-int Postgres::getClientId(const QString& username, const QString& ip)
+int LPTF_database::getClientId(const QString& username, const QString& ip)
 {
     QSqlQuery query(db_);
     query.prepare("SELECT id FROM client WHERE username = :username AND ip = :ip");
@@ -105,7 +105,7 @@ int Postgres::getClientId(const QString& username, const QString& ip)
 }
 
 
-bool Postgres::addClient(const QString& username, const QString& ip)
+bool LPTF_database::addClient(const QString& username, const QString& ip)
 {
     QSqlQuery query(db_);
     query.prepare("INSERT INTO client (username, ip, online_status, last_seen) "
@@ -122,7 +122,7 @@ bool Postgres::addClient(const QString& username, const QString& ip)
 
 // --- New methods for startup data loading ---
 
-QList<QMap<QString, QVariant>> Postgres::getAllClients()
+QList<QMap<QString, QVariant>> LPTF_database::getAllClients()
 {
     QList<QMap<QString, QVariant>> clients;
     QSqlQuery query(db_);
@@ -147,7 +147,7 @@ QList<QMap<QString, QVariant>> Postgres::getAllClients()
     return clients;
 }
 
-bool Postgres::updateClientOnlineStatus(const QString& username, const QString& ip, bool isOnline)
+bool LPTF_database::updateClientOnlineStatus(const QString& username, const QString& ip, bool isOnline)
 {
     QSqlQuery query(db_);
     query.prepare("UPDATE client SET online_status = :status, last_seen = NOW() "
@@ -167,7 +167,7 @@ bool Postgres::updateClientOnlineStatus(const QString& username, const QString& 
 
 // --- Command result management ---
 
-bool Postgres::addPendingCommand(int clientId, uint16_t packetId, const QString& command)
+bool LPTF_database::addPendingCommand(int clientId, uint16_t packetId, const QString& command)
 {
     QSqlQuery query(db_);
     query.prepare("INSERT INTO pending_commands (client_id, packet_id, command, created_at) "
@@ -183,7 +183,7 @@ bool Postgres::addPendingCommand(int clientId, uint16_t packetId, const QString&
     return true;
 }
 
-QString Postgres::getPendingCommand(int clientId, uint16_t packetId)
+QString LPTF_database::getPendingCommand(int clientId, uint16_t packetId)
 {
     QSqlQuery query(db_);
     query.prepare("SELECT command FROM pending_commands WHERE client_id = :client_id AND packet_id = :packet_id");
@@ -195,7 +195,7 @@ QString Postgres::getPendingCommand(int clientId, uint16_t packetId)
     return QString(); // Empty string if not found
 }
 
-bool Postgres::removePendingCommand(int clientId, uint16_t packetId)
+bool LPTF_database::removePendingCommand(int clientId, uint16_t packetId)
 {
     QSqlQuery query(db_);
     query.prepare("DELETE FROM pending_commands WHERE client_id = :client_id AND packet_id = :packet_id");
@@ -209,7 +209,7 @@ bool Postgres::removePendingCommand(int clientId, uint16_t packetId)
 }
 
 
-bool Postgres::addCommandResult(int clientId, const QString& command, const QString& output)
+bool LPTF_database::addCommandResult(int clientId, const QString& command, const QString& output)
 {
     QSqlQuery query(db_);
     query.prepare("INSERT INTO command_result (client_id, command, output) "

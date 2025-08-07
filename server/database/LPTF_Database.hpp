@@ -12,18 +12,18 @@
 /**
  * @brief Gère la connexion à une base de données PostgreSQL via Qt.
  */
-class Postgres
+class LPTF_database
 {
 public:
-    Postgres();
-    ~Postgres();
+    LPTF_database();
+    ~LPTF_database();
 
     // Canonical form (Coplien)
-    Postgres(const Postgres& other);
-    Postgres& operator=(const Postgres& other);
+    LPTF_database(const LPTF_database& other);
+    LPTF_database& operator=(const LPTF_database& other);
 
-    Postgres(Postgres&& other) noexcept;
-    Postgres& operator=(Postgres&& other) noexcept;
+    LPTF_database(LPTF_database&& other) noexcept;
+    LPTF_database& operator=(LPTF_database&& other) noexcept;
 
     bool connect(const QString& host, int port, const QString& dbName, const QString& user, const QString& password);
     bool isConnected() const;
