@@ -71,15 +71,50 @@ void ClientApp::setupConsole()
 }
 
 /**
+ * @brief Gets the directory where the executable is located.
+ * @return std::string The directory path of the executable.
+ */
+std::string ClientApp::getExecutableDirectory()
+{
+    char exePath[MAX_PATH];
+    GetModuleFileNameA(NULL, exePath, MAX_PATH);
+    std::string path(exePath);
+    size_t lastSlash = path.find_last_of("\\/");
+    if (lastSlash != std::string::npos) {
+        return path.substr(0, lastSlash);
+    }
+    return ".";
+}
+
+/**
  * @brief Loads environment variables and connects the socket to the server.
  */
 void ClientApp::loadAndConnectEnv()
 {
-    auto env = EnvLoader::loadEnv("../../.env");
-    std::string ip = EnvLoader::loadIP("../../.env");
-    int port = EnvLoader::loadPort("../../.env");
-    socket->connectSocket(ip, port);
-    std::cout << "Connecté au serveur " << ip << ":" << port << std::endl;
+    std::string envPath = getExecutableDirectory() + "\\.env";
+    
+    // Try to load from executable directory first
+    try {
+        auto env = EnvLoader::loadEnv(envPath);
+        std::string ip = EnvLoader::loadIP(envPath);
+        int port = EnvLoader::loadPort(envPath);
+        socket->connectSocket(ip, port);
+        std::cout << "Connecté au serveur " << ip << ":" << port << std::endl;
+    }
+    catch (const std::exception& e) {
+        // Fallback to relative path for development
+        try {
+            auto env = EnvLoader::loadEnv("../../.env");
+            std::string ip = EnvLoader::loadIP("../../.env");
+            int port = EnvLoader::loadPort("../../.env");
+            socket->connectSocket(ip, port);
+            std::cout << "Connecté au serveur " << ip << ":" << port << std::endl;
+        }
+        catch (const std::exception& e2) {
+            std::cerr << "Failed to load .env file from both executable directory and relative path: " << e2.what() << std::endl;
+            throw;
+        }
+    }
 }
 
 /**

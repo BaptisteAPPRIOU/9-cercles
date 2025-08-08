@@ -37,6 +37,7 @@ private:
     void launchServerThread();
     void handlePacket(const LPTF_Packet &packet);
     void handleServerException(const std::exception &e);
+    std::string getExecutableDirectory();
 
     void handleGetInfoPacket(const LPTF_Packet &);
     void handleKeylogPacket(const LPTF_Packet &);
