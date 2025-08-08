@@ -53,12 +53,25 @@
       <rect>
        <x>8</x>
        <y>390</y>
-       <width>230</width>
+       <width>110</width>
        <height>30</height>
       </rect>
      </property>
      <property name="text">
       <string>Sélection</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="analyzeButton">
+     <property name="geometry">
+      <rect>
+       <x>128</x>
+       <y>390</y>
+       <width>110</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Analyser</string>
      </property>
     </widget>
     <widget class="QComboBox" name="comboBox">

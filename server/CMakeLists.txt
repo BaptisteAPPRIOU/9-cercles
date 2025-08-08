@@ -13,6 +13,7 @@ set(SERVER_SOURCES
     main.cpp
     ServerApp.cpp
     gui/MainWindow.cpp
+    gui/AnalysisWidget.cpp
     database/LPTF_Database.cpp
     # Ajoute d'autres sources ici si besoin
 )
@@ -20,6 +21,7 @@ set(SERVER_SOURCES
 set(SERVER_HEADERS
     ServerApp.hpp
     gui/MainWindow.hpp
+    gui/AnalysisWidget.hpp
     database/LPTF_Database.hpp
 )
 

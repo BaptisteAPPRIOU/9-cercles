@@ -35,6 +35,9 @@ public:
 
     // New method to load clients from database
     void loadClientsFromDatabase();
+    
+    // Get database connection for analysis
+    LPTF_database* getDatabase() { return &m_dbManager; }
 
 signals:
     void clientConnected(const QString &clientInfo, uint32_t sessionId);

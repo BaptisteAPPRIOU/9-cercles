@@ -73,6 +73,9 @@ int main(int argc, char *argv[])
 
     w.show();
     
+    // Set database connection for analysis functionality
+    w.setDatabase(serverApp->getDatabase());
+    
     // Load clients from database after GUI is shown
     QTimer::singleShot(100, [serverApp]() {
         serverApp->loadClientsFromDatabase();

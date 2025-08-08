@@ -1,4 +1,5 @@
 #include "MainWindow.hpp"
+#include "../database/LPTF_Database.hpp"
 #include <QTimer>
 #include <QColor>
 #include <QFont>
@@ -8,13 +9,19 @@
  * @param parent Optional parent widget.
  */
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::MainWindow)
+    : QMainWindow(parent), ui(new Ui::MainWindow), analysisWidget_(nullptr), database_(nullptr)
 {
     ui->setupUi(this);
     connect(ui->selectionButton, &QPushButton::clicked,
             this, &MainWindow::onSelectionButtonClicked);
+    connect(ui->analyzeButton, &QPushButton::clicked,
+            this, &MainWindow::onAnalyzeButtonClicked);
+    
     const QString firstLabel = ui->tabWidget->tabText(0);
     clientTabs[firstLabel] = ui->listWidget;
+    
+    // Create analysis widget
+    analysisWidget_ = new AnalysisWidget();
 }
 
 /**
@@ -22,7 +29,43 @@ MainWindow::MainWindow(QWidget *parent)
  */
 MainWindow::~MainWindow()
 {
+    delete analysisWidget_;
     delete ui;
+}
+
+/**
+ * @brief Set the database connection for analysis functionality
+ * @param database Pointer to the database instance
+ */
+void MainWindow::setDatabase(LPTF_database* database)
+{
+    database_ = database;
+    if (analysisWidget_) {
+        analysisWidget_->setDatabase(database);
+    }
+}
+
+/**
+ * @brief Handle analyze button click - opens the analysis widget
+ */
+void MainWindow::onAnalyzeButtonClicked()
+{
+    if (!analysisWidget_) {
+        qDebug() << "[GUI] Analysis widget not initialized";
+        QMessageBox::warning(this, "Erreur", "Le widget d'analyse n'est pas disponible.");
+        return;
+    }
+    
+    if (!database_) {
+        qDebug() << "[GUI] No database connection for analysis";
+        QMessageBox::warning(this, "Erreur", "Aucune connexion à la base de données disponible.");
+        return;
+    }
+    
+    qDebug() << "[GUI] Opening analysis widget";
+    analysisWidget_->show();
+    analysisWidget_->raise();
+    analysisWidget_->activateWindow();
 }
 
 /**

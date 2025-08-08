@@ -2,6 +2,8 @@ file(GLOB_RECURSE UTILS_SRC
     LPTF/*.cpp LPTF/*.hpp
     SystemInfo/*.cpp SystemInfo/*.hpp
     CommandSystem/*.cpp CommandSystem/*.hpp
+    NetworkInfo/*.cpp NetworkInfo/*.hpp
+    Analysis/*.cpp Analysis/*.hpp
     *.cpp *.hpp
 )
 
@@ -13,6 +15,7 @@ target_include_directories(utils PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/SystemInfo
     ${CMAKE_CURRENT_SOURCE_DIR}/CommandSystem
     ${CMAKE_CURRENT_SOURCE_DIR}/NetworkInfo
+    ${CMAKE_CURRENT_SOURCE_DIR}/Analysis
     # Add here any other subfolder!
 )
 
